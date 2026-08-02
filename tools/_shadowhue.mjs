@@ -38,7 +38,7 @@ const POKE = (process.argv[5] ?? '').split(',').filter(Boolean)
   .map((kv) => kv.split('=')).map(([k, v]) => [k, Number(v)]);
 /** `volumetrics=0,bloom=0` — RENDER_DEBUG kill switches, applied before capture. */
 const DBG = (process.argv[6] ?? '').split(',').filter(Boolean)
-  .map((kv) => kv.split('=')).map(([k, v]) => [k, v !== '0']);
+  .map((kv) => kv.split('=')).map(([k, v]) => [k, k === 'envIntensity' ? v : v !== '0']);
 const OUT = `shots/_shadow/${TAG}`;
 
 export function deciles(png, y0f = 0.42) {
@@ -127,7 +127,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       window.RENDER_DEBUG.lut = false;
       const sky = ctx.get('sky');
       for (const [k, v] of poke) { sky.machine.to[k] = v; sky.machine.from[k] = v; }
-      for (const [k, v] of dbg) window.RENDER_DEBUG[k] = v;
+      for (const [k, v] of dbg) {
+        if (k === 'envIntensity') ctx.scene.environmentIntensity = Number(v);
+        else window.RENDER_DEBUG[k] = v;
+      }
     }, fr, HOUR, POKE, DBG);
     await sleep(3000);
     const buf = await page.screenshot({ type: 'png' });

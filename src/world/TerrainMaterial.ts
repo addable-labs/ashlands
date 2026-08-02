@@ -529,12 +529,22 @@ varying float vCamDist;
 // without the separation, a terrain-material round can spend itself pushing on
 // a number that is not its to move. Measured this way on the gate's five
 // vantages, a perfectly achromatic ground still renders dark-ground relative
-// saturation at 0.26-0.42, which is the floor this stage cannot go below and
-// the reason the target band belongs partly to lighting and atmosphere.
+// saturation at 0.295-0.443 over terrain pixels (0.324-0.452 over the whole
+// dark-ground set), against an art-bible ground band of 0.174-0.203. That is
+// the floor this stage cannot go below however far the albedo is desaturated,
+// and it is why the frame-level target belongs to lighting and atmosphere as
+// much as to materials. Terrain albedo's own share of the measured saturation
+// is 0.021-0.125 depending on the vantage, and on ridge it is 0.003.
 //
 // QA only, via setBudget('TQ_MONOALB', '1'). No tier sets it.
 #ifndef TQ_MONOALB
 #define TQ_MONOALB 0
+#endif
+
+// Restores the chromatic LAYER_TINT set retired this round. QA only; see the
+// array's own note. No tier sets it.
+#ifndef TQ_LEGACYTINT
+#define TQ_LEGACYTINT 0
 #endif
 
 // Restores the mid band's position-proportional scale jitter, which shipped
@@ -928,6 +938,22 @@ void terrainWeights(float y, float s, float f, float c, float sh, float lo, floa
 // call, and it is called up to three times inside sampleTriple, which itself
 // runs up to six times per pixel. That is several hundred instructions per pixel
 // spent looking up a constant. Indexing a const array is a constant-buffer read.
+#if TQ_LEGACYTINT
+// The chromatic set this replaced, kept behind a QA switch so the before/after
+// is one setBudget apart in a single browser session instead of a file edit
+// between two of them. Set TQ_LEGACYTINT 1, TQD_CHROMA 1.0 and TQD_SAT_KNEE 9.0
+// together and the shader is bit-for-bit the pre-round build.
+const vec3 LAYER_TINT[8] = vec3[8](
+  vec3(1.52, 1.42, 1.28),
+  vec3(1.06, 1.00, 0.92),
+  vec3(1.24, 0.82, 0.58),
+  vec3(0.42, 0.50, 0.68),
+  vec3(1.22, 1.08, 0.84),
+  vec3(0.62, 0.94, 0.72),
+  vec3(0.76, 0.71, 0.66),
+  vec3(0.30, 0.28, 0.29)
+);
+#else
 const vec3 LAYER_TINT[8] = vec3[8](
   vec3(1.431),               // ash — was (1.52, 1.42, 1.28), the mid-value the world hangs on
   vec3(1.007),               // ash_coarse — was (1.06, 1.00, 0.92): ash plus cinder
@@ -938,6 +964,7 @@ const vec3 LAYER_TINT[8] = vec3[8](
   vec3(0.717),               // mud — was (0.76, 0.71, 0.66)
   vec3(0.285)                // lava_crust — was (0.30, 0.28, 0.29); crushed black, so the ember reads
 );
+#endif
 
 // Chroma discipline for the analytic bands.
 //
@@ -981,10 +1008,10 @@ vec3 chromaTrim(vec3 t, float keep) {
 // ground swatches sit at 0.312-0.359. Sweepable with setBudget for the same
 // reason TQD_CHROMA is.
 #ifndef TQD_SAT_KNEE
-#define TQD_SAT_KNEE 0.34
+#define TQD_SAT_KNEE 0.30
 #endif
 #ifndef TQD_SAT_CEIL
-#define TQD_SAT_CEIL 0.46
+#define TQD_SAT_CEIL 0.40
 #endif
 const float TQ_SAT_KNEE = float(TQD_SAT_KNEE);
 const float TQ_SAT_CEIL = float(TQD_SAT_CEIL);
@@ -3389,10 +3416,34 @@ const FRAG_SPLAT = /* glsl */ `
   // The thresholds are the BIBLE's own swatches converted to linear light,
   // which is the space accA lives in. #8a7f72 is 0.333 there, #4a423b 0.359 and
   // #2a2622 0.312 — the sRGB byte figures the review quotes (0.174-0.203) are
-  // the same colours after the encode. So 0.34 is "already on the palette" and
-  // nothing below it moves at all; above it the excess is compressed onto an
-  // asymptote at 0.46, which is a soft knee rather than a clip because a hard
-  // one puts a visible contour across a flank wherever the ground crosses it.
+  // the same colours after the encode. The knee sits at 0.30, a hair under the
+  // darkest of the three, so a texel already on the palette moves by under a
+  // thousandth; above it the excess is compressed onto an asymptote at 0.40,
+  // which is a soft knee rather than a clip because a hard one puts a visible
+  // contour across a flank wherever the ground crosses it.
+  //
+  // Measured with the inscatter-cancelling probe described below, the pair
+  // (0.30, 0.40) lands the albedo on the bible on every vantage the probe can
+  // resolve — sRGB-equivalent relative saturation dawn 0.271 -> 0.168, redmtn
+  // 0.216 -> 0.173, vale 0.205 -> 0.177, coast 0.349 -> 0.207, against the
+  // bible's 0.174-0.203. Ridge is unresolvable and stays unquoted: its basalt
+  // is dark enough that the albedo signal sits under the inscatter, which is
+  // the same reason the chroma ablation moves that vantage by 0.003.
+  //
+  // The looser (0.34, 0.46) pair tried first left ridge and dawn above the band.
+  // Basalt's own library set carries a #603e28 heat stain at 0.583, and the cool
+  // basalt tint retired above had been cancelling it by accident — which is
+  // exactly the kind of compensation this ceiling exists to make unnecessary.
+  //
+  // How that was measured, since a shaded frame cannot answer it directly and
+  // this file has burned rounds on numbers that turned out to be fog: capture
+  // the QA albedo channel three times per vantage — as authored, with
+  // TQ_MONOALB (albedo forced to its own luminance), and with TQ_NOSPLAT (the
+  // channel writes zero, so what comes back is the inscatter alone). Subtract
+  // the third from the first two and divide: transmittance and inscatter are
+  // per-channel but identical between the captures, so both cancel exactly and
+  // the quotient is accA over its own luminance — the material's chroma with
+  // the air taken back out.
   //
   // Luminance is preserved exactly — the scale is applied to the deviation from
   // the pixel's own Rec.709 luminance — so value, relief, cavity and roughness

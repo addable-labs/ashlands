@@ -183,7 +183,36 @@ export const PRESETS: Record<Kind, SkyParams> = {
     // real layer in front of it: at 1320m the sea-level fraction goes from 1.2%
     // to 19%, i.e. sixteen times the extinction at exactly the altitude every
     // vista shot is taken from.
-    hazeDensity: 2.0e-4, hazeH: 800, hazeR: 0.58, hazeG: 0.48, hazeB: 0.33,
+    // 1.2e-4 over a 1000m scale height, not 2.0e-4 over 800m — and the quantity
+    // that actually changed is the layer's VERTICAL column, which is what the
+    // sky sees, while its extinction at ridge altitude, which is what the vista
+    // shots see, is nearly held.
+    //
+    // sigma * H is the whole optical depth an upward ray crosses: at 2.0e-4/800
+    // it is 0.16, so a ray fifteen degrees up out of a three-metre eye still ran
+    // od 0.62 of particulate and the layer owned 46% of every sky pixel a
+    // sea-level frame contains. The coast vantage's sky spans elevation 0 to 27
+    // degrees and nothing else, and the dome underneath that layer is hue 213 at
+    // 15 degrees and 224 at 25 — a real blue with a sulphur band under it, the
+    // same rotation the ridge frame is praised for. None of it survived: the
+    // frame measured 0.2% non-warm content at any chroma threshold, which is the
+    // "flat, sunless, cloudless wash" finding in one number.
+    //
+    // sigma * exp(-1320/H) is the extinction at the ridge's eye altitude, and it
+    // is the constraint that stopped this being a free change — the 300m version
+    // of this layer switched aerial perspective off the moment the camera
+    // climbed. Raising H while lowering sigma trades against it far better than
+    // lowering sigma alone: 0.16 -> 0.12 on the column costs only 0.095 -> 0.082
+    // on the ridge's 2.5km vista, i.e. a seventh of the depth cue for a quarter
+    // of the sky back. At the boots the layer still extinguishes 0.24 over two
+    // kilometres, so a headland at that range still hands a fifth of its own
+    // radiance to the air in front of it.
+    //
+    // The horizon band does not move at all: a level ray from sea level crosses
+    // an airmass of ~90 scale heights, so its optical depth is 10 at this value
+    // and 17 at the old one, and both are far past the point where any further
+    // load changes the colour. #c99a5c stays exactly where the palette puts it.
+    hazeDensity: 1.2e-4, hazeH: 1000, hazeR: 0.58, hazeG: 0.48, hazeB: 0.33,
     // Even on a clear day the bottom of the boundary layer carries the coarse
     // red grit and the top carries only the bleached fine fraction, so the fog
     // at the boots is a shade redder than the fog on a ridge line. It is a small
@@ -217,7 +246,10 @@ export const PRESETS: Record<Kind, SkyParams> = {
     // the tops are visible through the gaps and the deck has silhouette. 0.50
     // puts the coverage threshold above the shape field's median, which breaks it.
     coverage: 0.56, cirrus: 0.38, density: 1.25, type: 0.68, sunMul: 0.88, ambMul: 1.05,
-    mieMul: 1.05, hazeDensity: 2.2e-4, hazeH: 800, wind: 8, gust: 4, audioWind: 0.2,
+    // Same rebalance as `clear` above, kept a shade heavier because a cloudy day
+    // genuinely carries more suspended load: the column is 0.14 against clear's
+    // 0.12 and the ridge-altitude extinction is within 8% of what it was.
+    mieMul: 1.05, hazeDensity: 1.4e-4, hazeH: 1000, wind: 8, gust: 4, audioWind: 0.2,
     hazeR: 0.56, hazeG: 0.47, hazeB: 0.34, deepR: 0.54, deepG: 0.35, deepB: 0.19,
     tintR: 1.03, tintG: 0.99, tintB: 0.93,
   }),
