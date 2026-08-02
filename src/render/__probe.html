@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>render probe</title>
+    <style>
+      body { margin: 0; background: #111; color: #ddd; font: 12px ui-monospace, monospace; }
+      #view { display: block; width: 960px; height: 540px; }
+      #out { white-space: pre-wrap; padding: 8px; max-height: 50vh; overflow: auto; }
+    </style>
+  </head>
+  <body>
+    <canvas id="view" width="960" height="540"></canvas>
+    <pre id="out">running…</pre>
+    <script type="module" src="/src/render/__probe.ts"></script>
+  </body>
+</html>

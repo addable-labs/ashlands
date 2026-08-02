@@ -1,0 +1,14 @@
+node_modules
+.DS_Store
+
+# Build output. Agents create their own dist-* trees per verification tool so a
+# capture can never be corrupted by a concurrent hot reload.
+dist
+dist-*
+
+# Capture output. A session generates thousands of frames; leaving them on disk
+# pins on-access antivirus at high CPU and starves the build.
+shots/
+
+# Session/machine state, not source.
+.claude/

@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; background: #14161a; color: #e8e4dc; font: 13px/1.35 ui-monospace, Menlo, monospace; }
+  #wrap { position: relative; width: 1400px; height: 1000px; }
+  canvas { position: absolute; inset: 0; }
+  .lbl { position: absolute; transform: translate(-50%, -50%); pointer-events: none; text-shadow: 0 0 4px #000, 0 0 4px #000, 0 0 4px #000; white-space: nowrap; font-size: 12px; }
+  .panel { position: absolute; pointer-events: none; }
+  .title { font-size: 15px; font-weight: 700; color: #fff; text-shadow: 0 0 6px #000; }
+  .sub { font-size: 12px; color: #b9b2a6; text-shadow: 0 0 6px #000; }
+  .call { font-size: 13px; font-weight: 700; text-shadow: 0 0 6px #000, 0 0 6px #000; }
+  #verdict { position: absolute; left: 0; top: 0; width: 1400px; padding: 7px 12px; box-sizing: border-box;
+             font-size: 16px; font-weight: 700; background: #7a1220; color: #fff; }
+  #legend { position: absolute; right: 10px; bottom: 8px; text-align: right; line-height: 1.55; font-size: 12px; }
+  .k { display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c" width="1400" height="1000"></canvas>
+  <div id="verdict">…</div>
+  <div id="legend"></div>
+</div>
+<script type="module">
+import * as THREE from '/node_modules/three/build/three.module.js';
+
+const D = await (await fetch('/tools/_hand/hand.json')).json();
+const wrap = document.getElementById('wrap');
+const v3 = (a) => new THREE.Vector3(a[0], a[1], a[2]);
+const L = D.landmarks;
+const lift = new THREE.Vector3(0, D.lift, 0);   // the dumped mesh is lifted up the haft; the bone data is not
+
+/** The authored hand, and its mirrorZ() — which is what the viewmodel installs
+ *  as the LEFT hand (Viewmodel.ts handPair()). */
+function makeHand(mirror) {
+  const s = mirror ? -1 : 1;
+  const g = new THREE.BufferGeometry();
+  const p = D.position.slice();
+  if (mirror) for (let i = 2; i < p.length; i += 3) p[i] = -p[i];
+  g.setAttribute('position', new THREE.Float32BufferAttribute(p, 3));
+  const idx = D.index.slice();
+  if (mirror) for (let i = 0; i < idx.length; i += 3) { const t = idx[i]; idx[i] = idx[i + 2]; idx[i + 2] = t; }
+  g.setIndex(idx);
+  g.computeVertexNormals();
+  const mz = (a) => new THREE.Vector3(a[0], a[1], s * a[2]);
+  const pt = (a) => mz(a).add(lift);
+  const F = mz(L.F), T = mz(L.T), N = mz(L.N);
+  return {
+    geo: g, mirror,
+    wrist: pt(L.wrist), mcp: L.mcp.map(pt), tip: L.tip.map(pt), thumbTip: pt(L.thumbTip),
+    F, T, N,
+    triple: new THREE.Vector3().crossVectors(T, F).dot(N),
+    chi: new THREE.Vector3().crossVectors(T, F).normalize(),
+  };
+}
+
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true });
+renderer.setPixelRatio(1);
+renderer.setSize(1400, 1000, false);
+renderer.setScissorTest(true);
+
+const labels = [];
+function buildScene(H, withLandmarks) {
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x14161a);
+  scene.add(new THREE.Mesh(H.geo, new THREE.MeshStandardMaterial({ color: 0xb9a894, roughness: 0.85, metalness: 0 })));
+  scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x30281f, 1.0));
+  const key = new THREE.DirectionalLight(0xfff2dd, 2.0); key.position.set(0.4, 0.9, 0.6); scene.add(key);
+  const fill = new THREE.DirectionalLight(0x9fb4d8, 0.7); fill.position.set(-0.6, -0.2, -0.5); scene.add(fill);
+  const haft = new THREE.Mesh(new THREE.BoxGeometry(D.grip.x * 2, 0.115, D.grip.z * 2),
+    new THREE.MeshStandardMaterial({ color: 0x2b2b30, roughness: 0.7 }));
+  haft.position.set(0, 0.030, 0);
+  scene.add(haft);
+  return scene;
+}
+
+/** Markers drawn ON TOP of the mesh — a diagnostic, not a beauty shot. */
+function addMarkers(scene, H, panel) {
+  const overlay = (o) => {
+    o.traverse((m) => { if (m.material) { m.material.depthTest = false; m.material.transparent = true; m.renderOrder = 10; } m.renderOrder = 10; });
+    scene.add(o);
+  };
+  const arrow = (dir, origin, len, color) => {
+    const a = new THREE.ArrowHelper(dir.clone().normalize(), origin, len, color, len * 0.26, len * 0.15);
+    overlay(a);
+    return origin.clone().addScaledVector(dir.clone().normalize(), len * 1.12);
+  };
+  const tag = (text, p, color) => labels.push({ text, p: p.clone(), color, panel });
+  const dot = (p, color, r = 0.0035) => {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 8), new THREE.MeshBasicMaterial({ color }));
+    m.position.copy(p); overlay(m);
+  };
+  const AL = 0.085;
+  tag('F  fingers, extended', arrow(H.F, H.wrist, AL, 0x00e5ff), '#4ff0ff');
+  tag('T  thumb, abducted (radial)', arrow(H.T, H.wrist, AL, 0xff40d0), '#ff7ade');
+  tag('N  palm normal', arrow(H.N, H.wrist, AL, 0xffd400), '#ffe14a');
+  tag('cross(T,F)', arrow(H.chi, H.wrist, AL * 0.8, 0xffffff), '#ffffff');
+  dot(H.wrist, 0xffffff, 0.005);
+  tag('wrist', H.wrist, '#ffffff');
+  dot(H.thumbTip, 0xff2fd0, 0.005);
+  tag('THUMB tip', H.thumbTip, '#ff7ade');
+  H.mcp.forEach((p, i) => { dot(p, 0x33ff88); });
+  tag('index MCP', H.mcp[0], '#8dffbe');
+  tag('little MCP', H.mcp[3], '#8dffbe');
+  // Weapon-space axes at the hand anchor.
+  tag('+Y blade axis', arrow(new THREE.Vector3(0, 1, 0), new THREE.Vector3(), 0.09, 0x49e06a), '#6bef88');
+  tag('+X', arrow(new THREE.Vector3(1, 0, 0), new THREE.Vector3(), 0.055, 0xff4b4b), '#ff6b6b');
+  tag('+Z flat', arrow(new THREE.Vector3(0, 0, 1), new THREE.Vector3(), 0.055, 0x4b8bff), '#7aa8ff');
+}
+
+const R = new makeHand(false).constructor ? makeHand(false) : null;   // authored
+const Rh = makeHand(false);
+const Lh = makeHand(true);
+
+const W = 700, PH = 470, TOP = 36;
+const rect = (i) => ({ x: (i % 2) * W, y: TOP + Math.floor(i / 2) * PH, w: W, h: PH });
+
+const panels = [
+  { hand: Rh, name: 'A — AS AUTHORED, PALM VIEW', eye: (H) => H.N, up: (H) => H.F,
+    note: 'handGeometry() output. Installed as the RIGHT hand.' },
+  { hand: Rh, name: 'B — AS AUTHORED, BACK OF HAND', eye: (H) => H.N.clone().negate(), up: (H) => H.F,
+    note: 'same geometry from behind the knuckles' },
+  { hand: Lh, name: 'C — mirrorZ(), PALM VIEW', eye: (H) => H.N, up: (H) => H.F,
+    note: 'Viewmodel.handPair() installs this as the LEFT hand.' },
+  { hand: Rh, name: 'D — AS AUTHORED, DISTAL', eye: (H) => H.F, up: (H) => H.N,
+    note: 'looking back down the fingers; N (palm) is screen UP' },
+];
+
+const shots = [];
+panels.forEach((pn, i) => {
+  const H = pn.hand;
+  const scene = buildScene(H);
+  addMarkers(scene, H, i);
+  const centre = H.wrist.clone().lerp(H.mcp[1].clone().lerp(H.mcp[3], 0.5), 0.62);
+  const cam = new THREE.PerspectiveCamera(30, W / PH, 0.01, 5);
+  cam.position.copy(centre).addScaledVector(pn.eye(H).clone().normalize(), 0.40);
+  cam.up.copy(pn.up(H));
+  cam.lookAt(centre);
+  const r = rect(i);
+  renderer.setViewport(r.x, 1000 - r.y - r.h, r.w, r.h);
+  renderer.setScissor(r.x, 1000 - r.y - r.h, r.w, r.h);
+  renderer.render(scene, cam);
+  shots.push({ cam, r, H });
+});
+
+/* ---- labels ------------------------------------------------------------ */
+const proj = (p, cam, r) => {
+  const q = p.clone().project(cam);
+  return { x: r.x + (q.x * 0.5 + 0.5) * r.w, y: r.y + (-q.y * 0.5 + 0.5) * r.h, inside: Math.abs(q.x) < 0.98 && Math.abs(q.y) < 0.94 };
+};
+for (const l of labels) {
+  const s = shots[l.panel];
+  const q = proj(l.p, s.cam, s.r);
+  if (!q.inside) continue;
+  const d = document.createElement('div');
+  d.className = 'lbl';
+  d.textContent = l.text;
+  d.style.color = l.color;
+  d.style.left = q.x + 'px';
+  d.style.top = q.y + 'px';
+  wrap.appendChild(d);
+}
+
+/* Which side does the thumb fall on, in each palm-on view? For a RIGHT hand
+   seen palm-on with the fingers pointing up, the thumb is on the viewer's
+   RIGHT (palm up + fingers north + thumb east, seen from above with north up:
+   east is to the right — the map convention). */
+panels.forEach((pn, i) => {
+  const s = shots[i];
+  const r = rect(i);
+  const d = document.createElement('div');
+  d.className = 'panel';
+  d.style.left = (r.x + 10) + 'px';
+  d.style.top = (r.y + 6) + 'px';
+  let call = '';
+  if (i === 0 || i === 2) {
+    const a = proj(s.H.thumbTip, s.cam, r), b = proj(s.H.wrist, s.cam, r);
+    const side = a.x > b.x ? "viewer's RIGHT" : "viewer's LEFT";
+    call = `<div class="call" style="color:${s.H.triple > 0 ? '#7dffa8' : '#ff8080'}">`
+      + `cross(T,F)·N = ${s.H.triple.toFixed(4)} → ${s.H.triple > 0 ? 'RIGHT HAND' : 'LEFT HAND'} `
+      + `&nbsp;·&nbsp; thumb falls to the ${side}</div>`;
+  } else {
+    call = `<div class="call" style="color:${s.H.triple > 0 ? '#7dffa8' : '#ff8080'}">`
+      + `cross(T,F)·N = ${s.H.triple.toFixed(4)} → ${s.H.triple > 0 ? 'RIGHT HAND' : 'LEFT HAND'}</div>`;
+  }
+  d.innerHTML = `<div class="title">${pn.name}</div><div class="sub">${pn.note}</div>${call}`;
+  wrap.appendChild(d);
+});
+
+document.getElementById('verdict').textContent =
+  `handGeometry() builds a ${Rh.triple > 0 ? 'RIGHT' : 'LEFT'} HAND (cross(T,F)·N = ${Rh.triple.toFixed(4)}). `
+  + `mirrorZ() of it — installed as the game's LEFT hand — is the ${Lh.triple > 0 ? 'RIGHT' : 'LEFT'} one (${Lh.triple.toFixed(4)}). `
+  + `Right-hand rule: palm up, fingers north ⇒ right thumb east ⇒ cross(T,F) = +N.`;
+document.getElementById('legend').innerHTML =
+  `<div><span class="k" style="background:#4ff0ff"></span>F — fingers, extended (wrist → middle MCP)</div>`
+  + `<div><span class="k" style="background:#ff7ade"></span>T — thumb, abducted (little MCP → index MCP)</div>`
+  + `<div><span class="k" style="background:#ffe14a"></span>N — palm outward normal</div>`
+  + `<div><span class="k" style="background:#ffffff"></span>cross(T,F) — with N ⇒ RIGHT, against N ⇒ LEFT</div>`
+  + `<div><span class="k" style="background:#ff6b6b"></span>+X&nbsp; <span class="k" style="background:#6bef88"></span>+Y blade axis&nbsp; <span class="k" style="background:#7aa8ff"></span>+Z flat of the blade</div>`;
+
+window.__READY = true;
+</script>
+</body>
+</html>
