@@ -146,9 +146,38 @@ export const FRAMING_FN = `
       // Night wants sky, but not an empty black lower third — keep the horizon in.
       out.night = { x: best.p.x, z: best.p.z, h: 3.0, yaw: yawTo(best.p, best.sea), fov: 68,
                     pitchRad: pitchTo(best.p.x, best.p.z, camY, far, 68, 0.78) };
-      // Sit the camera under the surface, well clear of the bottom.
-      const s = best.sea;
-      out.underwater = { x: s.x, z: s.z, h: null, absY: Math.max(s.h + 2.5, SEA - 4), yaw: yawTo(s, best.p), pitch: -8, fov: 70 };
+      // "Well clear of the bottom" was the whole problem. best.sea is the DEEPEST
+      // neighbour within 400 m, and the camera then sat at y=-4 looking nearly
+      // level at a shore hundreds of metres off. Extinction over that path length
+      // is total, so the shot -- whose declared intent is "underwater extinction
+      // + caustics" -- rendered as a featureless green card: no seabed, no
+      // surface, no caustics, nothing to extinguish. Same failure as ridge's
+      // vantage, where a frame with no depth range was asked to show aerial
+      // perspective. Extinction is only legible if something is IN the water with
+      // you, and caustics are only legible against a surface that is in frame.
+      //
+      // So: find a SHALLOW bed near the shoreline, sit just above it, and look
+      // up-slope. The bed fills the lower frame at a few metres range, the lit
+      // surface closes the top, and the extinction gradient is readable between
+      // them because there is near geometry to compare the far water against.
+      let sh = null, shs = -Infinity;
+      for (let a = 0; a < 24; a++) {
+        const th = (a / 24) * Math.PI * 2;
+        for (let d = STEP; d <= 600; d += STEP) {
+          const x = best.p.x + Math.cos(th) * d, z = best.p.z + Math.sin(th) * d;
+          if (Math.abs(x) > E || Math.abs(z) > E) continue;
+          const hh = t.heightAt(x, z);
+          if (hh > SEA - 5 || hh < SEA - 18) continue;      // 5-18 m of water above the bed
+          // Prefer a bed that is sloping, so the up-slope look has relief in it
+          // rather than a flat plane, and prefer being near the shore.
+          const s2 = slopeAt(x, z) * 2 - d / 600;
+          if (s2 > shs) { shs = s2; sh = { x, z, h: hh }; }
+        }
+      }
+      const s = sh ?? best.sea;
+      // +14 degrees: seabed across the lower frame, surface and caustics above it.
+      out.underwater = { x: s.x, z: s.z, h: null, absY: s.h + 2.0,
+                         yaw: yawTo(s, best.p), pitch: 14, fov: 70 };
     }
   }
 
