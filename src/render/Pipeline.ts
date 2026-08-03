@@ -472,6 +472,42 @@ export class RenderPipeline implements IPipeline {
   gainMax = 2.6;
 
   /**
+   * Highlight rolloff knee and toe width for the frame's value curve, both
+   * display-referred. Fields rather than constants baked into the material
+   * because they are the shape of the top and bottom of the curve and both had
+   * to be swept against real frames to establish what the shoulder was actually
+   * costing; see agx() in shaders.ts for what that measurement found.
+   */
+  shoulder = 0.70;
+  toeKnee = 0.075;
+  /**
+   * Fraction of AgX's own highlight desaturation to undo, hue-exactly. See
+   * agx() in shaders.ts for what the number means and what it is measured
+   * against. 0 is stock AgX.
+   */
+  hueRestore = 0.85;
+  /**
+   * When the metered region's own dynamic range exceeds this many stops, the
+   * key stops being solved against the weighted log-average and starts being
+   * solved against the midpoint of the range, ramping to fully so by
+   * `keyRangeHi`. See the key block in EXPOSURE_FRAG.
+   *
+   * 3.4 and 4.6 because that is where the canonical set separates: coast
+   * measures 4.84 stops between its shadow and highlight populations, redmtn
+   * 3.08, vale 2.60, ridge 2.35, dawn 1.56. Only the frame with a four-stop
+   * step at its own horizon line is affected, and it is affected fully.
+   */
+  keyRangeLo = 3.4;
+  keyRangeHi = 4.6;
+  /**
+   * Display value the bright population is held under, and the gain floor that
+   * serves it — both active only on frames past the range gate above. See the
+   * third-anchor block in EXPOSURE_FRAG for why this is gated and not global.
+   */
+  highlightCeil = 0.86;
+  gainMin = 1.30;
+
+  /**
    * Aperture control, 0..1. Zero is the gameplay default and means a *stopped
    * down* lens, not a disabled effect: the same physical model runs, it simply
    * resolves to a sub-pixel circle of confusion everywhere past the near plane.
@@ -1386,6 +1422,10 @@ export class RenderPipeline implements IPipeline {
       uBlackRel: { value: this.blackRel },
       uDarkFloor: { value: this.darkFloor },
       uGainMax: { value: this.gainMax },
+      uRangeLo: { value: this.keyRangeLo },
+      uRangeHi: { value: this.keyRangeHi },
+      uHiCeil: { value: this.highlightCeil },
+      uGainMin: { value: this.gainMin },
       uTrim: { value: 1.0 },
     }, { METER_W: String(METER_W), METER_H: String(METER_H), METER_TAPS: String(METER_TAPS) });
 
@@ -1428,8 +1468,9 @@ export class RenderPipeline implements IPipeline {
       uCaPixels: { value: this.caPixels },
       uTexel: { value: new THREE.Vector2() },
       uVignette: { value: 0.11 },
-      uShoulder: { value: 0.70 },
-      uToeKnee: { value: 0.075 },
+      uShoulder: { value: this.shoulder },
+      uToeKnee: { value: this.toeKnee },
+      uHueRestore: { value: this.hueRestore },
     });
 
     this.mCAS = fsMaterial(CAS_FRAG, {
@@ -2020,6 +2061,10 @@ export class RenderPipeline implements IPipeline {
       u.uBlackRel.value = RENDER_DEBUG.blackPoint ? this.blackRel : 0;
       u.uDarkFloor.value = this.darkFloor;
       u.uGainMax.value = RENDER_DEBUG.blackPoint ? this.gainMax : 1;
+      u.uRangeLo.value = this.keyRangeLo;
+      u.uRangeHi.value = this.keyRangeHi;
+      u.uHiCeil.value = this.highlightCeil;
+      u.uGainMin.value = RENDER_DEBUG.blackPoint ? this.gainMin : 1;
       u.uTrim.value = this.exposure;
       u.uAdapt.value = this.exposureAdapt;
       u.uMinExp.value = this.exposureMin;
@@ -2042,6 +2087,10 @@ export class RenderPipeline implements IPipeline {
       u.uBlackRel.value = RENDER_DEBUG.blackPoint ? this.blackRel : 0;
       u.uDarkFloor.value = this.darkFloor;
       u.uGainMax.value = RENDER_DEBUG.blackPoint ? this.gainMax : 1;
+      u.uRangeLo.value = this.keyRangeLo;
+      u.uRangeHi.value = this.keyRangeHi;
+      u.uHiCeil.value = this.highlightCeil;
+      u.uGainMin.value = RENDER_DEBUG.blackPoint ? this.gainMin : 1;
       u.uTrim.value = this.exposure;
       this.blit.draw(this.renderer, this.mExposure, cur);
       this.expPrimed = true;
@@ -2067,6 +2116,39 @@ export class RenderPipeline implements IPipeline {
       // Some drivers refuse a FLOAT readback; the frame is unaffected either way.
     }
     return { exposure: buf[0], avgLuminance: buf[1], gain: buf[2], black: buf[3] };
+  }
+
+  /**
+   * Debug/QA hook: pull the meter's tile grid back to the CPU.
+   *
+   * The point of this is that a metering scheme is an argument about a
+   * *distribution*, and every previous argument about this one was made from the
+   * final 8-bit image — which is the distribution after the meter, the
+   * tonemapper and the value curve have all had their say, i.e. the one piece of
+   * evidence that cannot distinguish between them. This returns the frame's own
+   * spatial log-luminance map, 32x18 tiles, in SCENE radiance, so a candidate
+   * weighting can be evaluated offline over the canonical set before any of it
+   * is written into a shader.
+   *
+   * Stalls the pipeline twice. Capture harness only.
+   */
+  readMeterGrid(): { w: number; h: number; logL: Float32Array } {
+    // Half float, so the readback buffer is typed to match the texture and the
+    // values are decoded here. A Float32Array against a HALF_FLOAT attachment
+    // comes back as zeros with no error, which is how this returned a grid of
+    // "-12 everywhere" the first time it was run.
+    const buf = new Uint16Array(METER_W * METER_H * 4);
+    try {
+      this.renderer.readRenderTargetPixels(this.rtMeter, 0, 0, METER_W, METER_H, buf, undefined, 1);
+    } catch {
+      // Some drivers refuse the readback; the frame is unaffected either way.
+    }
+    const logL = new Float32Array(METER_W * METER_H);
+    for (let i = 0; i < logL.length; i++) {
+      const n = THREE.DataUtils.fromHalfFloat(buf[i * 4 + 3]);
+      logL[i] = n > 0 ? THREE.DataUtils.fromHalfFloat(buf[i * 4 + 2]) / n : -12;
+    }
+    return { w: METER_W, h: METER_H, logL };
   }
 
   private expPrimed = false;
@@ -2104,6 +2186,9 @@ export class RenderPipeline implements IPipeline {
     u.tBloom.value = bloomTex ? bloomTex.texture : null;
     u.uBloomIntensity.value = RENDER_DEBUG.bloom ? this.bloomIntensity : 0;
     u.uExposure.value = this.exposure;
+    u.uShoulder.value = this.shoulder;
+    u.uToeKnee.value = this.toeKnee;
+    u.uHueRestore.value = this.hueRestore;
     u.uCaPixels.value = RENDER_DEBUG.chromatic ? this.caPixels : 0;
     this.blit.draw(this.renderer, this.mUber, dst);
     return dst;

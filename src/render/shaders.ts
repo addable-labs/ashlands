@@ -1246,17 +1246,57 @@ vec3 agxContrast(vec3 x) {
  * three consecutive rounds of grading failed to move a hue histogram. Colour
  * is authored in exactly one place now, and this is not it.
  */
-vec3 agx(vec3 c) {
+/**
+ * The restore argument undoes a controlled fraction of AgX's own highlight
+ * desaturation.
+ *
+ * AgX is a PER-CHANNEL operator: the sigmoid runs on r, g and b independently,
+ * so every channel walks toward the same asymptote and a colour loses chroma
+ * purely as a function of how far over key it sits. That is a property of the
+ * curve, not of the picture, and it is measurable: the same fixed-ratio sky
+ * comes out of this function at chroma 12 when it is exposed at 0.2 and chroma
+ * 6 when it is exposed at 2.5. The coast vantage looks within a few degrees of
+ * the sun, so its sky is genuinely three stops over key, and by the time it
+ * reaches the encode there is nothing chromatic left to grade — measured
+ * pre-grade at 217-231/255 carrying chroma 5-13, against the same dome at the
+ * ridge vantage sitting at 158-195 carrying 15-33. Two vantages, one dome, and
+ * the only difference is where on this curve each one landed.
+ *
+ * The restoration is the standard maximum-chroma projection, and it is HUE
+ * EXACT by construction: take the scene's own chromaticity, scale it to the
+ * luminance the tonemapper chose, and if that lands outside the display cube,
+ * desaturate toward that same luminance by the smallest amount that brings it
+ * back in. Nothing rotates; only chroma moves, and only when it has to. Mixed
+ * against the per-channel result rather than replacing it, because a real
+ * sensor does desaturate its highlights and a frame with none of that reads as
+ * a cartoon — this recovers part of the loss, not all of it.
+ */
+vec3 agx(vec3 c, float restore) {
   const float MIN_EV = -12.47393;
   const float MAX_EV = 4.026069;
-  c = SRGB_TO_REC2020 * max(c, vec3(0.0));
+  vec3 scene = max(c, vec3(0.0));
+  c = SRGB_TO_REC2020 * scene;
   c = AGX_INSET * max(c, vec3(0.0));
   c = clamp((log2(max(c, vec3(1e-10))) - MIN_EV) / (MAX_EV - MIN_EV), 0.0, 1.0);
   c = agxContrast(c);
   c = AGX_OUTSET * c;
   c = pow(max(c, vec3(0.0)), vec3(2.2));
   c = REC2020_TO_SRGB * c;
-  return clamp(c, 0.0, 1.0);
+  c = clamp(c, 0.0, 1.0);
+
+  if (restore > 0.0) {
+    float li = luma(scene);
+    float lo = luma(c);
+    if (li > 1e-6 && lo > 1e-4) {
+      vec3 hp = scene * (lo / li);
+      float m = max(hp.r, max(hp.g, hp.b));
+      // Out of gamut: pull toward the achromatic colour of the SAME luminance,
+      // which is the one move that cannot change hue.
+      if (m > 1.0) hp = mix(vec3(lo), hp, clamp((1.0 - lo) / max(m - lo, 1e-5), 0.0, 1.0));
+      c = clamp(mix(c, max(hp, vec3(0.0)), restore), 0.0, 1.0);
+    }
+  }
+  return c;
 }
 
 vec3 encodeSrgb(vec3 c) {
@@ -1304,6 +1344,8 @@ void main() {
   float swb = 0.0;
   float sld = 0.0;
   float swd = 0.0;
+  float sn = 0.0;
+  float sc = 0.0;
   for (int y = 0; y < METER_TAPS; y++) {
     for (int x = 0; x < METER_TAPS; x++) {
       vec2 f = (vec2(float(x), float(y)) + 0.5) / float(METER_TAPS);
@@ -1340,10 +1382,17 @@ void main() {
       float wd = clamp(exp2(-3.0 * (log2(l / ref) + 1.0)), 0.0, 1.0);
       sld += wd * log2(l);
       swd += wd;
+      // Unweighted tile statistics, .zw of attachment 1. These do NOT feed the
+      // exposure solve; they exist so readMeterGrid() can pull the frame's own
+      // spatial luminance map back to the CPU and a candidate metering scheme
+      // can be evaluated offline against real frames instead of guessed at. Two
+      // channels that were already being written as zero.
+      sn += log2(l);
+      sc += 1.0;
     }
   }
   gl_FragColor = vec4(sl, sw, slb, swb);
-  pc_fragDark = vec4(sld, swd, 0.0, 0.0);
+  pc_fragDark = vec4(sld, swd, sn, sc);
 }
 `;
 
@@ -1384,6 +1433,17 @@ uniform float uDarkFloor;
  * sampling noise, magnified.
  */
 uniform float uGainMax;
+/**
+ * Dynamic range, in stops between the frame's own shadow and highlight
+ * populations, over which the key stops being solved against the weighted mean
+ * and starts being solved against the midpoint of the range. See the key block
+ * in main() for the measurements these two are set from.
+ */
+uniform float uRangeLo;
+uniform float uRangeHi;
+/** Display ceiling on the bright population, and the gain floor that serves it. */
+uniform float uHiCeil;
+uniform float uGainMin;
 /** Manual exposure trim, so the anchor matches what the uber pass will apply. */
 uniform float uTrim;
 uniform sampler2D tPrev;
@@ -1425,7 +1485,43 @@ void main() {
     }
   }
   float avgL = exp2(sl / max(sw, 1e-5));
-  float target = clamp(pow(uKey / max(avgL, 1e-6), uAdapt), uMinExp, uMaxExp);
+  float darkL = exp2(sld / max(swd, 1e-5));
+
+  // WHAT THE KEY IS SOLVED AGAINST, WHEN THE FRAME IS BIMODAL.
+  //
+  // A log-average is the right key estimator for a frame whose luminances form
+  // one population. It is the wrong one for a frame that has two, far apart:
+  // the average then lands in the gap between them and describes no part of the
+  // picture. Measured over the canonical set at hour 9, as tile log-luminance
+  // by frame row, the coast vantage is exactly that frame — its top eight rows
+  // sit at -0.8 to -1.9 and its bottom ten at -3.9 to -5.9, a four-stop step at
+  // the horizon line — while ridge, which is framed almost identically, spans
+  // 0.87 stops end to end. The positional weighting then puts nine tenths of
+  // the meter's weight on the dark half, so the exposure that comes out is the
+  // one that renders a black ash beach as midtone, and the sky it also has to
+  // render is three stops over key with nowhere left to go.
+  //
+  // The two populations the pass already computes ARE the frame's range: the
+  // shadow channel's soft minimum and the highlight channel's log-average. When
+  // they are far enough apart that the mean is meaningless, key off the
+  // midpoint between them instead — the classic photographic compromise, placed
+  // by the frame's own extremes rather than by a constant. Reconstructed over
+  // the set the separation is clean: coast measures 4.84 stops, redmtn 3.08,
+  // vale 2.60, ridge 2.35, dawn 1.56. The gate is set above every frame that
+  // does not have the problem, so those four are left bit-identical, and it is
+  // one-sided (max against avgL) because the cure for a dark frame is never to
+  // expose it darker still.
+  //
+  // avgL itself is deliberately NOT touched. It is the honest weighted mean and
+  // it anchors the value curve's black point further down; substituting a key
+  // statistic for it there would move the frame's floor to satisfy a decision
+  // about its exposure, which is how two anchors end up fighting.
+  float hiL = swb > 1e-4 ? exp2(slb / swb) : avgL;
+  float range = log2(max(hiL, 1e-6) / max(darkL, 1e-6));
+  float midL = sqrt(max(hiL, 1e-6) * max(darkL, 1e-6));
+  float wide = smoothstep(uRangeLo, uRangeHi, range);
+  float keyL = mix(avgL, max(avgL, midL), wide);
+  float target = clamp(pow(uKey / max(keyL, 1e-6), uAdapt), uMinExp, uMaxExp);
 
   // Highlight placement.
   //
@@ -1445,8 +1541,16 @@ void main() {
   // log-average alone (the cure for a scene with no dynamic range is not to
   // overexpose it), and a hundred pixels of sun disc is not a reason to stop
   // down the other two million.
+  //
+  // Placing the highlight LOWER on a wide-range frame — protecting the top and
+  // letting the bottom compress — was built here and measured, and it does not
+  // pay: at 0.75 stops of protection the coast frame's median fell 93 -> 70 of
+  // 255 and its 99th percentile moved 220 -> 217. Twenty-four levels of midtone
+  // for three of highlight, because the value curve below re-anchors on the
+  // frame's own mean and takes the black point down with it, so the top barely
+  // moves. What DOES move the top on that frame is the gain, which is where the
+  // range gate is spent instead. See the third-anchor block further down.
   float hiCover = swb / max(tiles * float(METER_TAPS * METER_TAPS), 1.0);
-  float hiL = swb > 1e-4 ? exp2(slb / swb) : avgL;
   float hiWant = uHiKey / max(hiL, 1e-6);
   float lift = clamp(hiWant / max(target, 1e-6), uMinLift, uMaxLift);
   lift = mix(1.0, lift, smoothstep(0.004, 0.030, hiCover));
@@ -1468,9 +1572,8 @@ void main() {
   // exact chain the uber pass is about to run — exposure, AgX, sRGB encode.
   // Both here, in a 1x1 target, precisely because both are constant across the
   // frame: two AgX evaluations per frame instead of four million.
-  float meanDisplay = luma(encodeSrgb(agx(vec3(max(avgL, 1e-6) * e * uTrim))));
-  float darkL = exp2(sld / max(swd, 1e-5));
-  float darkDisplay = luma(encodeSrgb(agx(vec3(max(darkL, 1e-6) * e * uTrim))));
+  float meanDisplay = luma(encodeSrgb(agx(vec3(max(avgL, 1e-6) * e * uTrim), 0.0)));
+  float darkDisplay = luma(encodeSrgb(agx(vec3(max(darkL, 1e-6) * e * uTrim), 0.0)));
   darkDisplay = min(darkDisplay, meanDisplay - 1e-3);
 
   // THE VALUE CURVE'S TWO ANCHORS, SOLVED TOGETHER.
@@ -1492,6 +1595,39 @@ void main() {
   // frame with no floor to find asks for more, and gets it up to the rail.
   float gain = clamp((uDarkFloor - meanDisplay) / (darkDisplay - meanDisplay),
                      1.0 / max(1.0 - uBlackRel, 0.15), uGainMax);
+
+  // THE THIRD ANCHOR: the top — AND WHY IT IS GATED RATHER THAN ALWAYS ON.
+  //
+  // The two conditions above pin the mean and the floor and say nothing about
+  // the ceiling, so the gain they agree on is free to drive the bright
+  // population clean past display 1.0 and into the uber pass's shoulder, where
+  // every ratio inside it is compressed toward white. Completing the pair is
+  // the obvious move:
+  //
+  //   gain * (hiDisplay - black) <= uHiCeil,  black = meanDisplay (1 - 1/gain)
+  //
+  // and applied unconditionally it is a bad trade at every ceiling value swept
+  // (1.00 / 0.96 / 0.92 / 0.88 / 0.86 / 0.80). Every daylight frame in the
+  // canonical set already places its highlights near the top of the curve, so
+  // the ceiling binds on all of them and pays for one frame's sky with
+  // everyone else's contrast: at 0.86, redmtn's gain fell 2.60 -> 1.57, its 1st
+  // percentile rose 9 -> 20 of 255 and its dynamic range collapsed from 4.62
+  // stops to 3.40 — a frame with no blacks in it, which is the exact defect the
+  // dark anchor exists to prevent.
+  //
+  // So it is gated on the same range measure the key block uses. A frame the
+  // curve can hold whole keeps every stop of its contrast and is bit-identical;
+  // a frame with nearly five stops in it gives up contrast rather than its sky.
+  // That is the same trade the highlight protection above makes, made once more
+  // at the other end of the chain, and on the same frames.
+  float hiDisplay = luma(encodeSrgb(agx(vec3(max(hiL, 1e-6) * e * uTrim), 0.0)));
+  float gainHi = uGainMax;
+  if (hiDisplay > meanDisplay + 0.02) {
+    gainHi = (uHiCeil - meanDisplay) / (hiDisplay - meanDisplay);
+  }
+  gainHi = mix(uGainMax, gainHi, wide * smoothstep(0.004, 0.030, hiCover));
+  gain = max(min(gain, gainHi), uGainMin);
+
   float black = clamp(meanDisplay * (1.0 - 1.0 / gain), 0.0, 0.90 * meanDisplay);
   gl_FragColor = vec4(e, avgL, gain, black);
 }
@@ -1518,6 +1654,8 @@ uniform float uVignette;
 uniform float uShoulder;
 /** Width of the smooth-max at the bottom of the value curve. */
 uniform float uToeKnee;
+/** How much of AgX's per-channel highlight desaturation to undo. See agx(). */
+uniform float uHueRestore;
 in vec2 vUv;
 
 /**
@@ -1662,7 +1800,7 @@ void main() {
   #endif
 
   #ifdef USE_TONEMAP
-    vec3 c = agx(hdr);
+    vec3 c = agx(hdr, uHueRestore);
   #else
     vec3 c = clamp(hdr, 0.0, 1.0);
   #endif
