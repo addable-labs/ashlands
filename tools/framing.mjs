@@ -136,6 +136,32 @@ export const FRAMING_FN = `
     }
     if (best) {
       const camY = best.p.h + 3.0;
+      // TRIED AND REVERTED: framing coast so it actually contains water.
+      //
+      // This vantage holds almost no water -- a sliver at the horizon, with dry
+      // mushroom ground and a Telvanni tower filling the frame -- against a
+      // declared intent naming shoreline, water shading, foam, wet sand and sun
+      // glint. That looks exactly like the framing bugs found in ridge and
+      // underwater, and coast is also the one shot failing the palette check, so
+      // the obvious theory was that the two facts were the same defect.
+      //
+      // They are not. Restricting the sea search to 150 m, scoring on proximity
+      // instead of depth, and aiming at the NEAR water put the sea across the
+      // lower half and made every measured number worse:
+      //
+      //   hueFamilies      2 -> 1        hueConcentration  97% -> 100%
+      //   dynamic range  4.59 -> 3.05 stops
+      //
+      // The sea MIRRORS the sky. A sea-filled frame at this hour is more
+      // monochrome than a ground-filled one, not less, because the ground at
+      // least carries its own albedo. Filling the frame with water removes the
+      // only second hue source present.
+      //
+      // So coast's palette failure is NOT a framing bug and putting water in
+      // frame cannot fix it. Whether this shot should keep a vantage that fails
+      // its own stated intent, or the intent should change, is a genuine
+      // art-direction question and is left open deliberately.
+      //
       // Aim at open water a good way out so the sea fills the lower half rather
       // than collapsing to a sliver at the horizon.
       const far = { x: best.p.x + (best.sea.x - best.p.x) * 3, z: best.p.z + (best.sea.z - best.p.z) * 3, y: 0 };
