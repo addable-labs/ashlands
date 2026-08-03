@@ -394,11 +394,25 @@ if (RECORD) {
   // unanchored alternation silently captures any metric whose name merely
   // contains one of these words, which is how moireN got mis-scored.
   const lowerBetter = /^(moire|fogWallCv|hueConcentration)$/;
+  // Some metrics are not monotonic in EITHER direction — they have a target, and
+  // both sides of it are wrong. meanSat was scored higher-better, so re-framing
+  // ridge from a point-blank crater wall to a real vista took it 0.407 -> 0.272,
+  // straight toward the art bible's 0.174-0.203 ground band, and the gate called
+  // it a regression. A metric that reports movement toward the spec as a failure
+  // trains you to ignore it. Band is widened above the bible's GROUND figure
+  // because this is measured whole-frame and sky legitimately carries chroma.
+  const BAND = { meanSat: [0.15, 0.36] };
+  const dist = (x, [lo, hi]) => (x < lo ? lo - x : x > hi ? x - hi : 0);
   for (const [shot, cur] of Object.entries(metrics)) {
     const old = prev.metrics?.[shot]; if (!old) continue;
     for (const [k, v] of Object.entries(cur)) {
       if (DIAGNOSTIC.has(k)) continue;
       if (typeof v !== 'number' || old[k] == null) continue;
+      if (BAND[k]) {                      // regression = moved further outside the band
+        const was = dist(old[k], BAND[k]), now = dist(v, BAND[k]);
+        if (now > was + 0.02) worse.push(`${shot}.${k}: ${old[k]} -> ${v} (outside ${BAND[k].join('-')})`);
+        continue;
+      }
       const d = v - old[k];
       const bad = lowerBetter.test(k) ? d > Math.max(0.02, Math.abs(old[k]) * 0.15)
                                       : d < -Math.max(0.02, Math.abs(old[k]) * 0.15);

@@ -166,9 +166,19 @@ export const FRAMING_FN = `
   {
     const p = pick((c) => {
       const d = dist(c, peak);
-      if (d < 350 || d > 1400) return -1;
+      if (d < 900 || d > 1400) return -1;
       if (c.h < q(0.40)) return -1;              // must genuinely be high ground
-      return c.h / 1200 + flat(c) * 0.5;
+      // Reward standing BACK, which the comment above always claimed but the
+      // score never implemented: it maximised height alone, so it climbed to the
+      // nearest high shoulder inside the 350 m floor and aimed point blank at the
+      // peak. Measured from the depth buffer, the resulting frame spanned 15-677 m
+      // with 95% of it between 300 and 680 m -- a 380 m slab. This shot's declared
+      // intent is terrain LOD, erosion channels and silhouette, and all three need
+      // a long sightline; a stage-4 round then burned itself proving aerial
+      // perspective cannot show falloff on a frame with no depth to fall off over.
+      // Distance is weighted to matter about as much as height so the flank still
+      // fills the lower frame rather than the camera fleeing to the 1400 m ceiling.
+      return c.h / 1200 + flat(c) * 0.5 + (d / 1400) * 0.8;
     }, 'ridge');
     if (p) {
       out.ridge = { x: p.x, z: p.z, h: 4, yaw: yawTo(p, peak), fov: 55,
