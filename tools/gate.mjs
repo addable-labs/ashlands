@@ -303,9 +303,27 @@ for (const name of SHOTS) {
   // A wall is uniform (cv < 0.45) AND strong (mean > 6).
   record(`${name}: no fog wall`, !(fw.cv < 0.45 && fw.mean > 6), fw.cv,
     `edge uniformity cv=${fw.cv.toFixed(2)} strength=${fw.mean.toFixed(1)} @row ${fw.row}`);
-  record(`${name}: no chunk seam`, !(sm.isolation >= 3.0 && sm.raw >= 2.0), sm.isolation,
+  // Strength floor raised 2.0 -> 5.0, CALIBRATED against synthetic seams rather
+  // than adjusted until dawn went green. Injecting a full-height line of known
+  // amplitude into a real frame and running this same detector gives:
+  //
+  //   amplitude   0     2     4     6    10    20   (luminance levels of 255)
+  //   isolation  1.63  1.74  3.49  5.54 10.05 22.13
+  //   strength   1.30  1.39  2.79  4.43  8.04 17.71
+  //
+  // So strength runs ~0.85 per level. A floor of 2.0 fires at ~2.4 levels, under
+  // 1% modulation -- below sight, and inside the frame's own texture noise, which
+  // is why dawn flip-flopped across 2.55/3.01/3.22/3.32/3.45/3.56 on unchanged
+  // builds without ever catching a real seam. Inspected directly at the reported
+  // column there is no visible line, and that column was not even among the
+  // frame's worst six (0.238 departure, 1.5x median, against 2.51 elsewhere).
+  // 5.0 requires ~7 levels, ~2.7% on a straight line, which IS visible. Note this
+  // is a genuine sensitivity reduction: a ~2% seam now passes. It stays paired
+  // with the isolation ratio -- clean frames sit at 1.6-1.7 -- so a real chunk
+  // boundary at 10+ levels fails loudly on both terms.
+  record(`${name}: no chunk seam`, !(sm.isolation >= 3.0 && sm.raw >= 5.0), sm.isolation,
     `isolation ${sm.isolation.toFixed(2)}x, strength ${sm.raw.toFixed(2)} on ${sm.axis} ${sm.idx}` +
-    ` (fails only if isolation>=3.0 AND strength>=2.0)`);
+    ` (fails only if isolation>=3.0 AND strength>=5.0)`);
   record(`${name}: no moire/screen-door`, mo.mod < 0.09, mo.mod,
     `phase modulation ${(mo.mod * 100).toFixed(1)}% at period ${mo.n}px`);
   record(`${name}: frame not blank`, pal.stops > 1.2, pal.stops,
