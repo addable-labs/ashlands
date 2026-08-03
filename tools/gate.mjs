@@ -232,6 +232,36 @@ const place = async (name) => {
   await page.evaluate((fr, hr) => {
     const ctx = window.engine.ctx, p = ctx.get('player');
     ctx.clock.hour = hr; ctx.clock.scale = 0;
+    // Cloud motion is driven from ctx.time.elapsed (Atmosphere.ts uTime), which
+    // is wall-clock since boot — and boot varies by seconds. That made the coast
+    // frame non-reproducible: its single patch of cool sky drifts behind the
+    // deck, and the palette check read 2.2 / 0.0 / 4.3% across three captures of
+    // an IDENTICAL build. Pin it so the settle below lands on the same phase
+    // every run; a flaky check produces false regressions forever.
+    ctx.time.elapsed = 1000;
+    // Pick an hour that puts the sun ~75 degrees off the view axis, the way
+    // shoot.mjs does. The gate previously hardcoded 09:00 for every shot, which
+    // left coast — aimed at the open sea — staring within 20 degrees of the sun:
+    // its sky is then forward-scattered warm edge to edge and there is genuinely
+    // no second hue family in the scene to measure. That is a framing artefact,
+    // not a rendering defect.
+    if (hr < 20) {
+      const sky = ctx.get('sky');
+      const fwd = new (ctx.camera.position.constructor)();
+      ctx.camera.getWorldDirection(fwd);
+      const viewAz = Math.atan2(fwd.x, fwd.z);
+      const score = (h) => {
+        ctx.clock.hour = h; sky?.update?.(ctx);
+        const sd = sky.sun.position.clone().sub(sky.sun.target.position).normalize();
+        if (Math.asin(Math.max(-1, Math.min(1, sd.y))) < 0.12) return -1;
+        let d = Math.abs(Math.atan2(sd.x, sd.z) - viewAz);
+        if (d > Math.PI) d = 2 * Math.PI - d;
+        return 1 - Math.abs(d - 1.31) / Math.PI;
+      };
+      let best = hr, bs = score(hr);
+      for (let h = 7; h <= 18; h += 0.25) { const v = score(h); if (v > bs) { bs = v; best = h; } }
+      ctx.clock.hour = best; sky?.update?.(ctx);
+    }
     ctx.camera.fov = fr.fov; ctx.camera.updateProjectionMatrix();
     ctx.get('sky')?.setWeather?.('clear', 0);
     if (p) p.freefly = true;
@@ -271,6 +301,12 @@ for (const name of SHOTS) {
     `dynamic range ${pal.stops} stops (p1=${pal.p1} p50=${pal.p50} p99=${pal.p99})`);
   // Either a spread of hue, or at least two separated families, counts as not
   // being a single-hue wash.
+  // KNOWN OPEN: `coast` fails this legitimately, not from a rendering defect.
+  // That vantage sits at sea level looking out over open water; the sea mirrors
+  // the sky and the ground is warm basalt, so the scene contains one hue source
+  // at any hour — verified after adding sun re-angling, which fixed the other
+  // four. Resolving it needs an art-direction decision about what the canonical
+  // coast shot should frame, so it is left RED rather than silenced.
   record(`${name}: palette not single-hue`, pal.hueConcentration < 0.85 || pal.hueFamilies >= 3,
     pal.hueConcentration,
     `${(pal.hueConcentration * 100).toFixed(0)}% in the dominant adjacent pair, ` +
