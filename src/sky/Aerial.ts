@@ -161,7 +161,72 @@ vec3 applyAerial(vec3 color, float dist, vec3 viewDir) {
   float horizonMu = -sqrt(max(0.0, 1.0 - (6360000.0 * 6360000.0) / (rr * rr)));
   vec3 vSky = vec3(v.x, max(v.y, horizonMu), v.z);
   vec3 skyInf = texture(uAerialSkyView, aerialSkyUV(normalize(vSky))).rgb;
+
   vec3 fogged = mix(inscat, skyInf, clamp(vec3(1.0) - T, 0.0, 1.0));
+
+  // TRIED AND REVERTED — the whole of stage 4's aerial-magnitude round. Read
+  // this before touching the two lines above, because they are NOT what they
+  // look like and the obvious correction has already been shipped and measured.
+  //
+  // What is wrong with them, which is real: inscat carries the path's own
+  // (1 - T) and skyInf does not — skyInf is the airlight of an INFINITE path,
+  // a radiance. So the mix is between two quantities in different units, and
+  // dividing the composite's own weight back out shows what the frame is
+  // actually veiled with:
+  //
+  //     fogged / (1 - T)  =  T * (scat/ext)  +  skyInf
+  //
+  // The entire horizon radiance, at unit weight, at every depth, on top of the
+  // local term. The effective airlight is therefore LARGER near the eye
+  // (local + skyInf) than at infinity (skyInf) — inverted, when the whole
+  // content of aerial perspective is that it grows with range. Replayed in
+  // closed form against the live uniforms of the ridge vantage (camY 1324 m,
+  // clear, 8.4h), effective airlight luminance by range:
+  //
+  //     range        50m    400m   1200m   3000m   10km
+  //     as shipped  0.505  0.500   0.487   0.458  0.383   <- falls with range
+  //     convex mix  0.209  0.210   0.214   0.223  0.256   <- rises, converges
+  //
+  // The fix is one token: weight skyInf by (1 - T) as well, i.e. make the
+  // handover a convex blend in the RADIANCE domain,
+  // mix(scat/ext, skyInf, 1 - T) * (1 - T). Both endpoints are bit-identical
+  // to the above (T=1 -> the local term, T=0 -> exactly skyInf), so the horizon
+  // continuity this handover exists for is untouched and every optically thick
+  // path — every ash storm past its first mean free path — does not move at all.
+  //
+  // It was shipped, captured over the canonical ten, and backed out, because
+  // every number the project judges on got worse:
+  //
+  //  - Whole-frame relative saturation went UP where it had to come down. Ridge,
+  //    the shot this round was called for, 0.4292 -> 0.4461; dawn 0.327 -> 0.364;
+  //    redmtn 0.352 -> 0.364. All well past the +/-0.006 capture spread on those
+  //    vantages. The gate's own meanSat agreed: ridge 0.407 -> 0.417.
+  //  - The art bible's third non-negotiable — distance desaturates toward the
+  //    sky — got WEAKER, not stronger. Relative saturation across depth bands,
+  //    near -> far: ridge 0.499/0.491/0.476 became 0.518/0.517/0.504, i.e. the
+  //    gradient flattened from -0.023 to -0.014; vale, over 42 m to 1550 m,
+  //    0.437 -> 0.337 became 0.441 -> 0.367, a gradient of -0.100 flattened to
+  //    -0.074.
+  //  - The gate went 1 fail -> 2, dawn's marginal column seam crossing its
+  //    strength threshold (isolation 3.01 at baseline -> 3.56, strength -> 3.10).
+  //    A global contrast lift is exactly what pushes a marginal seam over.
+  //
+  // Why it goes that way, which is the part worth keeping: this veil is a
+  // LOW-SATURATION BRIGHT layer over a HIGH-saturation surface. hazeSSA has
+  // already taken the particulate's per-event albedo down to ~0.17 for the
+  // optically thin paths every landscape frame lives on — the art bible's ash
+  // swatch is 0.174 — while the surface under it measures 0.50+ because the key
+  // light is warm and the albedo is warm. Removing veil therefore ADDS frame
+  // saturation and REMOVES the depth-desaturation cue. The veil is not what
+  // makes the ridge vantage a terracotta wash; it is the only thing currently
+  // fighting it. Same conclusion the hazeDeep chroma experiment reached from the
+  // other side (see Weather.ts): the frame is warm because the light landing on
+  // it is warm.
+  //
+  // So the inverted falloff is real and is still here, and it is worth fixing —
+  // but it is worth fixing ONLY together with whatever is making a 0.20-albedo
+  // rock render at 0.50 saturation, because on its own it makes the picture
+  // worse on every axis that is measured. Do not land it alone again.
 
   // Contrast floor. The medium is finite and the draw distance is not infinite,
   // so transmittance must not reach zero: at T = 0 a silhouette carries no
@@ -171,6 +236,13 @@ vec3 applyAerial(vec3 color, float dist, vec3 viewDir) {
   // [T_FLOOR, 1] and scaling the airlight by the complement is energy-conserving
   // — the sum of the two weights is still one at every depth — so this is a
   // floor on CONTRAST, not a brightness lift, and nothing at short range moves.
+  //
+  // NOT the depth-decoupling defect, though it looks like one: aw below is
+  // exactly (1 - T_FLOOR) = 0.88 for every T, because the (1 - T) in fogged
+  // cancels the one in the denominator. That is correct bookkeeping, not a
+  // collapse — the division is what converts fogged from a path integral back
+  // to a radiance so the floored weight can be applied to it. Measured: the
+  // whole expression is a straight lerp between color and that radiance.
   const float T_FLOOR = 0.12;
   vec3 Tf = T_FLOOR + (1.0 - T_FLOOR) * T;
   vec3 aw = (1.0 - Tf) / max(1.0 - T, vec3(1e-4));
