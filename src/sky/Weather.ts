@@ -218,6 +218,39 @@ export const PRESETS: Record<Kind, SkyParams> = {
     // at the boots is a shade redder than the fog on a ridge line. It is a small
     // split — this is not weather — but it is the difference between midground
     // and background being two colours rather than one.
+    //
+    // TRIED AND REVERTED, with the numbers, so the next round does not spend
+    // itself here. 0.507/0.370/0.253 at identical luminance (0.390) — i.e. a
+    // pure chroma correction — was shipped and measured across the whole
+    // ten-shot set. The reasoning was good: read as an albedo, which is what
+    // this is, 0.56/0.36/0.19 is saturation 0.661 at hue 27.6 against the tint
+    // above it at 0.431, and the art bible's entire ground palette (ash #8a7f72
+    // to #4a423b, basalt #2a2622) sits at 0.174-0.203 in the same measure. This
+    // is the reflectance of AIRBORNE GRIT, which is the same oxide dust as the
+    // ground it was torn off, so authoring it three times more saturated than
+    // the ground says the dust is a different mineral in the air than on the
+    // floor. And 'deep' is where a landscape frame lives: the ramp is
+    // mix(deep, tint, smoothstep(0.10, 1.50, hbar/H)) with H = 1000 m here, so
+    // for any eye near the ground the veil past a few hundred metres is ~95%
+    // this number.
+    //
+    // It moved nothing. Whole-frame relative saturation, before -> after, on the
+    // canonical ten: dawn 0.328 -> 0.326, redmtn 0.352 -> 0.349, coast 0.365 ->
+    // 0.363, night 0.327 -> 0.330, ashstorm 0.484 -> 0.483, dusk 0.152 -> 0.150,
+    // vale 0.314 -> 0.319, storm 0.189 -> 0.189, underwater 0.318 -> 0.320,
+    // ridge 0.435 -> 0.432. Every one of those is inside the capture-to-capture
+    // spread of the framing search, and the circular-mean hue of shadowed ground
+    // did not move by a degree on any shot. The gate went 1 fail -> 2 (it pushed
+    // dawn's marginal column seam over its strength threshold), so it was backed
+    // out under the pipeline's revert rule.
+    //
+    // What that measurement is worth: the veil's ALBEDO CHROMA is not the lever,
+    // even though colour-tagging the veil proves the veil owns the pixel. Both
+    // facts are true at once because hazeSSA already takes the bulk reflectance
+    // down to a near-neutral per-event albedo (saturation 0.171 on this preset —
+    // the bible's ash swatch is 0.174) for optically thin paths, and the near and
+    // mid field are optically thin. The frame is warm because the light landing
+    // on the veil is warm, not because the veil is.
     deepR: 0.56, deepG: 0.36, deepB: 0.19,
     // A FLAT per-channel tint cannot produce a hue rotation — it is a constant,
     // and multiplying a gradient by a constant leaves the ratio between any two

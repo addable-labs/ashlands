@@ -407,6 +407,32 @@ vec3 hazeRadiance(vec3 tint, vec3 deep, float sigma, float H, float camY, vec3 v
   // using 0.70 here claims a more forward-scattering aerosol than the phase
   // function below describes, which over-corrects the albedo inversion.
   vec3 w0 = hazeSSA(alb, 0.586);
+  // TRIED AND REVERTED: 'events' as the exact probability rather than this fit.
+  //
+  // Scattering along a path of optical depth od is Poisson with mean od, so the
+  // fraction of the light that has scattered MORE THAN ONCE — the only light
+  // that can have built up the bulk reflectance 'alb' — is 1 - e^-od (1 + od).
+  // The fit below is not close to it at the thin end, which is the end every
+  // landscape frame lives at:
+  //
+  //      od       0.1     0.5     1.0     2.0     4.0     8.0     30
+  //      fit     0.054   0.240   0.423   0.667   0.889   0.988   1.000
+  //      exact   0.005   0.090   0.264   0.594   0.908   0.997   1.000
+  //
+  // Shipped, captured over the canonical ten and measured: whole-frame relative
+  // saturation moved by at most 0.003 on any shot (ridge 0.435 -> 0.435, vale
+  // 0.314 -> 0.311, coast 0.365 -> 0.397 which is framing noise, the rest within
+  // 0.002), and the circular-mean hue of shadowed ground did not move on any of
+  // them. Backed out under the pipeline's revert rule rather than kept as a free
+  // correctness fix, because it is a change to shared output that buys nothing
+  // and this round's one global-appearance slot is not free.
+  //
+  // Why it bought nothing, which is the part worth keeping: the two endpoints it
+  // interpolates between are much closer together than they look. w0 for the
+  // clear preset is saturation 0.171 — the art bible's ash swatch is 0.174 — and
+  // alb is 0.431, so re-weighting between them at od < 1 is worth a few
+  // hundredths of saturation on a term that is then mixed with the surface. The
+  // veil is not what makes a landscape frame warm; the light landing on it is.
   float events = 1.0 - exp(-min(od, 60.0) * 0.55);
   vec3 msTint = mix(w0, alb, events);
   // The beam: its unscattered part has by definition scattered zero times and
