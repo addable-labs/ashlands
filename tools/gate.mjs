@@ -250,10 +250,21 @@ const place = async (name) => {
       const fwd = new (ctx.camera.position.constructor)();
       ctx.camera.getWorldDirection(fwd);
       const viewAz = Math.atan2(fwd.x, fwd.z);
-      const score = (h) => {
+      const elevAt = (h) => {
         ctx.clock.hour = h; sky?.update?.(ctx);
         const sd = sky.sun.position.clone().sub(sky.sun.target.position).normalize();
-        if (Math.asin(Math.max(-1, Math.min(1, sd.y))) < 0.12) return -1;
+        return Math.asin(Math.max(-1, Math.min(1, sd.y)));
+      };
+      // Hold the nominal hour's elevation band, exactly as shoot.mjs does — see the
+      // ELEV_BAND comment there. Optimising azimuth alone lets a 7am rake outscore
+      // the 9am key this gate is supposed to hold fixed, which silently changes what
+      // every downstream metric is measuring.
+      const elevNominal = elevAt(hr);
+      const score = (h) => {
+        const elev = elevAt(h);
+        if (elev < 0.12) return -1;
+        if (Math.abs(elev - elevNominal) > 0.15) return -1;
+        const sd = sky.sun.position.clone().sub(sky.sun.target.position).normalize();
         let d = Math.abs(Math.atan2(sd.x, sd.z) - viewAz);
         if (d > Math.PI) d = 2 * Math.PI - d;
         return 1 - Math.abs(d - 1.31) / Math.PI;

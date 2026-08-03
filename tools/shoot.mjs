@@ -143,12 +143,28 @@ for (const name of wanted) {
     const fwd = new (ctx.camera.position.constructor)();
     ctx.camera.getWorldDirection(fwd);
     const viewAz = Math.atan2(fwd.x, fwd.z);
-    const score = (h) => {
+    const elevAt = (h) => {
       ctx.clock.hour = h;
       sky.update?.(ctx);
       const s = sky.sun.position.clone().sub(sky.sun.target.position).normalize();
-      const elev = Math.asin(Math.max(-1, Math.min(1, s.y)));
+      return Math.asin(Math.max(-1, Math.min(1, s.y)));
+    };
+    const elevNominal = elevAt(nominal);
+    // The elevation band is the shot's intent and must survive re-angling. Without
+    // this the search optimised azimuth alone and was free to trade mid-morning for
+    // sunrise: ridge (nominal 8.4) was landing on 6.25, a 4.8 deg sun sitting behind
+    // the Telvanni towers. They lit correctly and were then crushed to flat black by
+    // the frame's black point, which reads as an unlit-asset bug and cost an agent a
+    // full investigation to trace back to here. 0.15 rad ~= 8.6 deg. Because solar
+    // elevation moves fast near sunrise and slowly near noon, a fixed band self-scales:
+    // midday shots keep hours of latitude to re-angle, dawn shots — whose whole intent
+    // IS the low sun — keep almost none.
+    const ELEV_BAND = 0.15;
+    const score = (h) => {
+      const elev = elevAt(h);
       if (elev < 0.06) return -1;            // below/at horizon: no useful key light
+      if (Math.abs(elev - elevNominal) > ELEV_BAND) return -1;   // out of the shot's band
+      const s = sky.sun.position.clone().sub(sky.sun.target.position).normalize();
       const sunAz = Math.atan2(s.x, s.z);
       let d = Math.abs(sunAz - viewAz);
       if (d > Math.PI) d = 2 * Math.PI - d;
