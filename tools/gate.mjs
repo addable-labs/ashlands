@@ -379,11 +379,25 @@ if (RECORD) {
   const prev = JSON.parse(await readFile(BASELINE, 'utf8'));
   console.log('\n=== VS BASELINE ===');
   const worse = [];
-  // Lower is better for these; higher is better for the rest.
-  const lowerBetter = /moire|seamIsolation|fogWallCv|hueConcentration/;
+  // Diagnostics, not quality axes — no meaningful direction, so comparing them
+  // manufactures regressions. `moireN` is the phase-fold's period; the check
+  // consumes `moire` (mo.mod) alone and nothing reads moireN. It was matching
+  // /moire/ as a SUBSTRING and being scored lower-better, which fired on an
+  // unmodified control shader — a regression reported against a build with no
+  // diff. `seamIsolation` is excluded for a different reason: gate.mjs already
+  // documents two runs of an identical build measuring 3.73 and 4.17, and later
+  // runs spread 1.61-2.02, so its run-to-run noise exceeds the effect size it
+  // would be reporting. The pass/fail seam check still runs and still needs
+  // BOTH isolation >= 3.0 and strength >= 2.0; only the baseline diff drops it.
+  const DIAGNOSTIC = new Set(['moireN', 'seamIsolation']);
+  // Lower is better for these; higher is better for the rest. Anchored: an
+  // unanchored alternation silently captures any metric whose name merely
+  // contains one of these words, which is how moireN got mis-scored.
+  const lowerBetter = /^(moire|fogWallCv|hueConcentration)$/;
   for (const [shot, cur] of Object.entries(metrics)) {
     const old = prev.metrics?.[shot]; if (!old) continue;
     for (const [k, v] of Object.entries(cur)) {
+      if (DIAGNOSTIC.has(k)) continue;
       if (typeof v !== 'number' || old[k] == null) continue;
       const d = v - old[k];
       const bad = lowerBetter.test(k) ? d > Math.max(0.02, Math.abs(old[k]) * 0.15)

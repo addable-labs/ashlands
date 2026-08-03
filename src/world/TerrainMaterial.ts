@@ -300,6 +300,7 @@ varying float vCamDist;
 #if TQ >= 3
   // Photo mode. Nothing is cut; this is the shader as authored.
   #define TQD_ANISO_NEAR 16.0
+  #define TQD_ANISO_FAR  2.0
   #define TQD_MODAN      8.0
   #define TQD_MESO_OCT   4
   #define TQD_POM        1
@@ -372,6 +373,7 @@ varying float vCamDist;
   // milliseconds. They are rules 7, 4 and 6 of the art bible respectively, and
   // the tier that is allowed to drop them is the one below this one.
   #define TQD_ANISO_NEAR 10.0
+  #define TQD_ANISO_FAR  2.0
   #define TQD_MODAN      4.0
   #define TQD_MESO_OCT   3
   #define TQD_POM        1
@@ -393,6 +395,7 @@ varying float vCamDist;
   #define TQD_MONO_B     430.0
 #elif TQ == 1
   #define TQD_ANISO_NEAR 6.0
+  #define TQD_ANISO_FAR  2.0
   #define TQD_MODAN      3.0
   #define TQD_MESO_OCT   2
   #define TQD_POM        0
@@ -414,6 +417,7 @@ varying float vCamDist;
   #define TQD_MONO_B     280.0
 #else
   #define TQD_ANISO_NEAR 4.0
+  #define TQD_ANISO_FAR  2.0
   #define TQD_MODAN      2.0
   #define TQD_MESO_OCT   2
   #define TQD_POM        0
@@ -439,6 +443,9 @@ varying float vCamDist;
 // takes the tier's value only if nobody has already supplied one.
 #ifndef TQ_ANISO_NEAR
 #define TQ_ANISO_NEAR TQD_ANISO_NEAR
+#endif
+#ifndef TQ_ANISO_FAR
+#define TQ_ANISO_FAR TQD_ANISO_FAR
 #endif
 #ifndef TQ_MODAN
 #define TQ_MODAN TQD_MODAN
@@ -562,6 +569,49 @@ varying float vCamDist;
 #define TQ_ANTAP 3
 #endif
 
+// ------------------------------------------------------- attribution probes
+//
+// Four switches, all zero at every tier, that exist because the chevron-weave
+// investigation on the ridge caldera wall had to rule out the whole fragment
+// stage one piece at a time and there was no way to ask most of these questions
+// without a rebuild per question. Every one of them compiles out.
+//
+// TQ_LODB   mip bias in QUARTER levels, applied inside limitAniso, so it moves
+//           the level the hardware picks for every array fetch in the shader
+//           without changing the footprint's shape. A defect that survives
+//           TQ_LODB 6 — a mip and a half of extra blur — is resolved content
+//           and no filtering story can explain it.
+// TQ_OUTABL flattens ONE of the four things the splat publishes: 1 normal,
+//           2 cavity, 3 albedo, 4 roughness. Attributes a defect to the channel
+//           carrying it once the band ablations have all come back negative.
+// TQ_NODT   collapses the de-tiling frame to the identity — no rotation, no
+//           reflection, no per-cell scale, no offset — so the mid and far bands
+//           read a plain repeating lattice. This is what separates "the texture
+//           repeats" from "the de-tiling frame is printing its own structure".
+// TQ_NOREFL keeps the per-cell rotation and drops only the reflection.
+// TQ_DT1PLANE collapses the three per-projection de-tiling lattices back onto
+//           the single world-XZ one every projection used to share. This is the
+//           exact pre-round shader, so the change that removed the cliff
+//           herringbone is one setBudget apart from its own control rather than
+//           a file edit between two browser sessions. See the long note above
+//           dtHash2 for what the two states are and why XZ-for-everything is
+//           degenerate on a vertical face.
+#ifndef TQ_LODB
+#define TQ_LODB 0
+#endif
+#ifndef TQ_DT1PLANE
+#define TQ_DT1PLANE 0
+#endif
+#ifndef TQ_OUTABL
+#define TQ_OUTABL 0
+#endif
+#ifndef TQ_NODT
+#define TQ_NODT 0
+#endif
+#ifndef TQ_NOREFL
+#define TQ_NOREFL 0
+#endif
+
 vec3 gTerrNormal;
 #if TQ_DBG
 vec3 gTerrDbg;
@@ -640,6 +690,91 @@ float ss(float a, float b, float x) {
 // just under three tiles, so a cell never contains a whole number of repeats.
 #define DT_CELL 23.0
 
+// ---------------------------------------------------------------------------
+// THE LATTICE IS PER-PROJECTION. Read this before collapsing it back to one.
+//
+// dtCells lays a 2D lattice down over a plane, and a 2D lattice over world XZ
+// has exactly one degenerate direction — world up. While all three triplanar
+// projections shared the XZ lattice, a near-vertical face lay inside a single
+// COLUMN of cells for its whole height: the cell id was constant from the top
+// of a cliff to the bottom, and with it the rotation, the reflection, the
+// per-cell scale and the offset. On the one surface class this whole block was
+// written for, the anti-tiling did nothing at all in the vertical — the 8 m
+// tile repeated unbroken all the way down — while across the face the cell
+// walls projected as long vertical lines with a differently-rotated copy of the
+// same tile on either side. Two neighbouring stripes whose rotations differ by
+// something near a right angle read as a HERRINGBONE, and the reflection, which
+// is exactly a mirror, supplied the chevron. TQ_DBG 16 drew it: on the ridge
+// caldera wall the cells were vertical lozenges four to eight times taller than
+// they were wide.
+//
+// Attribution, measured on the ridge vantage's caldera wall (high-pass sigma
+// 2.4-2.6 levels over the wall, weave plainly legible in it):
+//
+//   - the same frame captured at 3840x2160 and box-downsampled to 1920 leaves
+//     the weave at 2.39 against 2.55 native. 2x supersampling does not touch
+//     it, so it is resolved content and no mip, footprint or anisotropy story
+//     can be the cause;
+//   - TQ_LODB 6 — a mip and a half of extra blur on every array fetch — leaves
+//     it at 2.10. TQ_ANISO_FAR 1.0, which asks for a perfectly isotropic fetch
+//     past 260 m, leaves it at 2.05. Both soften it; neither removes it;
+//   - ablated one at a time, the meso, strata, columnar, rill, crust, ripple,
+//     grain, far and debris bands, the parallax march, the second de-tiling
+//     cell and the single-layer collapse all leave it at 2.0-3.4. It is under
+//     every band, in the base splat fetch;
+//   - TQ_NODT removes the chevron CHARACTER and leaves a plain 8 m lattice
+//     behind it. The repeat is the tile; the frame is what dresses it as a
+//     weave;
+//   - uMidScale x4 (a 2 m tile) removes it outright at 1.36, while the far,
+//     detail and macro scales change nothing. The tile is the mid band's.
+//
+// Two cheap fixes were tried first and both REGRESSED, so both were reverted
+// rather than iterated on. They are recorded because they are the two obvious
+// ideas and both of them are wrong:
+//
+//   - shearing the lattice coordinate by world Y moves the degenerate direction
+//     off vertical but does not remove it; TQ_DBG 16 shows the same lozenges
+//     rotated onto the diagonal, and the weave came back at the same strength;
+//   - building ONE lattice in the surface's own plane by blending the
+//     COORDINATE through the triplanar weights (tw.x * wpos.zy + tw.y * wpos.xz
+//     + tw.z * wpos.xy) does give equiaxed cells on the wall and does kill the
+//     vertical mirror spines, but a weighted sum of three different linear maps
+//     is not itself a rigid map: where tw changes quickly the coordinate goes
+//     locally stationary and a single cell covers a large patch of screen. The
+//     right mountain in the ridge frame came back with two pale washed-out
+//     discs ~120 px across. That is a worse defect than the one being removed.
+//
+// What ships is neither, and it does not need a third dimension or a 27-site
+// search. This material is a TRUE three-sample triplanar: three independent
+// fetches, blended by tw AFTER the fact (see the ax loop in FRAG_SPLAT). So
+// each projection gets its OWN lattice, laid down in its OWN 2D plane:
+//
+//     X projection -> lattice over world (z, y)
+//     Y projection -> lattice over world (x, z)   <- the historical one
+//     Z projection -> lattice over world (x, y)
+//
+// Each of those is a rigid 2D map in the plane it is actually fetched through,
+// so cell id, rotation, reflection, per-cell scale and offset are all well
+// defined, and none of them is constant along a direction the surface runs in.
+// No coordinate is ever averaged, so the locally-stationary failure of the
+// second attempt cannot arise by construction: the only blend is still the one
+// between three completed samples.
+//
+// Why this kills the weave. A near-vertical face is carried by the X and Z
+// projections, and world Y is an axis of BOTH of their lattices, so the cells
+// subdivide DOWN the face instead of running past it in a single column. Flat
+// ground is carried by the Y projection, whose lattice is the historical XZ one
+// bit-for-bit, so nothing about the ground plane moved. On a 45-degree face two
+// projections carry real weight and their two lattices are uncorrelated, which
+// is the same situation the splat's own layer blend is already in: two
+// independent stochastic fields at the same cell pitch, cross-faded, which
+// reads as mottling rather than as either lattice.
+//
+// See dtLatG (the per-projection lattice coordinate), dtFrames (one site search
+// plus the cell frames it feeds) and the ax loop, which asks for its own frame
+// only when it is not already holding the dominant axis's.
+// ---------------------------------------------------------------------------
+
 // Two decorrelated values out of one hash pipeline rather than two runs of the
 // scalar one. The nine-cell site search below is the single most expensive
 // block of ALU in this shader — eighteen scalar hashes before anything is
@@ -693,11 +828,19 @@ void dtCells(vec2 g, out vec2 cA, out vec2 cB, out float dd) {
 // orthogonal (det = -1 instead of +1), so its transpose is still its inverse
 // and the tangent-normal counter-rotation at the call sites is unchanged.
 mat2 dtRot(vec2 c) {
+#if TQ_NODT
+  return mat2(1.0, 0.0, 0.0, 1.0);
+#else
   float a = tHash(c + 5.17) * 6.2831853;
   float s = sin(a);
   float k = cos(a);
+#if TQ_NOREFL
+  float f = 1.0;
+#else
   float f = tHash(c + 47.3) < 0.5 ? -1.0 : 1.0;
+#endif
   return mat2(k * f, -s, s * f, k);
+#endif
 }
 
 // Per-cell scale, +/- 20%. The smooth scaleJ field already varies the mid
@@ -719,11 +862,19 @@ mat2 dtRot(vec2 c) {
 // bisection: raising DT_CELL from 23 m to 55 m scaled the visible plates by the
 // same 2.4x.
 float dtScl(vec2 c, float k) {
+#if TQ_NODT
+  return 1.0;
+#else
   return mix(1.0, 0.82 + 0.40 * tHash(c + 63.1), k);
+#endif
 }
 
 vec2 dtOff(vec2 c) {
+#if TQ_NODT
+  return vec2(0.0);
+#else
   return dtHash2(c + 31.7) * 41.0;
+#endif
 }
 
 // Value noise with its analytic gradient: (value, d/dp.x, d/dp.y). The quintic
@@ -745,6 +896,102 @@ vec3 tValD(vec2 p) {
   return vec3(a + k1 * u.x + k2 * u.y + k3 * u.x * u.y,
               du.x * (k1 + k3 * u.y),
               du.y * (k2 + k3 * u.x));
+}
+
+// The de-tiling lattice coordinate for one triplanar projection, in that
+// projection's own plane. See the long note above dtHash2 for why there is one
+// of these per axis rather than one for the whole surface.
+//
+// The Y projection keeps the historical expression verbatim, warp included, so
+// that ground — which resolves to exactly (0,1,0) below 34 degrees and is
+// therefore fetched through this axis alone — is bit-for-bit what it was.
+//
+// The two side projections warp their own plane with their own evaluation of
+// the same 37 m gradient field. That warp is not decoration: an unwarped
+// jittered-grid Voronoi wall is a straight segment tens of metres long, and a
+// field of straight walls meeting at Y-junctions reads as faceted geometry
+// however small the step across it is (see the note at the call site). Reusing
+// the XZ gradient here would warp a cliff's lattice by a field that is constant
+// down the face — the same degeneracy this whole change exists to remove, just
+// one level up — so each plane pays for its own tValD.
+vec2 dtLatG(int ax, vec3 P, vec2 mWarpY) {
+#if TQ_DT1PLANE
+  return P.xz * (1.0 / DT_CELL) + mWarpY;
+#else
+  if (ax == 1) return P.xz * (1.0 / DT_CELL) + mWarpY;
+  vec2 p = ax == 0 ? P.zy : P.xy;
+  return p * (1.0 / DT_CELL) + tValD((TROT * TROT) * p * (1.0 / 37.0) + 21.4).yz * 0.30;
+#endif
+}
+
+// One site search and everything derived from it: the two cell frames and the
+// two blend weights. Factored out of FRAG_SPLAT because the ax loop now needs
+// the whole set for a projection that is not the dominant one, and duplicating
+// eleven lines of it inline is how the two copies drift apart.
+//
+// dtFar and dtSK are pure functions of camera distance, so they are computed
+// once by the caller and passed in; nothing here is per-projection except the
+// lattice coordinate itself.
+void dtFrames(vec2 g, float dtSK, float dtFar,
+              out mat2 rA, out vec2 oA, out mat2 rB, out vec2 oB,
+              out float wMid, out float wFar, out vec2 cellA, out float dd) {
+  vec2 cellB;
+  dtCells(g, cellA, cellB, dd);
+  // Two blend widths off one site search, on opposite ramps, and this is the
+  // first half of the de-facet fix.
+  //
+  // The old single width was 0.075 of a cell — 1.7 m — which at the range the
+  // cone is seen from is one screen pixel. The mid band could afford that (its
+  // 8 m tile is well resolved close up, where 1.7 m is many pixels) but the far
+  // band is only *used* past 30 m and dominates past 110 m, so it was being
+  // cross-faded over a sub-pixel distance: an unblended discontinuity in albedo
+  // AND normal along every wall.
+  //
+  // So the far band's band widens with distance, to 0.40 of a cell (9 m, ~7 px
+  // at 1.4 km), while the mid band's narrows toward zero over the same range —
+  // by 420 m the 8 m tile has mipped close to its own mean, so its cell step is
+  // small and paying three extra fetches to soften it is waste. The extra taps
+  // the far band takes are bought back by the ones the mid band stops taking,
+  // and the far band's are the cheaper pair (two fetches against three).
+#if TQ_CELL_MID
+  wMid = 0.5 * (1.0 - ss(0.0, 0.075, dd)) * (1.0 - dtFar);
+#else
+  // A compile-time zero, not a branch: every consumer tests wMid > 0.02, so
+  // this deletes the runner-up cell's frame setup, its three-to-nine array
+  // fetches and their live registers rather than jumping over them.
+  wMid = 0.0;
+#endif
+  // The far band's cell blend is multiplied by dtFar as well as widened by it,
+  // so inside 140 m it does not exist. That is where the fragment budget
+  // actually goes — the near field still pays for parallax, the grain band and a
+  // full three-layer triple splat — and it is also where the tap is least
+  // needed: the mid band is at full strength there, is itself cell-blended, and
+  // covers the far band's wall completely. Measured, adding the tap
+  // unconditionally cost 2-3 fps on every vantage; gated this way it costs
+  // nothing outside the range that had the artefact.
+#if TQ_CELL_FAR
+  wFar = 0.5 * (1.0 - ss(0.0, mix(0.075, 0.34, dtFar), dd)) * dtFar;
+#else
+  wFar = 0.0;
+#endif
+  // Orthogonal frame times a per-cell scale. The product is no longer
+  // orthonormal, so nt.xy * rA counter-rotates the tangent normal *and* scales
+  // it by the cell's own factor — a +/-20% bump-strength variation that is
+  // harmless (the accumulator is normalised at the end) and, if anything,
+  // another axis of variety. The scale itself is faded out with distance; see
+  // dtScl for why it is the single largest contributor to the plate step.
+  rA = dtRot(cellA) * dtScl(cellA, dtSK);
+  oA = dtOff(cellA);
+  // The runner-up cell's frame is five hashes, a sine and a cosine, and it is
+  // read only inside a blend band along a cell wall. Both consumers' weights are
+  // exactly zero everywhere else, so this is the same gate the fetches
+  // themselves use, just moved up over the setup.
+  rB = rA;
+  oB = oA;
+  if (max(wMid, wFar) > 0.02) {
+    rB = dtRot(cellB) * dtScl(cellB, dtSK);
+    oB = dtOff(cellB);
+  }
 }
 
 // Three-tap line integral of tValD along one direction, and the reason the near
@@ -1109,6 +1356,12 @@ const vec2 LAYER_ROUGH[8] = vec2[8](
 // that stretch, and because u2 is an eigenvector of J*J^T it leaves the major
 // axis — and therefore the mip the hardware picks — untouched.
 void limitAniso(inout vec2 du, inout vec2 dv, float maxRatio) {
+#if TQ_LODB != 0
+  // See TQ_LODB. Scaling both derivatives by 2^b shifts the mip the hardware
+  // picks by exactly b levels and leaves the footprint's shape alone.
+  du *= exp2(float(TQ_LODB) * 0.25);
+  dv *= exp2(float(TQ_LODB) * 0.25);
+#endif
   // J * transpose(J), symmetric, written as mat2(e + f, g, g, e - f).
   float a00 = du.x * du.x + dv.x * dv.x;
   float a11 = du.y * du.y + dv.y * dv.y;
@@ -1701,86 +1954,6 @@ const FRAG_SPLAT = /* glsl */ `
   vec3 mCd = tValD((TROT * TROT) * vWPos.xz * (1.0 / 37.0) + 21.4);
   float mC = mCd.x;
 
-  // Anti-repetition, layer two: the per-cell stochastic frame. See dtCells.
-  //
-  // The lattice lookup is warped by the 37 m macro gradient before the site
-  // search, and that is the second half of the de-facet fix. A jittered-grid
-  // Voronoi wall is a straight segment tens of metres long; whatever residual
-  // step survives across it is therefore drawn as a *straight edge*, and a field
-  // of straight edges meeting at Y-junctions is read by the eye as faceted
-  // geometry no matter how small the step is. Displacing the domain by ~0.3 of a
-  // cell at a 37 m wavelength turns every wall into a meander, so the same
-  // residual reads as mottling in the rock instead of as a plate boundary. The
-  // gradient is already in hand from mCd, so this costs one multiply-add.
-  vec2 dtA;
-  vec2 dtB;
-  float dtDD;
-  dtCells(vWPos.xz * (1.0 / DT_CELL) + mCd.yz * 0.30, dtA, dtB, dtDD);
-  // Two blend widths off one site search, on opposite ramps, and this is the
-  // first half of the de-facet fix.
-  //
-  // The old single width was 0.075 of a cell — 1.7 m — which at the range the
-  // cone is seen from is one screen pixel. The mid band could afford that (its
-  // 8 m tile is well resolved close up, where 1.7 m is many pixels) but the far
-  // band is only *used* past 30 m and dominates past 110 m, so it was being
-  // cross-faded over a sub-pixel distance: an unblended discontinuity in albedo
-  // AND normal along every wall.
-  //
-  // So the far band's band widens with distance, to 0.40 of a cell (9 m, ~7 px
-  // at 1.4 km), while the mid band's narrows toward zero over the same range —
-  // by 420 m the 8 m tile has mipped close to its own mean, so its cell step is
-  // small and paying three extra fetches to soften it is waste. The extra taps
-  // the far band takes are bought back by the ones the mid band stops taking,
-  // and the far band's are the cheaper pair (two fetches against three).
-  float dtFar = ss(140.0, 420.0, vCamDist);
-#if TQ_CELL_MID
-  float dtW = 0.5 * (1.0 - ss(0.0, 0.075, dtDD)) * (1.0 - dtFar);
-#else
-  // A compile-time zero, not a branch: every consumer below tests dtW > 0.02,
-  // so this deletes the runner-up cell's frame setup, its three-to-nine array
-  // fetches and their live registers rather than jumping over them.
-  float dtW = 0.0;
-#endif
-  // The far band's cell blend is multiplied by dtFar as well as widened by it,
-  // so inside 140 m it does not exist. That is where the fragment budget
-  // actually goes — the near field still pays for parallax, the grain band and a
-  // full three-layer triple splat — and it is also where the tap is least
-  // needed: the mid band is at full strength there, is itself cell-blended, and
-  // covers the far band's wall completely. Measured, adding the tap
-  // unconditionally cost 2-3 fps on every vantage; gated this way it costs
-  // nothing outside the range that had the artefact.
-#if TQ_CELL_FAR
-  float dtWF = 0.5 * (1.0 - ss(0.0, mix(0.075, 0.34, dtFar), dtDD)) * dtFar;
-#else
-  float dtWF = 0.0;
-#endif
-  // Orthogonal frame times a per-cell scale. The product is no longer
-  // orthonormal, so nt.xy * dtR counter-rotates the tangent normal *and*
-  // scales it by the cell's own factor — a +/-20% bump-strength variation that
-  // is harmless (the accumulator is normalised at the end) and, if anything,
-  // another axis of variety. The scale itself is faded out with distance; see
-  // dtScl for why it is the single largest contributor to the plate step.
-  float dtSK = 1.0 - dtFar;
-  mat2 dtRA = dtRot(dtA) * dtScl(dtA, dtSK);
-  vec2 dtOA = dtOff(dtA);
-  // The runner-up cell's frame is five hashes, a sine and a cosine, and it is
-  // read only inside a blend band along a cell wall. Both consumers' weights are
-  // exactly zero everywhere else, so this is the same gate the fetches
-  // themselves use, just moved up over the setup.
-  mat2 dtRB = dtRA;
-  vec2 dtOB = dtOA;
-  if (max(dtW, dtWF) > 0.02) {
-    dtRB = dtRot(dtB) * dtScl(dtB, dtSK);
-    dtOB = dtOff(dtB);
-  }
-  // No screen-space pick between the two cells past 90 m either, for the same
-  // reason as the layer index above: it was the same IGN lattice, at the same
-  // period, and it printed the same crosshatch — on the *background ridge*,
-  // which is where the review found it in the dawn frame. The blend band is
-  // narrowed instead (see dtCells) so fewer pixels pay for the second tap, which
-  // is a cost reduction with no artefact attached rather than a trade of one for
-  // the other.
-
   // Triplanar onset. The old pair (0.86, 0.60) plus the 0.12 tail clip below
   // left a dead band: work it through for a 40-degree face and the blend still
   // comes out fully top-down planar, so every slope between about 30 and 45
@@ -1842,6 +2015,47 @@ const FRAG_SPLAT = /* glsl */ `
   // in the same plane and the same world tangent frame.
   int domAx = (tw.y >= tw.x && tw.y >= tw.z) ? 1 : (tw.x >= tw.z ? 0 : 2);
 
+  // Anti-repetition, layer two: the per-cell stochastic frame. See dtCells and
+  // the long note above dtHash2 for why there is one lattice PER PROJECTION.
+  //
+  // This is the DOMINANT projection's lattice, and it is set up here — after
+  // domAx is known and before the parallax march — because four consumers share
+  // it: the parallax march (ground only, so domAx is 1 wherever it runs), the
+  // 1.6 m detail band and the 72 m far band (both of which fetch through domUV
+  // in the dominant world tangent frame), and the ax loop on the one iteration
+  // where ax == domAx. The two minor projections ask dtFrames for their own
+  // inside the loop, where they are gated by their own weight.
+  //
+  // The lattice lookup is warped by the 37 m macro gradient before the site
+  // search, and that is the second half of the de-facet fix. A jittered-grid
+  // Voronoi wall is a straight segment tens of metres long; whatever residual
+  // step survives across it is therefore drawn as a *straight edge*, and a field
+  // of straight edges meeting at Y-junctions is read by the eye as faceted
+  // geometry no matter how small the step is. Displacing the domain by ~0.3 of a
+  // cell at a 37 m wavelength turns every wall into a meander, so the same
+  // residual reads as mottling in the rock instead of as a plate boundary. On
+  // the Y projection the gradient is already in hand from mCd, so it costs one
+  // multiply-add; the side projections evaluate their own (see dtLatG).
+  float dtFar = ss(140.0, 420.0, vCamDist);
+  float dtSK = 1.0 - dtFar;
+  vec2 dtA;
+  float dtDD;
+  mat2 dtRA;
+  vec2 dtOA;
+  mat2 dtRB;
+  vec2 dtOB;
+  float dtW;
+  float dtWF;
+  dtFrames(dtLatG(domAx, vWPos, mCd.yz * 0.30), dtSK, dtFar,
+           dtRA, dtOA, dtRB, dtOB, dtW, dtWF, dtA, dtDD);
+  // No screen-space pick between the two cells past 90 m either, for the same
+  // reason as the layer index above: it was the same IGN lattice, at the same
+  // period, and it printed the same crosshatch — on the *background ridge*,
+  // which is where the review found it in the dawn frame. The blend band is
+  // narrowed instead (see dtCells) so fewer pixels pay for the second tap, which
+  // is a cost reduction with no artefact attached rather than a trade of one for
+  // the other.
+
   // Anisotropy budget for every array fetch below. See limitAniso.
   // 16 near, not 8, and this is a correctness fix rather than a quality dial.
   //
@@ -1859,7 +2073,7 @@ const FRAG_SPLAT = /* glsl */ `
   // See TQ_ANISO_NEAR. The far end stays at 2 on every tier — past a couple of
   // hundred metres the mip being walked is coarser than the taps are resolving,
   // so the budget there was already free.
-  float maxAniso = mix(TQ_ANISO_NEAR, 2.0, ss(40.0, 260.0, vCamDist));
+  float maxAniso = mix(TQ_ANISO_NEAR, TQ_ANISO_FAR, ss(40.0, 260.0, vCamDist));
 
   // Parallax occlusion, ground projection only, inside the near band. Cliffs
   // already read as deep through triplanar plus the geometric relief, and
@@ -1889,6 +2103,12 @@ const FRAG_SPLAT = /* glsl */ `
     // frame too: the loop below re-uses it before its own rotation, so the two
     // agree. (The runner-up tap gets the same offset; it is only ever half the
     // weight and only inside the narrow blend band.)
+    //
+    // The gate above is tw.y > 0.55, so wherever this runs tw.y is the largest
+    // weight and domAx is 1 — i.e. dtRA/dtOA here IS the Y projection's lattice
+    // frame, the same one the ax == 1 iteration of the loop will hold. Outside
+    // that gate pomOff stays zero, so the loop cannot add an offset expressed in
+    // a frame it is not using.
     vec2 stepUV = dtRA * maxOff * layerD;
     vec2 baseUV = dtRA * (vWPos.xz * midS + macroW * 0.85) + dtOA;
     vec2 du = dtRA * (dpx.xz * midS);
@@ -1961,29 +2181,58 @@ const FRAG_SPLAT = /* glsl */ `
     dvv *= midS;
     limitAniso(du, dvv, maxAniso);
 
+    // This projection's own de-tiling lattice, laid down in this projection's
+    // own plane. The dominant axis's is already in hand — it is shared with the
+    // parallax march and the two distance bands — so only a MINOR axis pays for
+    // a second site search, and only on the pixels where it carries weight
+    // (aw >= 0.02 got us here, and the tail clip on tw drives most slopes to
+    // exactly one axis). Flat ground resolves to tw = (0,1,0) and therefore
+    // never takes this branch at all.
+    //
+    // Everything downstream in this iteration — the fetch UV, the derivatives
+    // handed to textureGrad, the runner-up cell and the tangent-normal
+    // counter-rotation — reads axR/axO rather than dtRA/dtOA, so the frame the
+    // normal is rotated OUT of is by construction the frame its UV was rotated
+    // INTO. Mixing the two is how a per-axis normal error gets in, and it is
+    // invisible in a still on anything but a rounded landform.
+    mat2 axRA = dtRA;
+    vec2 axOA = dtOA;
+    mat2 axRB = dtRB;
+    vec2 axOB = dtOB;
+    float axW = dtW;
+#if TQ_DT1PLANE == 0
+    if (ax != domAx) {
+      vec2 cA;
+      float dd;
+      float wF;
+      dtFrames(dtLatG(ax, vWPos, mCd.yz * 0.30), dtSK, dtFar,
+               axRA, axOA, axRB, axOB, axW, wF, cA, dd);
+    }
+#endif
+
     vec3 a;
     vec3 nt;
     float ao;
     float rg;
     float hg;
     {
-      vec2 uvA = dtRA * uv + dtOA;
+      vec2 uvA = axRA * uv + axOA;
       if (ax == 1) uvA += pomOff;
-      sampleTriple(uvA, dtRA * du, dtRA * dvv, li, lw, a, nt, ao, rg, hg);
+      sampleTriple(uvA, axRA * du, axRA * dvv, li, lw, a, nt, ao, rg, hg);
       // The texture domain was rotated, so its tangent-space normal has to be
       // counter-rotated back into the projection frame. v * M is transpose(M)*v
       // in GLSL, which is the inverse of an orthonormal rotation.
-      nt.xy = nt.xy * dtRA;
-      if (dtW > 0.02) {
+      nt.xy = nt.xy * axRA;
+      if (axW > 0.02) {
         vec3 a2;
         vec3 nt2;
         float ao2;
         float rg2;
         float hg2;
-        vec2 uvB = dtRB * uv + dtOB;
+        vec2 uvB = axRB * uv + axOB;
         if (ax == 1) uvB += pomOff;
-        sampleTriple(uvB, dtRB * du, dtRB * dvv, li, lw, a2, nt2, ao2, rg2, hg2);
-        nt2.xy = nt2.xy * dtRB;
+        sampleTriple(uvB, axRB * du, axRB * dvv, li, lw, a2, nt2, ao2, rg2, hg2);
+        nt2.xy = nt2.xy * axRB;
         a = mix(a, a2, dtW);
         nt = mix(nt, nt2, dtW);
         ao = mix(ao, ao2, dtW);
@@ -3543,6 +3792,19 @@ const FRAG_SPLAT = /* glsl */ `
   gTerrNormal = accNLen > 1e-5 ? accN / accNLen : N;
   gTerrRough = accR;
   gTerrAO = clamp(accAO, 0.0, 1.0);
+#if TQ_OUTABL
+  // See TQ_OUTABL. The splat publishes exactly four things; this hands the
+  // frame one of them flattened at a time.
+  #if TQ_OUTABL == 1
+    gTerrNormal = N;
+  #elif TQ_OUTABL == 2
+    gTerrAO = 1.0;
+  #elif TQ_OUTABL == 3
+    accA = vec3(0.36, 0.31, 0.26);
+  #elif TQ_OUTABL == 4
+    gTerrRough = 0.92;
+  #endif
+#endif
 
   // Cooling-crust fissures.
   //
@@ -3629,6 +3891,13 @@ const FRAG_SPLAT = /* glsl */ `
     dbg = vec3(float(li.x) * (1.0 / 7.0));
   #elif TQ_DBG == 15
     dbg = LAYER_TINT[li.x] * 0.25;
+  #elif TQ_DBG == 16
+    // The de-tiling cell id as false colour, with the blend band along the cell
+    // walls in blue. This is the picture that decides whether the lattice
+    // actually tiles a surface in two dimensions or hands it one column of
+    // cells for its whole height; see the note beside DT_CELL.
+    dbg = vec3(0.5 + 0.5 * cos(6.2831853 * (tHash(dtA) + vec3(0.0, 0.33, 0.67))));
+    dbg = mix(dbg, vec3(0.0, 0.0, 1.0), 1.0 - ss(0.0, 0.06, dtDD));
   #elif TQ_DBG == 13
     // Coverage of the three bands that own the near plane: red is the 24 cm
     // grit, green the 55 cm debris, blue the 28 cm grain texture. Black ground
