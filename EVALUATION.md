@@ -301,4 +301,61 @@ Two things worth keeping exactly as they were: **contract-first decomposition**,
 
 ---
 
-*Written by the orchestrating agent, so treat section 3 as self-assessment with the bias that implies. The commit history is the primary source; every claim above is traceable to a commit message or a recorded measurement.*
+## 9. Where this method transfers
+
+**This section is opinion, not measurement.** Everything above is traceable to a commit or a recorded number; what follows is extrapolation from a single project, and should be read as a hypothesis worth testing rather than a conclusion.
+
+The question it answers: in which domains would the Gauntlet Loop, *in its original simple form*, do better than it did here?
+
+### 9.1 The variable that decides it
+
+The loop's cost is set almost entirely by **the critic, not the builder**.
+
+The builder side of this project worked. 94,000 lines across 16 subsystems, authored concurrently against fixed contracts, essentially no merge conflicts. What consumed ~1.32M tokens for one shipped visual fix was *judging* the work.
+
+Ashlands had close to a worst-case critic on every axis:
+
+| Property | Ashlands | What you want |
+|---|---|---|
+| Cost per judgement | 30–70 min | Milliseconds |
+| Parallelism | One GPU, one browser — serial | Unbounded |
+| Fidelity | An agent's recollection of a game it had no copy of | An executable oracle |
+| Determinism | Captures varied run to run until pinned | Bit-exact |
+| Attribution | A bad frame could originate in any of five stages | The failing check names the unit |
+
+Two properties predict success better than anything else:
+
+1. **Is there an executable oracle** — something that answers yes/no without a model's opinion?
+2. **Are defects local** — does a failing check *name* the thing to fix?
+
+This project failed both, and the second was the expensive one. Roughly a million tokens went to *attribution* rather than repair; when the answer arrived, the fix was one term in a scoring function.
+
+### 9.2 Strong fits
+
+**Porting and reimplementation — probably the best fit available.** Port a library to another language, reimplement a spec, write a compiler backend. The reference is free, complete, legal and *executable*, so you differential-test: same input, compare output. The critic costs milliseconds, parallelises without limit, and is perfect rather than impressionistic. Attribution is free because a failing case names the function. Every property that hurt here is inverted.
+
+**Anything with a conformance suite** — protocol implementations, parsers, data-format converters, numerical routines checked against a slow reference. Same reasoning.
+
+**Game balance — the counterintuitive one.** Same industry as this project, opposite properties. You cannot cheaply judge whether a frame looks AAA, but you can run 100,000 headless matches and measure win rates, match length and dominant-strategy concentration. The critic becomes a Monte Carlo simulation: quantitative, parallel, deterministic under a fixed seed. The loop should do markedly better work on a card game's balance than on any 3D renderer.
+
+**Anything with a fast, deterministic, parallel harness** — data pipelines with reference outputs, refactoring under existing coverage, API integration against a live endpoint. **Performance optimisation is a particularly good fit**: the oracle is a number, and correctness stays pinned by tests while the loop hunts speed.
+
+### 9.3 Good fits with a caveat
+
+**Office and CRUD applications.** Quality decomposes into user flows, each independently testable with a browser driver, cheaply and in parallel — local defects, named failures. The caveat is that the moment the goal becomes "does this *feel* well designed", you are back in this project's territory. Split the brief: functional correctness to the loop, visual and interaction polish to a human.
+
+**Mobile.** Same structure, plus a trap. Emulators and device farms are a slow shared resource — structurally the same bottleneck as one GPU. Fan-out will look busy and buy nothing. See §5.2.
+
+### 9.4 Poor fits
+
+- **Novel research and genuinely new algorithms.** No oracle, so the loop cannot tell whether it is converging or wandering.
+- **Safety-critical work, or anything with irreversible side effects.** An agent's willingness to keep trying is a liability rather than a virtue.
+- **Anything whose reference you cannot legally hold** — which, ironically, was this project's binding constraint.
+
+### 9.5 Compressed
+
+**Point the loop at problems where being wrong is cheap to detect and obvious to locate.** In those domains the original simple prompt is close to sufficient. Nearly every clause added in §8 exists to compensate for a critic that was expensive, blind and shared — remove those three properties and most of the added ceremony becomes unnecessary.
+
+---
+
+*Written by the orchestrating agent, so treat section 3 as self-assessment with the bias that implies, and section 9 as untested opinion. Sections 1–8 are traceable to commit messages and recorded measurements.*
