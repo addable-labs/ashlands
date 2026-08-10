@@ -195,4 +195,110 @@ The gap between "utterly perfect" and the Current state list in the README is th
 
 ---
 
+---
+
+## 8. A better starting prompt
+
+The original brief is in the README. Its weaknesses, in order of cost:
+
+- **No reference set**, so its terminal condition was unverifiable
+- **"Utterly perfect"** is unfalsifiable — an agent can neither reach it nor prove it has
+- **No instrument requirement**, so the measuring tools were built ad hoc *during* the loop and silently lied for most of it
+- **No determinism requirement**, so captures were not reproducible and comparisons were unsound
+- **No licence to fail**, so the default incentive was to ship plausible patches
+- **"Fan out sub-agents"** unconditionally, when the closing work was verification-bound and could not parallelise
+
+A revised version. It is longer, because most of the cost above came from things left unsaid:
+
+```
+Build an action RPG in the spirit of Morrowind, in Three.js, running in a browser.
+Procedural only: no binary assets, nothing fetched at runtime.
+
+REFERENCES
+I have put reference screenshots in refs/. Study them before writing any code and
+derive an art bible from them: palette with hex values, value structure, the
+saturation band ground materials must sit in, and how shadows differ in hue from
+key light. Every later visual judgement compares against these images, never
+against your recollection of the game. If refs/ is empty, stop and tell me — do
+not proceed on memory.
+
+PHASE 0 — INSTRUMENTS BEFORE FEATURES
+Before building the game, build the harness that will judge it, and prove it works:
+  - A deterministic capture tool. Pin clock, weather, animation phase and camera.
+    Two runs of an identical build must produce identical frames. Verify this and
+    show me the diff.
+  - A metrics gate. For each metric state its target DIRECTION or BAND explicitly —
+    some are lower-better, some higher-better, some have a target with both sides
+    wrong. Getting this wrong makes progress look like regression.
+  - Calibrate every check by injecting a synthetic defect of known magnitude and
+    confirming it fires above the threshold and not below. Report the calibration
+    table. An uncalibrated check is worse than no check.
+  - Measure and record each metric's run-to-run noise floor next to its threshold.
+    Any later effect smaller than that floor is unmeasurable — say so rather than
+    reporting it.
+Do not start the game until the harness is calibrated. Show me the numbers.
+
+ARCHITECTURE
+Define the system contracts first: one interface per subsystem at a fixed path,
+resolved by id, communicating only through an event bus. Subsystems must never
+import each other. Then fan out — one agent per subsystem, working concurrently
+against those contracts.
+
+VERIFICATION DISCIPLINE
+  - At most ONE process may drive a browser at a time. Concurrent GPU capture
+    corrupts both frame timing and the image itself.
+  - One global-appearance change at a time, single owner. Two simultaneous changes
+    make both sets of measurements uninterpretable.
+  - Builders never grade their own work. Critics compare against refs/ and cite
+    pixel measurements, not impressions.
+  - Before blaming a renderer, verify the INPUTS: is the camera pointing at
+    anything, does the frame have depth range, is the subject lit at all. Cheap
+    checks first, always.
+
+HOW TO REPORT
+  - Label every hypothesis as a hypothesis. If you hand a suspect to a sub-agent,
+    say "verify, do not assume" — a premise asserted as fact propagates to every
+    agent downstream and is the most expensive error available to you.
+  - "I could not fix this, here is what I ruled out, with measurements" is a
+    COMPLETE and valued answer. Never ship a change you have not measured.
+  - If a change makes the numbers worse, revert it and keep the measurement in a
+    comment. Negative results are the point.
+  - Tell me when you are wrong, plainly, including when it contradicts something
+    you told me earlier.
+
+BUDGET
+Investigative agent rounds cost roughly 250-350k tokens each and most end in a
+negative. Before dispatching one, ask whether the question can be settled by
+measuring an existing capture — if so, do that instead. Sequence investigations so
+the earliest ones narrow the search space most. Tell me the running total and warn
+me before we approach a quota limit.
+
+DONE MEANS
+For each canonical shot: passes every gate check, AND three independent critics
+shown it alongside a reference from refs/ in randomised order cannot reliably pick
+the reference as the better-looking image. Report the vote.
+Where you fall short, list what is still wrong and why, and do not describe the
+result as finished. I would rather have an honest inventory than a claim of
+perfection.
+```
+
+### What changed and why
+
+| Change | Cost it would have avoided |
+|---|---|
+| References supplied up front, refusal to proceed without them | The acceptance criterion was never testable |
+| Phase 0 instruments, calibrated before use | Seven instrument defects that corrupted decisions for most of the run |
+| Determinism required and demonstrated | Non-reproducible captures made comparisons unsound |
+| Metric directions and bands declared explicitly | Movement toward the art bible reported as a regression |
+| Noise floors recorded next to thresholds | Effects chased that were smaller than capture noise |
+| "Check the inputs before the renderer" | ~1M tokens spent at three wrong stages on a camera-placement bug |
+| Hypotheses labelled as hypotheses | Wrong premises propagated to sub-agents, wasting whole rounds |
+| Negative results explicitly licensed | Plausible patches shipped to avoid returning empty-handed |
+| Serialisation rules stated up front | Corrupted captures, load average 37, orphaned processes, five server deaths |
+| Falsifiable "done" with a blind vote | An unreachable terminal condition and no way to know how close it got |
+
+Two things worth keeping exactly as they were: **contract-first decomposition**, which is why 16 subsystems could be written concurrently with essentially no merge conflicts, and **builder/critic separation**, which reliably caught what self-assessment missed.
+
+---
+
 *Written by the orchestrating agent, so treat section 3 as self-assessment with the bias that implies. The commit history is the primary source; every claim above is traceable to a commit message or a recorded measurement.*
