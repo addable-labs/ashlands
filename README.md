@@ -34,6 +34,8 @@ Losing that anchor is arguably what left the loop weakest: critics with nothing 
 
 The verification harness exists because of that pattern, not in spite of it. An agent's confidence is not evidence; a captured frame and a measured number are. `PIPELINE.md` is the process that emerged from getting this wrong repeatedly.
 
+**[EVALUATION.md](EVALUATION.md) is the full write-up** — what the method got right, a taxonomy of what went wrong, the measured cost of the sub-agent rounds (~1.32M tokens for one shipped visual fix, four negatives, and a sixth agent killed by a quota limit), whether the agents collided, an honest verdict against each clause of the brief, and a revised starting prompt for anyone rerunning this.
+
 ---
 
 ## Requirements
@@ -187,6 +189,8 @@ Known open:
 - Cell-scale mottling on terrain at distance — a per-cell mip step in the de-tiling lattice.
 - `dawn`'s description promises godrays the frame does not show.
 - Frame rate is 20–35 fps at capture resolution on an M3 MacBook Air.
+
+For how this list came to look the way it does, see [EVALUATION.md](EVALUATION.md).
 
 ---
 
