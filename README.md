@@ -10,6 +10,8 @@ It runs in the browser on Three.js (r185) and WebGL2. **Everything is procedural
 
 Ashlands is an experiment in agentic software development. The entire codebase — engine, renderer, RPG systems, quest graph, audio synthesis, and the verification harness that polices it — was written by Claude Code working from a single prompt, fanning out to sub-agents that each owned one subsystem and verified their own work against captured frames.
 
+The prompt follows the **Gauntlet Loop** method described by Matt Shumer in [*How to Run a Gauntlet Loop: The Prompting Method Behind Claude of Duty*](https://somethingbig.ai/gauntlet-loop): run it inside an agentic system rather than a chat, state the outcome without prescribing the implementation, give the critic a concrete reference to compare against, let the lead agent decompose the work into independently improvable pieces, and keep builders and critics separate so nothing grades its own homework.
+
 The originating prompt, verbatim:
 
 > I want you to build an action role-playing game at the level of the most recent version of Elder Scrolls: Morrowind, serving as a follow-up in the series, a new installment. It should be utterly perfect, visually beautiful, with every single thing done at AAA quality—from textures to physics to anything you could think of.
@@ -24,7 +26,9 @@ Read the goal as stated — "utterly perfect", "AAA quality" — and then read t
 
 Two caveats matter if you are evaluating this repository as evidence of anything:
 
-**The blind side-by-side against Morrowind never actually happened.** The brief asks for critic agents to compare frames against the real games and say which looks better. No reference screenshots were ever obtained, so every such judgement was an agent scoring a frame against its own *recollection* of Morrowind. Those numbers should not be read as a measured comparison, because they are not one.
+**The blind side-by-side against Morrowind never actually happened** — and this is a deviation from the method, not a detail. The Gauntlet Loop's third principle is to give the critic a concrete reference it can inspect. No reference screenshots were ever obtained here, so every "beats Morrowind" judgement was an agent scoring a frame against its own *recollection* of the game. Those numbers are not a measured comparison and should not be read as one.
+
+Losing that anchor is arguably what left the loop weakest: critics with nothing external to compare against drift toward grading a frame on whether it looks *good* rather than whether it looks *like the target*. Anyone rerunning this experiment should supply the reference set first.
 
 **"Perfect" was never reached, and several rounds of confident work were wrong.** The commit history is deliberately explicit about this: it contains reverted changes, negative results kept because they were expensive to obtain, and a number of cases where the tooling itself was manufacturing false signal — a gate metric scored in the wrong direction, a check flipping between pass and fail on an unchanged build, a diagnostic that silently invalidated every measurement after the first shot in a run. Two visual defects that each consumed multiple rounds of shader investigation turned out to be the camera standing in the wrong place.
 
