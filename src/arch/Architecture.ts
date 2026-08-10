@@ -335,7 +335,7 @@ export class ArchitectureSystem implements System {
       ashColor: new THREE.Color(0x5f7a63),
       spill: 0.30, spillColor: SPILL,
     }));
-    // Telvanni tower flesh. Tiled coarse — this is a 100 m organism, and a
+    // Vaelmyr tower flesh. Tiled coarse — this is a 100 m organism, and a
     // brick-sized repeat on it is the fastest way to destroy the scale read the
     // landmark exists to provide. Dark enough to hold a black silhouette
     // against the sulphur band, which is the whole job at 1.5 km.
@@ -490,7 +490,7 @@ export class ArchitectureSystem implements System {
     //
     // The review's dusk note is the one being answered: a tower at 650 m whose
     // windows sit at 0.13 radiance under a sky at 0.16 has no lit read at all,
-    // and with the towers that marginal the frame has no subject. A Dunmer
+    // and with the towers that marginal the frame has no subject. A Cindren
     // window at dusk is not dimmer than the sky behind it; it is the one thing
     // in the frame that is brighter, and it has to clear the bloom threshold to
     // say so. The per-panel `aLit` scatter (0.06-1.6) still decides which rooms
@@ -984,7 +984,7 @@ export class ArchitectureSystem implements System {
     // every window in the settlement stays dark. Intensity has no such
     // ambiguity: daylight is order 1, moonlight is order 0.05, and a blotted
     // sun in an ash storm lands between the two, which is exactly when a
-    // Dunmer household would light the lamps anyway.
+    // Cindren household would light the lamps anyway.
     const key = sky ? sky.sun.intensity : 3;
     // Lamps also come on when the AIR closes in, not only when the sun goes
     // down.
@@ -1008,14 +1008,14 @@ export class ArchitectureSystem implements System {
     //
     // At 0.02 a daytime window is a black rectangle in a hole, which is what a
     // flat unlit quad looks like from any distance — the review caught it in
-    // three separate shots. A Dunmer interior at noon is still a lamp-lit room
+    // three separate shots. A Cindren interior at noon is still a lamp-lit room
     // with no other opening, so a low ember floor is both physically right and
     // the only thing that gives an aperture a value read against a same-value
     // hull at hour 10.
     const flickerAll = 0.86 + 0.14 * Math.sin(ctx.time.elapsed * 7.3);
     // 0.34 floor, not 0.22. The review's dawn note is the one to answer: at
     // 6.2 h "not one of them is lit, which discards the strongest available
-    // reading cue for the settlement's scale and habitation". A Dunmer tower at
+    // reading cue for the settlement's scale and habitation". A Cindren tower at
     // first light has lamps burning in the rooms that are awake; the per-panel
     // `aLit` scatter decides which, and this sets how far the unlit ones fall.
     // 0.152 floor, not 0.34, because the panel's base radiance went up by 2.24x

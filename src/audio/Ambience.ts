@@ -35,7 +35,7 @@ const LAYERS: Record<LayerId, LayerDef> = {
   windMid: { noise: 'pink', filter: 'bandpass', hz: 780, q: 0.75, gustHz: 900, trim: 0.09, reverb: 0.05 },
   // Ash on your face. Broadband, bright, and the whole character of a storm.
   grit: { noise: 'white', filter: 'highpass', hz: 1900, q: 0.7, gustHz: 1500, trim: 0.085, reverb: 0.04 },
-  // Red Mountain. Sub-bass, barely modulated, always there when you are close.
+  // Ember Mount. Sub-bass, barely modulated, always there when you are close.
   // Trimmed hard: at 0.45 this one layer was 90% of the bed's energy anywhere
   // within two mountain-radii, which is most of the island. Sub-bass that loud
   // is not "felt not heard", it is mud under the whole mix.
@@ -267,8 +267,8 @@ export class Ambience {
       this.nextThunder = Math.max(this.nextThunder, 8);
     }
 
-    // Distant life. A cliff racer three hundred metres away is the sound of
-    // Vvardenfell, and the fact that it is coming for you is the point.
+    // Distant life. A ash shrike three hundred metres away is the sound of
+    // Ashenreach, and the fact that it is coming for you is the point.
     this.nextDistant -= dt * open * dry * lerp(0.35, 1, 1 - clamp01(bed.grit));
     if (this.nextDistant <= 0) {
       this.nextDistant = this.rng.range(22, 70);
@@ -446,19 +446,19 @@ export class Ambience {
   }
 
   private distantCall(env: AmbienceEnv, night: number): void {
-    // Silt striders call by day and carry for kilometres; racers hunt in the
+    // Fenwalkers call by day and carry for kilometres; racers hunt in the
     // open at any hour; netches drift over the coast.
     const roll = this.rng.next();
     if (roll < 0.42) {
-      this.creatures.call('cliffracer', 'idle', this.around(env, 70, 260, 20, 70));
+      this.creatures.call('ashshrike', 'idle', this.around(env, 70, 260, 20, 70));
     } else if (roll < 0.62 && night < 0.5) {
-      this.creatures.call('siltstrider', 'idle', this.around(env, 400, 1400, 10, 60));
+      this.creatures.call('fenwalker', 'idle', this.around(env, 400, 1400, 10, 60));
     } else if (roll < 0.8 && env.coast > 0.25) {
-      this.creatures.call('netch', 'idle', this.around(env, 60, 320, 5, 40));
+      this.creatures.call('skerrin', 'idle', this.around(env, 60, 320, 5, 40));
     } else if (roll < 0.92) {
-      this.creatures.call('nixhound', 'idle', this.around(env, 40, 180, -2, 6));
+      this.creatures.call('glassjaw', 'idle', this.around(env, 40, 180, -2, 6));
     } else {
-      this.creatures.call('guar', 'idle', this.around(env, 30, 140, -2, 4));
+      this.creatures.call('drell', 'idle', this.around(env, 30, 140, -2, 4));
     }
   }
 

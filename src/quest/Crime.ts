@@ -30,9 +30,9 @@ export const CRIME_BOUNTY: Record<CrimeKind, number> = {
 };
 
 /**
- * Actor factions that cannot testify. A nix-hound watching you cut a purse is
+ * Actor factions that cannot testify. A glassjaw watching you cut a purse is
  * not a witness, and before this the actor list was walked whole — so a crime
- * committed alone in the ashlands with a guar in line of sight earned a real
+ * committed alone in the ashlands with a drell in line of sight earned a real
  * bounty from nobody. Unknown factions still count, so a new kind of person is
  * a witness by default rather than silently exempt.
  */

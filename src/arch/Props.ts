@@ -46,7 +46,7 @@ function lathe(
   return res.outer;
 }
 
-/** Clay urn — the Dunmer household object. Neck, shoulder, foot. */
+/** Clay urn — the Cindren household object. Neck, shoulder, foot. */
 export function clayUrn(rng: Rng): PropDef {
   const h = rng.range(0.42, 0.95);
   const belly = h * rng.range(0.36, 0.52);

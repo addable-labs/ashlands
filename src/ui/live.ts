@@ -574,7 +574,7 @@ export type PreviewShape = ShapeId;
  */
 const MATERIAL_LOOK: Readonly<Record<string, { tint: number; metal: number; rough: number }>> = {
   fur: { tint: 0x6f5537, metal: 0.0, rough: 0.85 },
-  netch: { tint: 0x9c8558, metal: 0.02, rough: 0.6 },
+  skerrin: { tint: 0x9c8558, metal: 0.02, rough: 0.6 },
   chitin: { tint: 0xc0a878, metal: 0.05, rough: 0.45 },
   bonemold: { tint: 0xcbbb92, metal: 0.08, rough: 0.55 },
   iron: { tint: 0x9aa0a6, metal: 0.9, rough: 0.45 },

@@ -321,7 +321,7 @@ void mShade(vec2 uv, float h, inout vec3 albedo, inout float rough, inout float 
   // MACRO CONTRAST BUDGET. See the note on basalt for the measurement and the
   // reasoning; this set fails the same way and for the same reason. Its albedo
   // luminance standard deviation is 11.3 code values at level 0 and about 2 by
-  // level 4, which is the level Red Mountain's summit and upper flanks are
+  // level 4, which is the level Ember Mount's summit and upper flanks are
   // sampled from — and two code values across a whole massif is what renders as
   // "flat-shaded polygonal facets in uniform pale putty, individual triangles
   // readable as solid colour plates".
@@ -374,7 +374,7 @@ void mShade(vec2 uv, float h, inout vec3 albedo, inout float rough, inout float 
  * 8 m projection that is a 1.6 m honeycomb whose joints are the single loudest
  * frequency in the image; the FFT put its peak 60x above the local spectral
  * median in albedo and 250x in the normal map, and on screen it read as printed
- * chicken wire. Columnar jointing is right for Vvardenfell, but it has to be a
+ * chicken wire. Columnar jointing is right for Ashenreach, but it has to be a
  * *texture* rather than a graphic: the columns are now nine across (0.9 m), the
  * joint darkening is a fraction of what it was, and three louder fields — spall
  * scars, a two-scale fracture network and grain — sit on top of it so no single
@@ -605,7 +605,7 @@ float mHeight(vec2 uv) {
              + gGrainG * 0.10 + gFineL * 0.05 + gPebL * 0.09 + gLum * 0.08, 0.0, 1.0);
 }
 void mShade(vec2 uv, float h, inout vec3 albedo, inout float rough, inout float metal, inout float armA) {
-  // Vvardenfell ground cover is lichen on ash, not meadow: ochre, grey-green
+  // Ashenreach ground cover is lichen on ash, not meadow: ochre, grey-green
   // and rust. Nothing here is lush, and the glow is an accent, not a colour.
   gRustL = smoothstep(0.62, 0.95, fbm(uv, vec2(12.0), 4, 0.5, 9.0) * 0.5 + 0.5);
   vec3 dust  = PAL(112.0, 105.0,  94.0);
@@ -762,12 +762,12 @@ void mShade(vec2 uv, float h, inout vec3 albedo, inout float rough, inout float 
 }`;
 
 /**
- * Quarried tuff ashlar — Dwemer plate, Redoran revetment, every cut wall.
+ * Quarried tuff ashlar — Deshan plate, Korran revetment, every cut wall.
  *
  * The previous version put 3.7% of its albedo energy above 48 cycles per tile
  * and rendered a Laplacian of 4.9: at the 1.1 m tiling architecture uses, a
  * 250 px quad of it two metres from the camera is a value ramp with nothing in
- * it, which is exactly what the review measured off the Dwemer front plate.
+ * it, which is exactly what the review measured off the Deshan front plate.
  * Everything it had lived at the block scale. It also put a 108x spectral spike
  * at 54 cycles — the chisel train, whose phase warp was 2.2 radians, a third of
  * a cycle, far too little to de-phase a pure tone.
@@ -977,7 +977,7 @@ float mHeight(vec2 uv) {
   // Punctures. The old version dropped these into the height field at 0.07 and
   // never mentioned them in the albedo, which is why the rendered map came back
   // with a Laplacian of 0.97 — an order of magnitude flatter than any other set
-  // in the library, on the material the Telvanni pod shells and every insect
+  // in the library, on the material the Vaelmyr pod shells and every insect
   // carapace are made of. A shell with no surface is why the review could not
   // tell chitin from ash from bark.
   vec4 pr = clasts(uv, vec2(64.0), 0.46, 0.10, 0.36, 113.0);
@@ -1122,7 +1122,7 @@ void mShade(vec2 uv, float h, inout vec3 albedo, inout float rough, inout float 
 }`;
 
 /**
- * The trunk of a grown Telvanni tower and of every fungal stalk.
+ * The trunk of a grown Vaelmyr tower and of every fungal stalk.
  *
  * Every large field in the previous version was elongated along Y — the welts,
  * the fissures and the fibre all ran up the stalk — so the material carried no
@@ -1148,7 +1148,7 @@ float mHeight(vec2 uv) {
   // single uniform mauve-grey matte value across cap, pods and stalk with only
   // low-frequency vertex-ish mottling".
   //
-  // A grown Telvanni tower is not extruded from one flush. It swells in seasons,
+  // A grown Vaelmyr tower is not extruded from one flush. It swells in seasons,
   // and each season's growth carries its own skin colour, metres deep, with the
   // older flushes below bleached and ash-caked and the younger ones above still
   // dark. Three octaves from rep3's floor of 3 cycles put that at a 3 m, 1.5 m
@@ -1356,7 +1356,7 @@ void mShade(vec2 uv, float h, inout vec3 albedo, inout float rough, inout float 
 }`;
 
 /**
- * Dwemer bronze — the wreck on the horizon, the pipework, the great cogs.
+ * Deshan bronze — the wreck on the horizon, the pipework, the great cogs.
  *
  * The old version chased a chevron band with
  *   `1 - smoothstep(0.03, 0.075, abs(fract(uv.x * 6.0 + tri(uv.y * 6.0)) - 0.5))`
@@ -1368,7 +1368,7 @@ void mShade(vec2 uv, float h, inout vec3 albedo, inout float rough, inout float 
  * both an instant tiling fail under rule 4 and the source of the "rectangular
  * recessed panels" the review read off the wreck.
  *
- * Ornament is right for Dwemer work, so it stays — but as a *cast* ornament
+ * Ornament is right for Deshan work, so it stays — but as a *cast* ornament
  * whose lattice is warped, whose amplitude is masked, and whose ring pitch
  * varies per boss, rather than as a ruled screen. On top of it the material now
  * carries the response the review asked for by name: metal = 1 on bare bronze

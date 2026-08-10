@@ -133,7 +133,7 @@ float aSS(float a, float b, float x) {
  * Analytic organic-shell relief, in structure-local metres.
  *
  * This exists because a texture fetch cannot solve the problem it is aimed at.
- * A 110 m Telvanni tower is looked at from 300 m to 2 km; a 2.8 m texture
+ * A 110 m Vaelmyr tower is looked at from 300 m to 2 km; a 2.8 m texture
  * repeat is already below one pixel at 600 m, so the mip chain hands back a
  * flat average and the tower renders as an inflatable. Every band below is
  * evaluated per fragment from world position, so nothing mips out, and each is
@@ -234,7 +234,7 @@ float archMason(vec3 lp, ArchBands k, float px) {
   if (m == 1) {
     // ---- CUT AND COURSED STONE ------------------------------------------
     //
-    // Two course heights, because Dunmer masonry is both: cyclopean basalt at
+    // Two course heights, because Cindren masonry is both: cyclopean basalt at
     // over a metre for a Daedric ruin, dressed ashlar at a third of that for a
     // plinth or a doorway. The coarse course is on the 2.8 m band and so is
     // still there at a couple of hundred metres, which is where the "flat
@@ -626,7 +626,7 @@ const ARCH_SURFACE = /* glsl */ `
  */
 const ARCH_EMISSIVE = /* glsl */ `
   #include <emissivemap_fragment>
-  // Lamps: mostly a night term, but never fully off. A Dunmer interior at noon
+  // Lamps: mostly a night term, but never fully off. A Cindren interior at noon
   // is still a lamp-lit room, and an aperture with no wash around it in daylight
   // is the "clipped white quad that contributes zero light" the review found.
   totalEmissiveRadiance += uArchSpillCol * (vArchSpillV * uArchSpill * mix(0.14, 1.0, uArchNight));
@@ -718,7 +718,7 @@ const ARCH_TRANSMIT = /* glsl */ `
     // here is how close the fragment is to the silhouette. Twenty-five metres
     // of pod hull transmits nothing at all through its middle.
     //
-    // Measured: with the constant in, a Telvanni tower backlit by the red moon
+    // Measured: with the constant in, a Vaelmyr tower backlit by the red moon
     // rendered as a flat saturated maroon mass with no albedo variation, no
     // normal and no roughness break-up — the "untextured clay" failure, this
     // time on the pods, and with the palette's saturation discipline broken by
@@ -827,7 +827,7 @@ export interface ArchMatOptions {
   /** Strength of the ungated bioluminescent wash baked into `aBio`. */
   bio?: number;
   bioColor?: THREE.Color;
-  /** 0..1 ash accumulation strength. Ashlander domes want ~1, docks ~0.3. */
+  /** 0..1 ash accumulation strength. Shirenamat domes want ~1, docks ~0.3. */
   ash?: number;
   /**
    * What accumulates. Ash by default — but the same integral, tinted verdigris,
@@ -847,7 +847,7 @@ export interface ArchMatOptions {
   sway?: number;
   /**
    * Analytic metre-scale shell relief, 0..1. Grown architecture only — this is
-   * what keeps a Telvanni pod from mipping down to a smooth egg at range.
+   * what keeps a Vaelmyr pod from mipping down to a smooth egg at range.
    */
   organic?: number;
   /** Roughness blotching, 0..1. Breaks a continuous specular streak into patches. */
@@ -859,7 +859,7 @@ export interface ArchMatOptions {
    * Sky-dome irradiance at the silhouette edge, 0..1. See `ARCH_SKYRIM`.
    *
    * For upward-facing surfaces whose dark shape has to separate from a dark
-   * horizon — a Telvanni cap against a dusk sky is the case it exists for.
+   * horizon — a Vaelmyr cap against a dusk sky is the case it exists for.
    */
   skyRim?: number;
   /** Strength of the baked `aSpill` window wash. */

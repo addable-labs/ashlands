@@ -115,7 +115,7 @@ src/
   mat/        Procedural material library
   water/      Ocean surface, underwater extinction, caustics
   flora/      Vegetation instancing and impostors
-  arch/       Telvanni towers, settlements, interiors
+  arch/       Vaelmyr towers, settlements, interiors
   actors/     Creature and NPC bodies, animation
   combat/     Melee, ranged, blocking, damage resolution
   rpg/        Attributes, 27 skills-by-use, levelling, birthsigns, spellmaking

@@ -1687,7 +1687,7 @@ vec3 valueCurve(vec3 c, float black, float gain) {
   vec3 o = c * (l1 / l0);
 
   // THE SHOULDER RUNS ON THE MAX CHANNEL, NOT ON LUMINANCE, and that one line
-  // is the difference between Red Mountain's lava reading as fire and reading
+  // is the difference between Ember Mount's lava reading as fire and reading
   // as a scratch on plaster.
   //
   // What was here rolled luminance off and then, separately, handled the case

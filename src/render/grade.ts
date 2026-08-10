@@ -495,7 +495,7 @@ function anchor(out: Float32Array, hue: number, sat: number, l: number): void {
 }
 
 /**
- * Vvardenfell grade. Input and output are both display-encoded sRGB; the whole
+ * Ashenreach grade. Input and output are both display-encoded sRGB; the whole
  * transform is a 3D cube, so the arithmetic here runs 262144 times at boot and
  * never again.
  */
@@ -526,7 +526,7 @@ function gradePixel(out: Float32Array, r: number, g: number, b: number): void {
   // lava firmly at the top.
   //
   // The previous version additionally required an ember to be BRIGHT, and that
-  // extra condition is why lava fissures in the shadowed folds of Red Mountain
+  // extra condition is why lava fissures in the shadowed folds of Ember Mount
   // came out the same colour as the rock: a fissure that is chromatic but not
   // bright is still a fissure. Value is not part of the test any more.
   //
@@ -780,7 +780,7 @@ function gradePixel(out: Float32Array, r: number, g: number, b: number): void {
  * >> the mean rather than raising it.
  * >>
  * >> The feature is an ACTOR, not a seam. The strongest contributor is at rows
- * >> 763-847 around column 610-640: a netch's thin dangling tentacles, bright
+ * >> 763-847 around column 610-640: a skerrin's thin dangling tentacles, bright
  * >> against dark ground, which is precisely the "centre differs from both
  * >> neighbours in the same direction" pattern the scan is built to find. It
  * >> drifts between captures, which is why the reported column moved 610, 614,

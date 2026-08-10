@@ -113,13 +113,13 @@ const ENCLOSURE: Record<SpaceName, number> = {
 };
 
 const CREATURE_KINDS: Record<string, CreatureKind> = {
-  cliffracer: 'cliffracer',
-  netch: 'netch',
-  guar: 'guar',
-  kwama: 'kwama',
-  scrib: 'scrib',
-  nixhound: 'nixhound',
-  siltstrider: 'siltstrider',
+  ashshrike: 'ashshrike',
+  skerrin: 'skerrin',
+  drell: 'drell',
+  morvek: 'morvek',
+  vekling: 'vekling',
+  glassjaw: 'glassjaw',
+  fenwalker: 'fenwalker',
 };
 
 export class AudioSystem implements System {

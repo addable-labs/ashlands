@@ -54,11 +54,11 @@ YOUR SUBSYSTEM: vegetation. YOU OWN src/flora/ ONLY.
 Write ${ROOT}/src/flora/Flora.ts exporting \`class FloraSystem\` implementing System
 (id 'flora', order 20).
 
-Vvardenfell flora is FUNGAL and ALIEN. Nothing here may look like an oak or a pine. Species to
+Ashenreach flora is FUNGAL and ALIEN. Nothing here may look like an oak or a pine. Species to
 generate, all procedurally meshed:
 - **Emperor parasol / giant mushroom trees** — bulbous swollen stalks with a wide fleshy cap,
   8–25m tall, gill structures underneath, faintly bioluminescent rim. The signature silhouette.
-- **Telvanni-style bulb fungus** — smaller, clustered, spore-sac forms.
+- **Vaelmyr-style bulb fungus** — smaller, clustered, spore-sac forms.
 - **Ash yam / marshmerrow / stoneflower** — harvestable ground plants, sparse.
 - **Trama root** — thorny, twisted, grey-black, thrives in ash.
 - **Kelp and coral** — below sea level only, reacting to the water's wave motion.
@@ -98,14 +98,14 @@ YOUR SUBSYSTEM: architecture and settlements. YOU OWN src/arch/ ONLY.
 Write ${ROOT}/src/arch/Architecture.ts exporting \`class ArchitectureSystem\` implementing System
 (id 'arch', order 20).
 
-Build a small coastal settlement plus scattered ruins. Dunmer architecture is the most
+Build a small coastal settlement plus scattered ruins. Cindren architecture is the most
 recognisable thing in Morrowind — get the silhouettes right and the whole project reads as
 Elder Scrolls.
 
 Styles to generate procedurally:
 - **Velothi / ashlander domes** — organic curved shells, chimney vents, rounded doorways, built
   from mud-brick and plaster over a chitin frame. Weathered, streaked, ash-drifted.
-- **Redoran chitin shells** — buildings shaped from giant crab and beetle carapaces, ribbed and
+- **Korran chitin shells** — buildings shaped from giant crab and beetle carapaces, ribbed and
   segmented, iridescent lamellae, bone buttresses.
 - **Velothi towers / Daedric ruins** — tall angular basalt monoliths with sharp asymmetric
   buttresses and carved geometric relief, half-collapsed and partly buried in ash.
@@ -154,23 +154,23 @@ Also export from src/actors/ a stable API the combat and RPG layers will consume
 
 Creatures — the bestiary is what makes Morrowind Morrowind. Generate procedurally:
 - **Cliff racer** — the infamous flying pest. Long barbed tail, membranous wings, darting flight.
-- **Netch** — enormous serene floating gasbag with trailing tentacles. Drifts, never touches
+- **Skerrin** — enormous serene floating gasbag with trailing tentacles. Drifts, never touches
   ground. Translucent, backlit membrane. Visually the most striking creature in the game.
-- **Kwama forager** — low insectoid scuttler, chitinous, many-legged.
+- **Morvek forager** — low insectoid scuttler, chitinous, many-legged.
 - **Nix-hound** — leaping arthropod predator, hard shell, no eyes.
-- **Guar** — bipedal pack lizard, docile, used as livestock.
+- **Drell** — bipedal pack lizard, docile, used as livestock.
 - **Silt strider** (a set piece, one instance is enough) — a colossal flea-like creature the
   size of a building with impossibly long jointed legs and a hollowed shell. If you build one
   thing exceptionally well, make it this.
-- **Dunmer NPCs** — humanoid, ashen grey skin, red eyes, robed or armoured, walking the paths.
+- **Cindren NPCs** — humanoid, ashen grey skin, red eyes, robed or armoured, walking the paths.
 
 Requirements:
 - Procedural skinned meshes: build a skeleton (THREE.Bone hierarchy), generate the mesh
   around it, and compute skin weights from bone-distance falloff. Real THREE.SkinnedMesh —
   not rigid segments parented together; segmented robots are an instant fail.
 - Procedural animation, not baked clips: sinusoidal/phase-driven gait generators with proper
-  limb phase offsets per creature morphology (hexapod tripod gait for kwama, bipedal for guar
-  and NPCs, wing-flap cycles for cliff racers, slow buoyant bob and tentacle drift for netch).
+  limb phase offsets per creature morphology (hexapod tripod gait for morvek, bipedal for drell
+  and NPCs, wing-flap cycles for ash shrikes, slow buoyant bob and tentacle drift for skerrin).
 - Blend between locomotion states (idle / walk / run / turn) with real crossfades and a
   correct root-motion-free footfall — feet must not skate along the ground.
 - Two-bone IK foot placement against the terrain heightfield so feet land ON the surface on
@@ -184,7 +184,7 @@ Requirements:
 - LOD: skinned near, reduced-bone mid, impostor far. Cap simultaneous skinned actors and
   report the cap.
 - Spawn a populated but not crowded world: a few dozen creatures across the region, biome-
-  appropriate (netch over water and ash flats, kwama near rocks, racers in the air).`,
+  appropriate (skerrin over water and ash flats, morvek near rocks, racers in the air).`,
   },
   {
     key: 'vfx',

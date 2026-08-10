@@ -101,7 +101,7 @@ export class TargetIndex {
   /**
    * World-space hit volume for an actor, rebuilt at most once per frame. Bones
    * are read straight out of the skinned mesh the actor system already posed,
-   * so the volume tracks the animation exactly — a crouching nix-hound really
+   * so the volume tracks the animation exactly — a crouching glassjaw really
    * is a shorter capsule.
    */
   volume(a: ActorLike, frame: number): HitVolume {
@@ -172,7 +172,7 @@ export class TargetIndex {
     }
 
     // A capsule through the bone cloud: wide enough that a limb is hittable,
-    // tight enough that a swing past the shoulder of a cliff racer misses.
+    // tight enough that a swing past the shoulder of a ash shrike misses.
     v.radius = Math.max(0.22, Math.min(spread * 0.62, (maxY - minY) * 0.7 + 0.25));
     v.base.set(cx, minY + v.radius * 0.35, cz);
     v.top.set(cx, Math.max(minY + v.radius * 0.4, maxY - v.radius * 0.25), cz);

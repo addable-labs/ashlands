@@ -191,7 +191,7 @@ export class RPGSystem implements System {
   init(ctx: Ctx): void {
     this.ctx = ctx;
 
-    this.character.create('Nerevarine', 'dunmer', 'male', 'warrior', CLASS_DEFS.warrior);
+    this.character.create('Veyrane', 'dunmer', 'male', 'warrior', CLASS_DEFS.warrior);
     this.giveStartingKit();
 
     this.subs.push(

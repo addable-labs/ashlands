@@ -100,7 +100,7 @@ const SECUNDA_EPOCH = 3.0397;
  * Art-directed civil day: the clock hours at which the disc crosses the horizon.
  *
  * The shot list asks for a low dawn sun at 6.2h AND a setting sun at 19.8h. At
- * Vvardenfell's latitude the true equinox arc puts sunset at 18:00, so 19.8h
+ * Ashenreach's latitude the true equinox arc puts sunset at 18:00, so 19.8h
  * placed the sun 19 degrees BELOW the horizon: the "dusk" shot — briefed for
  * sunset scattering, horizon band and cloud silver lining — rendered as
  * astronomical night, with no disc, no glow and no warm band anywhere in frame.
@@ -217,7 +217,7 @@ export interface SunShading {
 /**
  * Direct sun colour: blackbody chroma at the altitude-derived CCT, multiplied
  * by the true atmospheric transmittance along the solar ray. The transmittance
- * term is what makes a Vvardenfell sunset burn — the ash-loaded Mie extinction
+ * term is what makes a Ashenreach sunset burn — the ash-loaded Mie extinction
  * strips blue far harder than Earth's would.
  */
 export function sunShading(alt: number, camY: number, out: SunShading): SunShading {

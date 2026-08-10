@@ -69,13 +69,13 @@ function p(over: Partial<SkyParams>): SkyParams {
 }
 
 /**
- * Vvardenfell weather. Note that nothing here is green or gentle: even "clear"
+ * Ashenreach weather. Note that nothing here is green or gentle: even "clear"
  * carries a suspended ash load, and the wet states are cold and iron-coloured
  * rather than pastoral.
  */
 export const PRESETS: Record<Kind, SkyParams> = {
   clear: p({
-    // "Clear" on Vvardenfell is not an empty sky. The deck stays sparse, but the
+    // "Clear" on Ashenreach is not an empty sky. The deck stays sparse, but the
     // standing ash load always leaves a high veil: without it the noon dome was
     // a featureless vertical ramp that could have been any hour of any day.
     // cirrus 0.32. Coverage and per-streak opacity are both driven by this one
@@ -325,7 +325,7 @@ export const PRESETS: Record<Kind, SkyParams> = {
     mieMul: 6.0, msBoost: 1.5,
     // 1.5e-2 / 700m, down from 2.5e-2 / 800m.
     //
-    // At 2.5e-2 the column above Red Mountain's 1330m summit still carried an
+    // At 2.5e-2 the column above Ember Mount's 1330m summit still carried an
     // optical depth of 3.8, so the hero silhouette of the entire province
     // measured THREE luminance levels off the sky behind it — 97% in-scatter,
     // which is not aerial perspective, it is erasure. The peak now sits under an
@@ -395,7 +395,7 @@ export const WEATHER_NOTICE: Record<Kind, string> = {
   thunder: 'Thunder walks the ashlands.',
   ashstorm: 'An ash storm rises out of the west. Find shelter.',
   blight: 'Blight winds. The air tastes of corruption.',
-  blizzard: 'Snow, driven hard. Sheogorath is laughing.',
+  blizzard: 'Snow, driven hard. Vexhal is laughing.',
 };
 
 /**

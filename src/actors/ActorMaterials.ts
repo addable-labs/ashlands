@@ -16,7 +16,7 @@ import { PREPASS_FRAG, PREPASS_VERT } from '../render/shaders';
  *
  * The sun is read from the shared aerial uniform block, never from a light this
  * module owns, so creature lighting and the sky agree by construction. The same
- * block supplies applyAerial, so a nix-hound at 300 m fades into exactly the
+ * block supplies applyAerial, so a glassjaw at 300 m fades into exactly the
  * haze the terrain behind it fades into.
  */
 
@@ -57,7 +57,7 @@ const SET_FOR: Record<ActorMatKind, string> = {
   hide: 'bark_fungal',
   // Plaster, not chitin. The chitin set is a lacquered elytron: hard lamellar
   // banding in the normal map and a metallic term in the ARM. Stretched over a
-  // netch's five-metre gasbag that banding is what read as corrugated pewter.
+  // skerrin's five-metre gasbag that banding is what read as corrugated pewter.
   // A membrane wants fine dermal grain and nothing else — the transmission
   // block below is what is supposed to be carrying the surface.
   membrane: 'plaster',
@@ -80,8 +80,8 @@ const SET_FOR: Record<ActorMatKind, string> = {
  * one: the atmosphere prefilters the sky DOME ONLY (Atmosphere.captureEnv), so
  * every direction below the horizon in `scene.environment` is empty. Terrain
  * never notices, because terrain faces up. A creature is the one thing in the
- * scene with a large downward-facing surface area — a netch's whole underside, a
- * guar's flank in its own shade, the underside of a silt strider's dome and all
+ * scene with a large downward-facing surface area — a skerrin's whole underside, a
+ * drell's flank in its own shade, the underside of a fenwalker's dome and all
  * six of its legs — and with an empty lower hemisphere every one of those
  * crushes to black. That is not shading, it is a missing light.
  *
@@ -122,7 +122,7 @@ uniform float uMinPx;
 /**
  * Sub-pixel limb rescue.
  *
- * A silt strider's shin is 17 cm across; at 150 m one pixel spans 15 cm, so the
+ * A fenwalker's shin is 17 cm across; at 150 m one pixel spans 15 cm, so the
  * leg lands under the Nyquist limit and the rasteriser can only ever produce an
  * un-antialiased one-pixel polyline that stair-steps as it moves. Thickening the
  * geometry enough to fix that at 150 m would make the animal look like it stands
@@ -228,7 +228,7 @@ vec3 ashen(vec3 c, float k) {
 /**
  * Internal density of a gas-filled body, in world space.
  *
- * A netch bell is not a shell, it is a sack of float bladders, and the thing
+ * A skerrin bell is not a shell, it is a sack of float bladders, and the thing
  * that makes one read as a volume rather than as a flat translucent disc is that
  * you can see the structure of the FAR wall through the near one. Sampled twice
  * along the view ray — once at the surface, once a bell-diameter behind it —
@@ -275,8 +275,8 @@ const FRAG_ROUGH = /* glsl */ `
  *   below   there is no radiance from any direction under the horizon at all,
  *           so every downward-facing surface is lit by whatever the sun still
  *           reaches and nothing else. On an animal that is most of the body:
- *           the belly, the underside of a netch's bell, the shaded flank of a
- *           guar, the whole length of six silt-strider legs.
+ *           the belly, the underside of a skerrin's bell, the shaded flank of a
+ *           drell, the whole length of six fenwalker legs.
  *   above   the probe is the only upper-hemisphere light the standard model
  *           has, and at a low sun it delivers a small fraction of the
  *           irradiance the atmosphere itself publishes for that same sky. That
@@ -353,7 +353,7 @@ const FRAG_TAIL = /* glsl */ `
   {
     // ---------------------------------------------------------- membrane
     //
-    // A netch is a hollow sack of gas inside a wall a few centimetres thick.
+    // A skerrin is a hollow sack of gas inside a wall a few centimetres thick.
     // Almost nothing you see on it is reflected light; it is light that went in
     // somewhere else and came back out here, and the surface shading model has
     // no term for that at all. Adding a polite second-order tint on top of the
@@ -383,7 +383,7 @@ const FRAG_TAIL = /* glsl */ `
     float sacN = gasSac(vWPos * 0.85);
     float sacF = gasSac((vWPos - V * 2.6) * 0.85);
     // INTERNAL STRUCTURE HAS TO BE SMALLER THAN THE BODY IT IS INSIDE, and this
-    // weight is the whole of the netch's "flat unlit facet across the top".
+    // weight is the whole of the skerrin's "flat unlit facet across the top".
     //
     // gasSac's lowest harmonic has a period of about 3.7 m. Over a five-metre gas
     // sack that is structure. Over anything smaller it does not vary at all — and
@@ -453,7 +453,7 @@ const FRAG_TAIL = /* glsl */ `
     // so the harder the wall is driven the closer the result sits to the
     // illuminant and the further from the pigment — and the Ashlands illuminant
     // is ash-warm, not saturated. Without it, raising the face-on lobe turns a
-    // cliff racer's wing into the most saturated object in a frame whose palette
+    // ash shrike's wing into the most saturated object in a frame whose palette
     // licenses exactly two of those, and a wing is not one of them.
     vec3 lit = mix(tint, vec3(dot(tint, vec3(0.28, 0.60, 0.12))), clamp(amount * 1.6, 0.0, 0.65));
     outgoingLight += min(uAerialSunColor * lit * amount, vec3(0.62));
@@ -486,7 +486,7 @@ const FRAG_TAIL = /* glsl */ `
 
     // ----------------------------------------------- thin-film clearcoat
     //
-    // A netch's bell is wet. The standard lobe underneath it is at roughness
+    // A skerrin's bell is wet. The standard lobe underneath it is at roughness
     // 0.86 — deliberately, so the five-metre sack does not read as pewter — but
     // that leaves the animal with no specular event anywhere on it, which is the
     // review's "no specular highlight" and half of why it reads as a flat mint
@@ -515,9 +515,9 @@ const FRAG_TAIL = /* glsl */ `
     float wrap = clamp((dot(Nw, L) + 0.55) / 1.55, 0.0, 1.0);
     float thick = vMask.x;
     // Grazing angles see a longer path through the surface layer, so ears and
-    // the rim of a netch bell light up while the flat of the body does not.
+    // the rim of a skerrin bell light up while the flat of the body does not.
     // Coefficients are deliberately small: transmission is a second-order term
-    // over the diffuse, and pushed any harder it turns grey Dunmer skin pink.
+    // over the diffuse, and pushed any harder it turns grey Cindren skin pink.
     float rim = pow(1.0 - ndv, 2.5);
     float amount = uSSS * thick * (fwd * 0.55 + wrap * 0.10 + rim * 0.18);
     // CEILING and chroma pullback, and this is the whole of the "hot orange
@@ -604,7 +604,7 @@ const FRAG_TAIL = /* glsl */ `
   //
   // applyAerial multiplies the body by transmittance and adds inscatter, so as
   // optical depth rises the animal and the air in front of it converge on one
-  // value: in an ash storm (visual range ~150 m) a twenty-metre silt strider
+  // value: in an ash storm (visual range ~150 m) a twenty-metre fenwalker
   // dissolves into a smudge that could equally be a rendering artifact. What
   // actually holds a silhouette in a dust-laden medium is the light the
   // particulate forward-scatters around the outline of the body — and that light
@@ -755,7 +755,7 @@ export function makeActorMaterial(mats: IMaterials, o: ActorMaterialOpts): THREE
   });
   // Repeat 1, not `texel`. The mesh builder already emits UVs in metres scaled
   // by texel, so asking the material system for a texel-times tiled clone on top
-  // squared the frequency — up to sixty repeats per metre on a kwama carapace,
+  // squared the frequency — up to sixty repeats per metre on a morvek carapace,
   // far past Nyquist. The normal map at that frequency is what produces the
   // specular fireflies that read as blown-out patches on a shell.
   applyPBR(m, mats.tiled(SET_FOR[o.kind], 1), 1);

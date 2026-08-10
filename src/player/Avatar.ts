@@ -375,7 +375,7 @@ function buildGeometry(): THREE.BufferGeometry {
   const leather = BAND.leather;
   const skin = BAND.skin;
 
-  // Robe: a bell that flares to the knee, so the silhouette reads Dunmer
+  // Robe: a bell that flares to the knee, so the silhouette reads Cindren
   // rather than generic-adventurer even at LOD distance.
   b.addTube(
     [0, 1.02, 0],

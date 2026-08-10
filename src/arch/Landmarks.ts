@@ -12,7 +12,7 @@ import { Rng, noise2 } from './Rng';
 import { ashMound, bevelBox, buildShell, mergeParts, placed, sweep, type Opening } from './Shapes';
 
 /**
- * LANDMARKS — the silhouettes that say Vvardenfell.
+ * LANDMARKS — the silhouettes that say Ashenreach.
  *
  * The settlement generators in Buildings.ts top out at a 5 m dome. At the
  * distances the game is actually looked at — a ridge 1.5 km away under aerial
@@ -97,7 +97,7 @@ function silhouetteShell(
 // ---------------------------------------------------------------- telvanni
 
 /**
- * Telvanni mushroom tower.
+ * Vaelmyr mushroom tower.
  *
  * The single most recognisable object in the province, and the reason this
  * module exists. Three parts carry it, in order of how far away they still
@@ -241,7 +241,7 @@ export function telvanniTower(spec: LandmarkSpec): Structure {
     const Rp = H * rng.range(0.085, 0.130);
     // Taller than wide. At 1.05 the pods came out oblate and, with a band of
     // windows round the equator, read as stacked flying saucers rather than as
-    // grown bulbs — the one thing that can make a Telvanni tower look sci-fi.
+    // grown bulbs — the one thing that can make a Vaelmyr tower look sci-fi.
     const podH = Rp * rng.range(1.55, 2.05);
     const d = rs * 0.55 + Rp * 0.42;
     const cx = ax + Math.cos(th) * d;
@@ -830,9 +830,9 @@ export function telvanniTower(spec: LandmarkSpec): Structure {
 // ---------------------------------------------------------------- dwemer
 
 /**
- * A fallen Dwemer machine, half swallowed by the ash.
+ * A fallen Deshan machine, half swallowed by the ash.
  *
- * The third silhouette Vvardenfell is made of, and the only METAL in the world.
+ * The third silhouette Ashenreach is made of, and the only METAL in the world.
  * Everything else here is stone, plaster or grown tissue and shades like a
  * dielectric; this is the one asset whose whole job is to prove the pipeline can
  * tell a metal from a rock — coloured specular, edge wear where the ash cannot
@@ -882,7 +882,7 @@ export function dwemerRuin(spec: LandmarkSpec): Structure {
 
   const drum: Surface = (u, v, out) => {
     const th = u * TAU;
-    // Fluting is the Dwemer read at silhouette scale and it is also what gives
+    // Fluting is the Deshan read at silhouette scale and it is also what gives
     // the metal something for a specular to run along.
     const flute = 1 + 0.045 * Math.cos(th * flutes);
     // Banded collars, and a taper into the far cap.
@@ -1098,7 +1098,7 @@ export function dwemerRuin(spec: LandmarkSpec): Structure {
       bronze.push(g);
       silhouette.push(g.clone());
       // The ash has had an era to pile against a fallen machine. Same argument
-      // as the Telvanni roots: what reads at range is the bank and the material
+      // as the Vaelmyr roots: what reads at range is the bank and the material
       // change, not the buried centimetres.
       ashParts.push(
         ashMound(tx, tz, ground, {
@@ -1221,7 +1221,7 @@ export function dwemerRuin(spec: LandmarkSpec): Structure {
 /**
  * Daedric shrine at landmark scale.
  *
- * Where the Telvanni tower is grown and asymmetric, this is cut and angular:
+ * Where the Vaelmyr tower is grown and asymmetric, this is cut and angular:
  * a faceted basalt mass with a collapsed crown, leaning horn slabs off the
  * shoulder, and — the part that actually carries the identity — a free-standing
  * gate of two pylons and a pointed arch, set out in front of the mass with

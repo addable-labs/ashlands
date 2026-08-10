@@ -17,7 +17,7 @@ import { Rng, ad, ahr, clamp01, lerp, noteHz, softClipCurve, type Vec3 } from '.
 
 export type Mood = 'rest' | 'explore' | 'night' | 'discovery' | 'combat' | 'dungeon';
 
-/** Dunmer flavour lives in the flat second and the raised sixth. */
+/** Cindren flavour lives in the flat second and the raised sixth. */
 const SCALES = {
   dorian: [0, 2, 3, 5, 7, 9, 10],
   phrygian: [0, 1, 3, 5, 7, 8, 10],

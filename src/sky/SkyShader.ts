@@ -1614,7 +1614,7 @@ vec3 atmosphere(vec3 rd, out vec3 Tview, out float gFade, out float tG,
   // aerosol has a forward peak an order of magnitude tighter than a single
   // g=0.68 lobe can express. That second lobe is the solar aureole — the
   // burning halo around the disc that makes a dust-loaded sunset read as
-  // Vvardenfell rather than as a generic gradient.
+  // Ashenreach rather than as a generic gradient.
   float pm = mix(hgPhase(cosS, uMieG), hgPhase(cosS, 0.94), 0.22);
   // Soft-limit the forward lobe. Single-scattering Henyey-Greenstein runs to
   // ~7x isotropic inside a few degrees of the disc, and at that radiance every

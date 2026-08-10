@@ -88,7 +88,7 @@ const RO_ASH_VOL = 1295;
  * should be attenuated by sixty metres of air, not by the full slab.
  */
 const RO_SHEETS = 1297;
-/** Emissive veins on Red Mountain: on the terrain, so behind everything airborne. */
+/** Emissive veins on Ember Mount: on the terrain, so behind everything airborne. */
 const RO_FISSURE = 1240;
 const RO_DECAL = 1250;
 const RO_SPELL_ALPHA = 1320;
@@ -846,7 +846,7 @@ export class VFXSystem implements System {
     // independent "reads as dirt on the lens" reports against iter13.
     //
     //  `load` is the province's permanent atmospheric ASH LOAD. It is real and
-    //  it is what makes Vvardenfell's aerial perspective read as ash rather
+    //  it is what makes Ashenreach's aerial perspective read as ash rather
     //  than as generic distance haze — but it is a MEDIUM, and a medium is
     //  rendered by `AshVolume`, which marches it against the depth buffer and
     //  produces extinction and in-scatter. It must never be rendered as
@@ -1032,7 +1032,7 @@ export class VFXSystem implements System {
   }
 
   /**
-   * Locate Red Mountain once, from the heightfield, and anchor the eruption
+   * Locate Ember Mount once, from the heightfield, and anchor the eruption
    * column on it.
    *
    * The caldera is not authored anywhere this subsystem can see — `ITerrain`
@@ -1158,7 +1158,7 @@ export class VFXSystem implements System {
   }
 
   /**
-   * Column density and vent glow. The plume never stops — Red Mountain is
+   * Column density and vent glow. The plume never stops — Ember Mount is
    * always erupting — but it thickens in ash weather and the vent glow lifts
    * as the sun goes down, which is when an ember-lit underside actually reads.
    */

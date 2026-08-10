@@ -4,7 +4,7 @@ import type { AttributeId, FactionDef, FactionId, FactionRankDef, SkillId } from
  * Nine factions, six of them joinable career tracks. Requirements are attribute
  * and skill floors plus faction reputation, exactly as the series does it: you
  * are not promoted for finishing quests alone, you are promoted when you are
- * *actually good enough*, which is why a Telvanni mouth can be a better mage
+ * *actually good enough*, which is why a Vaelmyr mouth can be a better mage
  * than an Arch-Mage's errand runner and the game never says so out loud.
  */
 
@@ -31,9 +31,9 @@ function ranks(
 export const FACTIONS = {
   fighters: {
     id: 'fighters',
-    name: 'Fighters Guild',
+    name: 'Ironring',
     blurb:
-      'Imperial-chartered, paid by contract, and — say the Houses — a militia the Empire keeps in Morrowind under another name.',
+      'Valmori-chartered, paid by contract, and — say the Houses — a militia the Concord keeps in Vethmar under another name.',
     ranks: ranks(
       ['Associate', 'Apprentice', 'Journeyman', 'Swordsman', 'Protector', 'Defender', 'Warder', 'Guardian', 'Champion'],
       'strength',
@@ -48,9 +48,9 @@ export const FACTIONS = {
   },
   mages: {
     id: 'mages',
-    name: 'Mages Guild',
+    name: 'Ashen Conclave',
     blurb:
-      'Also Imperial-chartered, and openly resented by House Telvanni, who consider a guild licence an insult to the idea of a wizard.',
+      'Also Valmori-chartered, and openly resented by House Vaelmyr, who consider a guild licence an insult to the idea of a wizard.',
     ranks: ranks(
       ['Associate', 'Apprentice', 'Journeyman', 'Evoker', 'Conjurer', 'Magician', 'Warlock', 'Wizard', 'Arch-Mage'],
       'intelligence',
@@ -65,7 +65,7 @@ export const FACTIONS = {
   },
   thieves: {
     id: 'thieves',
-    name: 'Thieves Guild',
+    name: 'Quiet Hand',
     blurb:
       'Has no hall, no charter and no name it will admit to. Ask about it in the wrong room and nobody has heard of it.',
     ranks: ranks(
@@ -82,8 +82,8 @@ export const FACTIONS = {
   },
   hlaalu: {
     id: 'hlaalu',
-    name: 'House Hlaalu',
-    blurb: 'Merchants. Hlaalu prospered under the Empire and will prosper after it, and says so without embarrassment.',
+    name: 'House Varo',
+    blurb: 'Merchants. Varo prospered under the Concord and will prosper after it, and says so without embarrassment.',
     ranks: ranks(
       ['Hireling', 'Retainer', 'Oathman', 'Lawman', 'Kinsman', 'House Cousin', 'House Brother', 'House Father', 'Grandmaster'],
       'personality',
@@ -98,8 +98,8 @@ export const FACTIONS = {
   },
   redoran: {
     id: 'redoran',
-    name: 'House Redoran',
-    blurb: 'Duty, honour, and a long memory. Redoran holds the ash-frontier and considers that a moral position.',
+    name: 'House Korran',
+    blurb: 'Duty, honour, and a long memory. Korran holds the ash-frontier and considers that a moral position.',
     ranks: ranks(
       ['Hireling', 'Retainer', 'Oathman', 'Lawman', 'Kinsman', 'House Cousin', 'House Brother', 'House Father', 'Archmaster'],
       'strength',
@@ -114,8 +114,8 @@ export const FACTIONS = {
   },
   telvanni: {
     id: 'telvanni',
-    name: 'House Telvanni',
-    blurb: 'Wizards in towers they grew themselves. Telvanni law is that the strong do as they like and the rest are furniture.',
+    name: 'House Vaelmyr',
+    blurb: 'Wizards in towers they grew themselves. Vaelmyr law is that the strong do as they like and the rest are furniture.',
     ranks: ranks(
       ['Hireling', 'Retainer', 'Oathman', 'Lawman', 'Mouth', 'Spellwright', 'Wizard', 'Master', 'Archmagister'],
       'intelligence',
@@ -130,7 +130,7 @@ export const FACTIONS = {
   },
   temple: {
     id: 'temple',
-    name: 'Tribunal Temple',
+    name: 'Temple of the Trine',
     blurb: 'The faith of the three, in the long century since the three stopped answering. Its curates preach continuity very loudly.',
     ranks: ranks(
       ['Layman', 'Novice', 'Initiate', 'Acolyte', 'Adept', 'Curate', 'Disciple', 'Diviner', 'Patriarch'],
@@ -146,10 +146,10 @@ export const FACTIONS = {
   },
   ashlanders: {
     id: 'ashlanders',
-    name: 'Shirenamat Ashlanders',
+    name: 'Shirenamat Shirenamat',
     blurb: 'Nomads of the ash. They kept the old prophecies while the Temple was busy editing them.',
     ranks: ranks(
-      ['Outlander', 'Clanfriend', 'Hearth-Guest', 'Herdsman', 'Gulakhan', 'Champion', 'Farseer', 'Wise Companion', 'Nerevarine'],
+      ['Outlander', 'Clanfriend', 'Hearth-Guest', 'Herdsman', 'Gulakhan', 'Champion', 'Farseer', 'Wise Companion', 'Veyrane'],
       'endurance',
       'agility',
       ['spear', 'marksman', 'athletics', 'unarmored'],
@@ -162,10 +162,10 @@ export const FACTIONS = {
   },
   legion: {
     id: 'legion',
-    name: 'Imperial Legion',
+    name: 'Valmori Cohort',
     blurb: 'Garrison, customs house and law court. Nobody in Ald Sethis loves them and everybody pays them.',
     ranks: ranks(
-      ['Recruit', 'Spearman', 'Trooper', 'Agent', 'Champion', 'Knight Errant', 'Knight Bachelor', 'Knight Protector', 'Knight of the Imperial Dragon'],
+      ['Recruit', 'Spearman', 'Trooper', 'Agent', 'Champion', 'Knight Errant', 'Knight Bachelor', 'Knight Protector', 'Knight of the Valmori Dragon'],
       'endurance',
       'personality',
       ['longBlade', 'heavyArmor', 'block', 'speechcraft'],

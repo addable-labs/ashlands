@@ -185,7 +185,7 @@ function capSample(u: number, t: number, out: Sample): void {
   out.r = l * 0.84 + 0.105;
   out.g = l * 0.76 + 0.082;
   out.bl = l * 0.62 + 0.060;
-  // Violet blush in the deeper ring valleys — Vvardenfell parasols are not
+  // Violet blush in the deeper ring valleys — Ashenreach parasols are not
   // uniformly tan, and this is where the only non-ochre hue is allowed. Tied to
   // the mottle so the blush pools in patches instead of following every ring.
   // Halved with the desaturation above: a magenta lift on a band that is now

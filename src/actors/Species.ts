@@ -63,7 +63,7 @@ export interface SpeciesDef {
   maxHealth: number;
   faction: string;
   scaleRange: [number, number];
-  /** LOD distance multiplier — a strider stays skinned far longer than a kwama. */
+  /** LOD distance multiplier — a strider stays skinned far longer than a morvek. */
   lodScale: number;
   /** Cruise altitude above terrain for flyers and drifters. */
   altitude?: [number, number];
@@ -78,18 +78,18 @@ export interface SpeciesDef {
    * This is a composition parameter, not a performance one. On-screen height is
    * `framedSize / (distance * pixelWorld)`, so distance is the only thing that
    * decides whether a creature reads as a mass with material response or as an
-   * unresolvable smudge — and the answer is different for a 0.5 m kwama and a
-   * 20 m silt strider. Bands are therefore authored per species against the
+   * unresolvable smudge — and the answer is different for a 0.5 m morvek and a
+   * 20 m fenwalker. Bands are therefore authored per species against the
    * role the animal plays in the frame:
    *
-   *   landmark   silt strider, netch — must subtend enough of the frame to be
+   *   landmark   fenwalker, skerrin — must subtend enough of the frame to be
    *              read as architecture-scale. Staged in the midground.
-   *   midground  guar, cliff racer — mass and silhouette, no surface detail.
-   *   near       kwama, nix-hound, dunmer — small, so they have to be close
+   *   midground  drell, ash shrike — mass and silhouette, no surface detail.
+   *   near       morvek, glassjaw, dunmer — small, so they have to be close
    *              enough to resolve at all or they contribute nothing.
    *
    * The old scheme placed everything in one 40–420 m band regardless of size,
-   * which is how a 15 m netch ended up at 450 m as a thirty-pixel cream blob
+   * which is how a 15 m skerrin ended up at 450 m as a thirty-pixel cream blob
    * with no shading, no texture and no silhouette — the exact defect the art
    * bible calls a placeholder.
    */
@@ -122,11 +122,11 @@ export class ModelBuilder {
     // One group per MATERIAL, not one per `use()` call.
     //
     // three issues a draw per geometry group, even when two groups resolve to
-    // the same material index — so a silt strider authored as ten body parts
+    // the same material index — so a fenwalker authored as ten body parts
     // was ten draw calls in the scene pass, ten more in the depth prepass and
     // ten more in every shadow cascade it fell inside. Sorting the index buffer
     // by material first collapses that to one group per material (strider 10 ->
-    // 4, guar 6 -> 4, cliff racer 5 -> 3) for exactly the same pixels: triangle
+    // 4, drell 6 -> 4, ash shrike 5 -> 3) for exactly the same pixels: triangle
     // order within an opaque, depth-tested mesh is not observable.
     const keys: string[] = [];
     for (const g of this.groups) if (!keys.includes(g.key)) keys.push(g.key);
@@ -223,7 +223,7 @@ function insectLeg(mb: ModelBuilder, pts: V3[], radii: number[], bows: V3[]): vo
   }
 }
 
-/* ------------------------------------------------------------ cliff racer */
+/* ------------------------------------------------------------ ash shrike */
 
 function cliffRacer(): SpeciesDef {
   const bones: BoneDef[] = [
@@ -240,7 +240,7 @@ function cliffRacer(): SpeciesDef {
   bonePair(bones, 'wingC', (s) => `wingB.${s}`, [1.02, 0.34, -0.2], [1.38, 0.22, -0.46], 0.46, 0.9);
 
   return {
-    kind: 'cliffracer',
+    kind: 'ashshrike',
     bones,
     materials: {
       hide: { kind: 'chitin', color: 0x6d5941, irid: 0.28, sheen: 0.45, sss: 0.25, sssColor: 0x9c4a28, rough: 0.62, texel: 4 },
@@ -371,9 +371,9 @@ function cliffRacer(): SpeciesDef {
   };
 }
 
-/* ------------------------------------------------------------------ netch */
+/* ------------------------------------------------------------------ skerrin */
 
-function netch(): SpeciesDef {
+function skerrin(): SpeciesDef {
   const bones: BoneDef[] = [
     { name: 'root', parent: null, head: [0, 0, 0], tail: [0, 1.0, 0], r: 1.2 },
     { name: 'bell', parent: 'root', head: [0, 0.4, 0], tail: [0, 2.2, 0], r: 5.0 },
@@ -409,7 +409,7 @@ function netch(): SpeciesDef {
   }
 
   return {
-    kind: 'netch',
+    kind: 'skerrin',
     bones,
     materials: {
       // The bell is the reason netches are the signature creature: a huge
@@ -429,7 +429,7 @@ function netch(): SpeciesDef {
       //
       // Albedo sits at the TOP of the ash band (#8a7f72), never above it. At
       // 0x949a8b the bell was 1.4x brighter than the brightest ground value in
-      // the palette, which made a drifting netch the single brightest object in
+      // the palette, which made a drifting skerrin the single brightest object in
       // the lower two-thirds of every frame it appeared in — the eye went
       // straight to it and read it as an untextured placeholder. The animal is
       // supposed to be lit from INSIDE: the transmission term below is not
@@ -516,7 +516,7 @@ function netch(): SpeciesDef {
           wear: 0.08 + 0.5 * Math.max(0, -bladder(u * Math.PI * 2) / 0.077),
         }),
       });
-      // Dorsal crest — the bull netch's fin, catching the sun edge-on.
+      // Dorsal crest — the bull skerrin's fin, catching the sun edge-on.
       //
       // IT MUST NOT BE PLANAR, and that is the whole of this rewrite. Both edges
       // used to be authored at x = 0, so the sheet between them was a flat plane
@@ -683,9 +683,9 @@ function netch(): SpeciesDef {
   };
 }
 
-/* -------------------------------------------------------- kwama forager */
+/* -------------------------------------------------------- morvek forager */
 
-function kwama(): SpeciesDef {
+function morvek(): SpeciesDef {
   const bones: BoneDef[] = [
     { name: 'root', parent: null, head: [0, 0.3, 0], tail: [0, 0.3, -0.3], r: 0.42 },
     { name: 'abdomen', parent: 'root', head: [0, 0.3, -0.14], tail: [0, 0.26, -0.55], r: 0.42 },
@@ -724,7 +724,7 @@ function kwama(): SpeciesDef {
   });
 
   return {
-    kind: 'kwama',
+    kind: 'morvek',
     bones,
     materials: {
       // Chitin sits in the palette's chitin/bone band (#d8c9a4 -> #8f7d5a). A
@@ -756,7 +756,7 @@ function kwama(): SpeciesDef {
       // are supposed to be plating crowns at y≈0.58 — twenty centimetres inside
       // it on a half-metre animal — so every one of them was buried and the
       // review correctly measured the result as a featureless dome. Same class
-      // of error as the silt strider's carapace, and the same fix: derive the
+      // of error as the fenwalker's carapace, and the same fix: derive the
       // plate's height from the body's own profile so it cannot drift out of
       // register with it.
       const shellY = (z: number): number => {
@@ -856,7 +856,7 @@ function kwama(): SpeciesDef {
   };
 }
 
-/* ------------------------------------------------------------- nix-hound */
+/* ------------------------------------------------------------- glassjaw */
 
 function nixHound(): SpeciesDef {
   const bones: BoneDef[] = [
@@ -896,7 +896,7 @@ function nixHound(): SpeciesDef {
   });
 
   return {
-    kind: 'nixhound',
+    kind: 'glassjaw',
     bones,
     materials: {
       shell: { kind: 'chitin', color: 0x8a7a58, irid: 0.55, sheen: 0.65, sss: 0.15, sssColor: 0xb06a34, rough: 0.34, texel: 5 },
@@ -992,9 +992,9 @@ function nixHound(): SpeciesDef {
   };
 }
 
-/* ------------------------------------------------------------------- guar */
+/* ------------------------------------------------------------------- drell */
 
-function guar(): SpeciesDef {
+function drell(): SpeciesDef {
   const bones: BoneDef[] = [
     { name: 'root', parent: null, head: [0, 1.02, -0.1], tail: [0, 1.05, 0.25], r: 0.75 },
     { name: 'spine', parent: 'root', head: [0, 1.04, 0.1], tail: [0, 1.12, 0.5], r: 0.7 },
@@ -1031,7 +1031,7 @@ function guar(): SpeciesDef {
   }
 
   return {
-    kind: 'guar',
+    kind: 'drell',
     bones,
     materials: {
       hide: { kind: 'hide', color: 0x776b5a, irid: 0.14, sheen: 0.2, sss: 0.5, sssColor: 0xc07a48, rough: 0.8, texel: 4 },
@@ -1091,7 +1091,7 @@ function guar(): SpeciesDef {
         spike(mb.b, [0.12 * s, 1.53, 1.34], [0.19 * s, 1.63, 1.44], 0.022, 0.01, M_HARD);
         mb.b.setMask(M_HARD);
       }
-      // Dorsal frill down the spine — the guar's readable top line.
+      // Dorsal frill down the spine — the drell's readable top line.
       mb.use('horn', M_THIN);
       // Dorsal frill: a narrow sail that follows the back line and dies away
       // into the tail. It reads on the silhouette; any taller and the animal
@@ -1155,7 +1155,7 @@ function guar(): SpeciesDef {
   };
 }
 
-/* ------------------------------------------------------------ silt strider */
+/* ------------------------------------------------------------ fenwalker */
 
 /**
  * The set piece. A flea the size of a building: a hollowed chitin shell on six
@@ -1205,7 +1205,7 @@ function siltStrider(): SpeciesDef {
   });
 
   return {
-    kind: 'siltstrider',
+    kind: 'fenwalker',
     bones,
     materials: {
       shell: { kind: 'chitin', color: 0xa08d68, irid: 0.4, sheen: 0.5, sss: 0.2, sssColor: 0xc07a40, rough: 0.4, texel: 1.1 },
@@ -1255,7 +1255,7 @@ function siltStrider(): SpeciesDef {
 
       // ------------------------------------------------------- the carapace
       //
-      // The one silhouette note that makes a silt strider a silt strider is the
+      // The one silhouette note that makes a fenwalker a fenwalker is the
       // high domed shell over the thorax. It had been authored as six plate
       // blobs whose peak sits at Y+2.9 — INSIDE the body tube, whose own crown
       // is at Y+3.4 — so not one of them broke the outline and the animal read,
@@ -1463,7 +1463,7 @@ function dunmer(): SpeciesDef {
     },
     build(mb) {
       // Head, hands and forearms are skin; everything else is a robe, which is
-      // both correct for a Dunmer commoner and cheap to deform well.
+      // both correct for a Cindren commoner and cheap to deform well.
       mb.use('skin', { trans: 0.4, irid: 0, wear: 0.1 });
       blob(mb.b, {
         centre: [0, 1.71, 0.01],
@@ -1575,7 +1575,7 @@ let cache: Map<string, SpeciesDef> | null = null;
 
 export function bestiary(): Map<string, SpeciesDef> {
   if (cache !== null) return cache;
-  const list = [cliffRacer(), netch(), kwama(), nixHound(), guar(), siltStrider(), dunmer()];
+  const list = [cliffRacer(), skerrin(), morvek(), nixHound(), drell(), siltStrider(), dunmer()];
   cache = new Map(list.map((s) => [s.kind, s]));
   return cache;
 }

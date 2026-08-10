@@ -403,7 +403,7 @@ export interface MembraneOpts {
    * blend of two curves, so its normal is pinned to the plane those curves span
    * and a sheet whose edges are both authored flat has one constant normal over
    * its entire area. That is not a subtle shading error — it is a hard-edged
-   * uniform-value plate stuck on the model, which is exactly what the netch's
+   * uniform-value plate stuck on the model, which is exactly what the skerrin's
    * dorsal crest was. Curvature has to come from somewhere, and a ruled surface
    * cannot supply it; this is where it comes from.
    *
@@ -422,7 +422,7 @@ const _mb = new THREE.Vector3();
 const _mbow = new THREE.Vector3();
 
 /**
- * A thin sheet stretched between two edges — wing membranes, netch fins, the
+ * A thin sheet stretched between two edges — wing membranes, skerrin fins, the
  * scalloped hem of a robe. Given real thickness rather than a plane: a
  * zero-volume sheet self-shadows into z-fighting stripes at grazing sun.
  */
@@ -462,7 +462,7 @@ export function membrane(b: SurfaceBuilder, o: MembraneOpts): void {
       out.y -= sag * rim;
 
       // Thickness has to go along the sheet's OWN normal, not along Y. Offsetting
-      // a vertical fin — a guar's dorsal frill, a netch crest, a Dunmer ear —
+      // a vertical fin — a drell's dorsal frill, a skerrin crest, a Cindren ear —
       // along Y turns it into a horizontal plate, which is exactly what a wing
       // membrane must not become.
       surf(Math.max(0, u - H), s, _t1);

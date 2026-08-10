@@ -76,7 +76,7 @@ export interface RestResult {
 
 /* ------------------------------------------------------------- constants */
 
-/** Metres. Something hostile inside this refuses sleep, as it does in Vvardenfell. */
+/** Metres. Something hostile inside this refuses sleep, as it does in Ashenreach. */
 export const REST_HOSTILE_RADIUS = 30;
 
 /** Seconds after the last blow — struck or taken — before you can lie down. */
@@ -152,7 +152,7 @@ const HOSTILE_FACTIONS: ReadonlySet<string> = new Set(['predator', 'daedra', 'un
 /**
  * Whether an actor blocks rest. Faction is the standing case; `provoked` covers
  * anything you have personally picked a fight with, whatever its nature — a
- * guar you decided to rob is as much a reason to stay awake as a nix-hound.
+ * drell you decided to rob is as much a reason to stay awake as a glassjaw.
  */
 export function blocksRest(faction: string, provoked: boolean): boolean {
   return provoked || HOSTILE_FACTIONS.has(faction);

@@ -115,7 +115,7 @@ const TARGETS = {
    * Stated as the 99.9th PERCENTILE of saturation rather than as the fraction
    * of the frame above a threshold, because a fraction confounds two different
    * things: whether the grade preserves an accent, and how much emissive area
-   * this particular vantage happens to contain. Red Mountain seen from six
+   * this particular vantage happens to contain. Ember Mount seen from six
    * kilometres has a few hundred pixels of lava in it and a coastal vantage at
    * dusk has one glow-cap; a fraction target calls both failures while a
    * percentile asks the question actually being asked — when this frame's most

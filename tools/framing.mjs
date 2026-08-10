@@ -39,7 +39,7 @@ export const FRAMING_FN = `
     return Math.acos(Math.max(-1, Math.min(1, n.y)));
   };
 
-  // Highest point on the map — the Red Mountain summit, our primary landmark.
+  // Highest point on the map — the Ember Mount summit, our primary landmark.
   let peak = pts[0];
   for (const p of pts) if (p.h > peak.h) peak = p;
 
@@ -79,7 +79,7 @@ export const FRAMING_FN = `
   const flat = (p) => 1 - Math.min(1, slopeAt(p.x, p.z) / 0.6);
 
   // Fixed pitch angles were decapitating the subject: the mountain ran off the
-  // top of frame, the Telvanni tower was cropped, and the "high vantage" shot
+  // top of frame, the Vaelmyr tower was cropped, and the "high vantage" shot
   // held no horizon at all. Aim at the subject instead and place it deliberately
   // in frame. \`frac\` is where the target should sit vertically, 0 = top edge,
   // 0.5 = centre, 1 = bottom edge.
@@ -139,7 +139,7 @@ export const FRAMING_FN = `
       // TRIED AND REVERTED: framing coast so it actually contains water.
       //
       // This vantage holds almost no water -- a sliver at the horizon, with dry
-      // mushroom ground and a Telvanni tower filling the frame -- against a
+      // mushroom ground and a Vaelmyr tower filling the frame -- against a
       // declared intent naming shoreline, water shading, foam, wet sand and sun
       // glint. That looks exactly like the framing bugs found in ridge and
       // underwater, and coast is also the one shot failing the palette check, so

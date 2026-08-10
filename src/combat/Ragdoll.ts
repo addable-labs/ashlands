@@ -10,7 +10,7 @@ import type { ActorLike } from './Targets';
  * whole thing is one particle per bone, Verlet integration, and three kinds of
  * constraint — distance along each bone, a cone limit at each joint, and a
  * damped twist about each bone's own axis. Twenty iterations of that over a
- * forty-bone silt strider costs less than the skinning pass that draws it, and
+ * forty-bone fenwalker costs less than the skinning pass that draws it, and
  * it cannot explode, because PBD projects positions rather than integrating
  * forces.
  *

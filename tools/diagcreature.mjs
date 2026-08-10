@@ -1,9 +1,9 @@
 /**
  * Creature viewer. Spawns one of a species in front of the camera and shoots it
- * from a few angles, including a backlit one — the read the netch lives or dies
+ * from a few angles, including a backlit one — the read the skerrin lives or dies
  * on.
  *
- *   node tools/diagcreature.mjs netch [--tag before]
+ *   node tools/diagcreature.mjs skerrin [--tag before]
  */
 import { launch } from 'puppeteer-core';
 import { spawn } from 'node:child_process';
@@ -13,7 +13,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 const URL = 'http://127.0.0.1:5178/';
 const argv = process.argv.slice(2);
 const flag = (n, d) => { const i = argv.indexOf(`--${n}`); return i < 0 ? d : argv[i + 1]; };
-const KIND = argv.find((a) => !a.startsWith('--')) ?? 'netch';
+const KIND = argv.find((a) => !a.startsWith('--')) ?? 'skerrin';
 const TAG = flag('tag', 'creature');
 
 async function up() { try { return (await fetch(URL, { signal: AbortSignal.timeout(800) })).ok; } catch { return false; } }

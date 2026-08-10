@@ -169,7 +169,7 @@ export function initBrain(brain: Brain, def: SpeciesDef, pos: THREE.Vector3, see
 /**
  * Choose a desired world velocity for this frame. The caller integrates it with
  * the species' own acceleration and turn limits, which is where the difference
- * between a kwama and a silt strider actually lives.
+ * between a morvek and a fenwalker actually lives.
  */
 export function steer(
   outVel: THREE.Vector3,
@@ -191,7 +191,7 @@ export function steer(
   if (playerDist < fleeRange * 2.2) wantAlarm = THREE.MathUtils.clamp(1 - playerDist / (fleeRange * 2.2), 0, 1);
   brain.alarm += (wantAlarm - brain.alarm) * Math.min(1, dt * 1.6);
 
-  if (skittish && playerDist < fleeRange && def.locomotion === 'ground' && def.kind !== 'siltstrider') {
+  if (skittish && playerDist < fleeRange && def.locomotion === 'ground' && def.kind !== 'fenwalker') {
     brain.behaviour = 'flee';
     brain.timer = 2.5;
   } else if (def.faction === 'predator' && playerDist < 48 && playerDist > 3) {
@@ -208,7 +208,7 @@ export function steer(
       if (brain.behaviour === 'dive') brain.timer = 2.2 + r * 2;
       if (brain.behaviour === 'circle') {
         brain.altitude = def.altitude![0] + r * (def.altitude![1] - def.altitude![0]);
-        // Cliff racers do not orbit one spot forever; the centre wanders.
+        // Ash shrikes do not orbit one spot forever; the centre wanders.
         brain.home.x += (r - 0.5) * 140;
         brain.home.z += (rand(brain.seed, w.time | 0) - 0.5) * 140;
         const e = w.terrain.extent - 200;
@@ -291,7 +291,7 @@ export function steer(
         const d = _v.length();
         if (d > 1e-3) outVel.copy(_v).multiplyScalar(1 / d);
         // Predators stalk, then commit. The lull below 12 m is what makes a
-        // nix-hound look like it is choosing a moment.
+        // glassjaw look like it is choosing a moment.
         speed = d > 14 ? def.runSpeed : def.walkSpeed * 1.3;
         if (d < 4) speed = 0;
       }

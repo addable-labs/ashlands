@@ -456,7 +456,7 @@ function planLandmarks(
 
   // Forced: a ring of great towers in the approach to the mountain.
   //
-  // NOT on the summit's own shoulder. Red Mountain is kilometres across, so a
+  // NOT on the summit's own shoulder. Ember Mount is kilometres across, so a
   // tower "near the peak" sits three kilometres from anywhere a camera stands
   // and resolves to a dark speck pasted on the cone — measured, and it is the
   // frame the review rejected twice.
@@ -665,7 +665,7 @@ function planLandmarks(
             // Kind follows the demand, which also keeps the horizon from
             // becoming a mushroom farm: where a site only needs forty metres to
             // stand clear, cyclopean basalt is both the cheaper asset and the
-            // better read, and Vvardenfell is not Telvanni everywhere.
+            // better read, and Ashenreach is not Vaelmyr everywhere.
             const height = demand <= 46 ? Math.min(70, Math.max(40, demand)) : Math.min(135, Math.max(72, demand));
             // Prefer sites that need the LEAST help, then prominence, then
             // proximity. A short tower that works beats a tall one propped up
@@ -680,7 +680,7 @@ function planLandmarks(
           if (best) {
             // Kind follows demand, then a stable per-site roll so the horizon
             // is not one idea repeated: a low site takes cyclopean basalt or a
-            // fallen Dwemer machine, a tall one takes a Telvanni tower.
+            // fallen Deshan machine, a tall one takes a Vaelmyr tower.
             const kind: LandmarkKind =
               bestH <= 70 ? (((best.x * 31 + best.z * 17) & 3) === 0 ? 'dwemer' : 'daedric') : 'telvanni';
             commit(best, kind, bestH);
@@ -705,7 +705,7 @@ function planLandmarks(
     // hill, and the frame comes back with no culturally identifiable object in
     // it for the third review running.
     //
-    // What Vvardenfell puts there is a sea rock. A shoal a couple of hundred
+    // What Ashenreach puts there is a sea rock. A shoal a couple of hundred
     // metres out, a battered basalt stack on it, a tower grown out of that: it
     // is the canonical image, it is the only thing that can occupy this frame
     // at a MIDGROUND distance rather than looming off the beach, and it costs

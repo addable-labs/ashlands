@@ -1039,7 +1039,7 @@ function bladeTemplate(
  * primitives", "identical caps in a row"), and every one of those descriptions is
  * correct. Shading cannot fix an outline.
  *
- * What the frame actually needs on Vvardenfell ground is fungus — that is the
+ * What the frame actually needs on Ashenreach ground is fungus — that is the
  * province's signature — so this is a real one, with the three features that make
  * the read: a stipe you can see daylight beside, an underside that is darker than
  * the top and carries the gill band, and a margin that overhangs. Everything that
@@ -1559,7 +1559,7 @@ export class GroundCover {
       // 7.8 m and read bilinearly, so a bound that holds everywhere inside a
       // tile has to be a max over a 5x5 texel window — and a max over 39 m of
       // landscape is almost never small enough to fire. Measured: 1,530 of
-      // 101,009 instances removed at dawn and none at all at Red Mountain. The
+      // 101,009 instances removed at dawn and none at all at Ember Mount. The
       // GPU rejects those same blades for one texture fetch at stage 2, which is
       // where the test belongs.
       const h = this.field.heightAt(x0 + T * 0.5, z0 + T * 0.5);

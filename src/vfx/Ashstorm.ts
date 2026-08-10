@@ -175,7 +175,7 @@ void main() {
   //
   // THE CEILING IS LOAD-BEARING AND IT IS NOT 20.
   //
-  // A Vvardenfell ash storm blows at forty metres a second. At half a metre from
+  // A Ashenreach ash storm blows at forty metres a second. At half a metre from
   // the lens that is a smear of well over a hundred pixels, so every near grain
   // pinned itself to the old clamp of 20x — and since a streak's opacity is
   // divided by sqrt(elong) to conserve flux over the area it gained, the entire
@@ -380,7 +380,7 @@ export interface StreakOpts {
    * Fraction of the wind the grains are ADVECTED at. Not a fudge, and not the
    * same number as the wind the streaks are stretched by.
    *
-   * A Vvardenfell gale runs at forty-five metres a second. A grain two metres
+   * A Ashenreach gale runs at forty-five metres a second. A grain two metres
    * from the lens therefore crosses the entire frame in a tenth of a second,
    * which means that at any frame rate the renderer actually achieves it lands
    * in a completely different place every frame — and a temporal resolve

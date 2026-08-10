@@ -42,7 +42,7 @@ function makeSpellDef(
   return { id, name, kind, effects, cost: spellCost(effects), autoCost: true, custom: false };
 }
 
-/** The spells a fresh character can plausibly have bought in Seyda Neen. */
+/** The spells a fresh character can plausibly have bought in Lowmarsh. */
 export const STARTER_SPELLS: readonly Spell[] = [
   makeSpellDef('spell:fireBite', 'Fire Bite', [eff('fireDamage', 5, 15, 0, 'touch')]),
   makeSpellDef('spell:flameOfAnger', 'Flame of Anger', [eff('fireDamage', 8, 20, 0, 'target')]),
@@ -73,7 +73,7 @@ export const STARTER_SPELLS: readonly Spell[] = [
   makeSpellDef('spell:demoralize', 'Fearful Gaze', [eff('demoralizeHumanoid', 20, 20, 20, 'target')]),
   makeSpellDef('spell:paralyze', 'Paralysis', [eff('paralyze', 0, 0, 8, 'target')]),
   makeSpellDef('spell:dispel', 'Dispel', [eff('dispel', 40, 40, 0, 'self')]),
-  makeSpellDef('spell:almsivi', 'Almsivi Intervention', [eff('almsiviIntervention', 0, 0, 0, 'self')]),
+  makeSpellDef('spell:almsivi', 'Trine Intervention', [eff('almsiviIntervention', 0, 0, 0, 'self')]),
   makeSpellDef('spell:divine', 'Divine Intervention', [eff('divineIntervention', 0, 0, 0, 'self')]),
 ];
 

@@ -120,7 +120,7 @@ record('AudioContext running', ctxState.state === 'running' || ctxState.tapped,
  *
  * Level, centroid and flatness come from the whole window. Harmonicity does
  * not: it is computed per 400 ms sub-window and reported as a percentile,
- * because a cliff racer screech is four short events inside a three-second
+ * because a ash shrike screech is four short events inside a three-second
  * window and averaging its spectrum with the silence between the cries buries
  * the very thing we are trying to detect.
  *
@@ -161,7 +161,7 @@ const listen = (ms) => page.evaluate(async (ms) => {
     //
     // This matters more than it looks. Ring modulation, formant filtering and
     // any bandpassed voice routinely produce a spectrum whose lowest present
-    // partial is well above the fundamental — the cliff racer's carrier sits at
+    // partial is well above the fundamental — the ash shrike's carrier sits at
     // 5x its modulator, so its series runs 4,5,6, 9,10,11 x f0 with nothing at
     // all at f0, 2f0 or 3f0. Scoring "is harmonic h present?" over h = 1..12
     // regardless marks half the slots absent by construction and reports a
@@ -379,18 +379,18 @@ await trial('spell', 'spell cast', () => {
 
 await trial('melee', 'melee swing + impact', async () => {
   const c = window.engine.ctx, A = c.get('actors'), p = c.get('player');
-  const t = A.all().find((x) => x.alive && ['kwama', 'guar', 'nixhound'].includes(x.kind));
+  const t = A.all().find((x) => x.alive && ['morvek', 'drell', 'glassjaw'].includes(x.kind));
   if (t) { p.teleport(t.position.x + 1.5, t.position.z, 0.2);
     A.damage(t, 5, new (t.position.constructor)(1, 0, 0)); }
   c.get('combat')?.equip?.(0);
 }, 2400);
 
-// The cliff racer screech is the one creature sound the series is known for and
+// The ash shrike screech is the one creature sound the series is known for and
 // it is a pitched shriek, so it is fired directly rather than hoping one
 // wanders into earshot.
 await trial('creature', 'creature calls', () => {
   const c = window.engine.ctx, a = c.get('audio');
-  const emit = () => a?.creature?.('cliffracer', 'alert', null);
+  const emit = () => a?.creature?.('ashshrike', 'alert', null);
   emit();
   for (let i = 1; i < 3; i++) setTimeout(emit, i * 1400);
 }, 4000, 0);

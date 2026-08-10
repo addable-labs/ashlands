@@ -30,7 +30,7 @@ const gatheringStage = (
  *
  * Each verse has at least three doors and none of them is another quest. The
  * Verse of Name used to be reachable only by finishing The Hollow Star and the
- * Verse of Deed only by killing a man who is the subject of a Fighters Guild
+ * Verse of Deed only by killing a man who is the subject of a Ironring
  * contract — so a player who had done neither had a chapter of the main quest
  * with no way through it, and a player who took the one Deed door available
  * destroyed a guild quest they had not been offered yet.
@@ -92,7 +92,7 @@ const verseDoors = (here: number, next: number): PathDef[] => [
     },
   },
 
-  /* ------------------------------------- Verse of Blood: in the Telvanni library */
+  /* ------------------------------------- Verse of Blood: in the Vaelmyr library */
   {
     id: 'blood_spore',
     label: 'Fetch Nevena Telvo her gallery spore',
@@ -117,7 +117,7 @@ const verseDoors = (here: number, next: number): PathDef[] => [
   },
   {
     id: 'blood_copy',
-    label: 'Have the Mages Guild copy the Telvanni page',
+    label: 'Have the Ashen Conclave copy the Vaelmyr page',
     kind: 'talk',
     when: [{ k: 'not', of: { k: 'item', v: 'verse_blood' } }, { k: 'faction', v: 'mages' }],
     to: next,
@@ -150,7 +150,7 @@ const verseDoors = (here: number, next: number): PathDef[] => [
     },
   },
 
-  /* ----------------------------------- Verse of Name: the Ashlanders keep it */
+  /* ----------------------------------- Verse of Name: the Shirenamat keep it */
   {
     id: 'name_trial',
     label: 'Claim the Verse of Name as clanfriend',
@@ -346,7 +346,7 @@ const trialDoors = (here: number, next: number): PathDef[] => [
   },
   {
     id: 'deed_hunt',
-    label: 'Trial of Deed — the cliff racer that has been taking the herd-boys',
+    label: 'Trial of Deed — the ash shrike that has been taking the herd-boys',
     kind: 'fight',
     when: [{ k: 'not', of: { k: 'flag', v: 'trial_deed' } }],
     skill: 'marksman',
@@ -431,7 +431,7 @@ export const QUESTS = {
       {
         n: 20,
         journal:
-          'Seryn Othrelas gave me a packet sealed with ash-wax. She was to carry it to a wise woman called Zabamat at the Ashlander camp of Shirenamat, and she says whoever stopped her on the road wanted the packet and not her purse. She would not say more, and I am not sure she knows more.',
+          'Seryn Othrelas gave me a packet sealed with ash-wax. She was to carry it to a wise woman called Zabamat at the Shirenamat camp of Shirenamat, and she says whoever stopped her on the road wanted the packet and not her purse. She would not say more, and I am not sure she knows more.',
         paths: [
           {
             id: 'carry',
@@ -508,7 +508,7 @@ export const QUESTS = {
       {
         n: 30,
         journal:
-          'I have the packet and the road to Shirenamat. The camp lies out on the ash flats where the wind carries clean, and the Ashlanders do not post a gate because they do not need one.',
+          'I have the packet and the road to Shirenamat. The camp lies out on the ash flats where the wind carries clean, and the Shirenamat do not post a gate because they do not need one.',
         // Second dead end: arriving at the camp had no exit either, for the same
         // reason — the handover was authored only as a line of dialogue.
         paths: [
@@ -551,7 +551,7 @@ export const QUESTS = {
       gatheringStage(
         10,
         11,
-        'Zabamat wants the four verses of the Ash-Wake brought together: Ash, Blood, Name and Deed. The Verse of Ash is at the shrine in Ald Sethis, though the Temple denies holding it. The Verse of Blood is in the Telvanni library at Tel Muran. The Verse of Name belongs to the Ashlanders and must be earned. The Verse of Deed was sold to a smuggler for forty drakes, which she told me twice.',
+        'Zabamat wants the four verses of the Ash-Wake brought together: Ash, Blood, Name and Deed. The Verse of Ash is at the shrine in Ald Sethis, though the Temple denies holding it. The Verse of Blood is in the Vaelmyr library at Tel Muran. The Verse of Name belongs to the Shirenamat and must be earned. The Verse of Deed was sold to a smuggler for forty drakes, which she told me twice.',
         verseDoors,
       ),
       gatheringStage(
@@ -769,7 +769,7 @@ export const QUESTS = {
           },
           {
             id: 'publish',
-            label: 'Have the Mages Guild copy and circulate it',
+            label: 'Have the Ashen Conclave copy and circulate it',
             kind: 'trade',
             when: [{ k: 'faction', v: 'mages' }],
             to: 33,
@@ -791,19 +791,19 @@ export const QUESTS = {
       {
         n: 31,
         journal:
-          'Madrel Vandas is gone north with the codex under his coat and a Redoran ash-watch escort I did not arrange and he will not explain. The Temple knows a name and no longer knows a face.',
+          'Madrel Vandas is gone north with the codex under his coat and a Korran ash-watch escort I did not arrange and he will not explain. The Temple knows a name and no longer knows a face.',
         finished: true,
       },
       {
         n: 32,
         journal:
-          'I was too slow, or too loud. The Ordinators took Madrel Vandas out of the shrine before the fourth bell and nobody in Ald Sethis saw it happen, which is not the same as nobody knowing.',
+          'I was too slow, or too loud. The Wardens took Madrel Vandas out of the shrine before the fourth bell and nobody in Ald Sethis saw it happen, which is not the same as nobody knowing.',
         finished: true,
       },
       {
         n: 33,
         journal:
-          'The Mages Guild copied the codex eleven times before the Temple heard the presses. Brenn Alvis says he did it for the scholarship. He also said it with a straight face, which is how I know he did it for the pleasure of it.',
+          'The Ashen Conclave copied the codex eleven times before the Temple heard the presses. Brenn Alvis says he did it for the scholarship. He also said it with a straight face, which is how I know he did it for the pleasure of it.',
         finished: true,
       },
     ],
@@ -819,7 +819,7 @@ export const QUESTS = {
       {
         n: 10,
         journal:
-          'The four verses agree on a place under Red Mountain that the Ashlanders call the Gate of Ash, and they agree on an hour: the hour before dawn, when the second moon is dark. Zabamat will not come. She says the verse names one, and that she has spent forty years being certain it was not her.',
+          'The four verses agree on a place under Ember Mount that the Shirenamat call the Gate of Ash, and they agree on an hour: the hour before dawn, when the second moon is dark. Zabamat will not come. She says the verse names one, and that she has spent forty years being certain it was not her.',
         paths: [
           {
             id: 'descend',
@@ -910,7 +910,7 @@ export const QUESTS = {
       {
         n: 41,
         journal:
-          'I sealed the shaft. The sound stopped, or the sound is now on the other side of a great deal of stone, and there is no way at all to know which. The Temple has been generous. The Ashlanders have struck the camp and moved east without a word to me.',
+          'I sealed the shaft. The sound stopped, or the sound is now on the other side of a great deal of stone, and there is no way at all to know which. The Temple has been generous. The Shirenamat have struck the camp and moved east without a word to me.',
         finished: true,
       },
       {
@@ -959,7 +959,7 @@ export const QUESTS = {
       {
         n: 15,
         journal:
-          'The name on the docks is Kell Blackwater, a Nord who works the north coast and sleeps by the ash-quay in daylight hours.',
+          'The name on the docks is Kell Blackwater, a Skarn who works the north coast and sleeps by the ash-quay in daylight hours.',
         paths: [
           {
             id: 'fight',
@@ -1004,7 +1004,7 @@ export const QUESTS = {
       },
       {
         n: 40,
-        journal: 'I have the strongbox. Hrafna Gulhild is in the Fighters Guild hall until the evening bell.',
+        journal: 'I have the strongbox. Hrafna Gulhild is in the Ironring hall until the evening bell.',
         paths: [
           {
             id: 'return',
@@ -1062,7 +1062,7 @@ export const QUESTS = {
       {
         n: 10,
         journal:
-          'A nix-hound pack has denned within sight of the Ashfall road and taken two guar and a carter. The Guild has a contract on it from the caravaners.',
+          'A glassjaw pack has denned within sight of the Ashfall road and taken two drell and a carter. The Guild has a contract on it from the caravaners.',
         paths: [
           {
             id: 'clear',
@@ -1076,7 +1076,7 @@ export const QUESTS = {
           },
           {
             id: 'lure',
-            label: 'Draw them off with tainted kwama meat',
+            label: 'Draw them off with tainted morvek meat',
             kind: 'sneak',
             skill: 'alchemy',
             difficulty: 35,
@@ -1111,7 +1111,7 @@ export const QUESTS = {
     stages: [
       {
         n: 10,
-        journal: 'Brenn Alvis needs kwama cuttle and scrib jelly from the Kaldera mine, and he needs it before the Guild\'s enchanting stock runs out.',
+        journal: 'Brenn Alvis needs morvek cuttle and vekling jelly from the Kaldera mine, and he needs it before the Guild\'s enchanting stock runs out.',
         paths: [
           { id: 'gather', label: 'Go into the mine and gather it', kind: 'travel', to: 20, effects: [{ k: 'item', v: 'kwama_reagents', n: 1 }] },
           {
@@ -1235,7 +1235,7 @@ export const QUESTS = {
       {
         n: 10,
         journal:
-          'Sethri wants the second Hlaalu ledger — the one that does not go to the Empire. Varo Hleran keeps it in the counting house and keeps himself there too, at every hour I have checked.',
+          'Sethri wants the second Varo ledger — the one that does not go to the Concord. Varo Hleran keeps it in the counting house and keeps himself there too, at every hour I have checked.',
         paths: [
           {
             id: 'night_lift',
@@ -1268,7 +1268,7 @@ export const QUESTS = {
           },
           {
             id: 'inside_job',
-            label: 'Walk in as a Hlaalu kinsman and take it off the shelf',
+            label: 'Walk in as a Varo kinsman and take it off the shelf',
             kind: 'steal',
             when: [{ k: 'rank', faction: 'hlaalu', min: 4 }],
             to: 30,
@@ -1325,7 +1325,7 @@ export const QUESTS = {
         ],
       },
       { n: 40, journal: 'Sethri has the ledger and I have four hundred drakes. He says the town will feel it in a month and not know why.', finished: true },
-      { n: 41, journal: 'The Legion has the second ledger. Hlaalu will be a year in the courts, the Guild has struck my name, and Sethri will not be in the cellar when I next knock.', finished: true },
+      { n: 41, journal: 'The Legion has the second ledger. Varo will be a year in the courts, the Guild has struck my name, and Sethri will not be in the cellar when I next knock.', finished: true },
       { n: 42, journal: 'Varo Hleran bought his own ledger back for twelve hundred drakes and shook my hand. Sethri has heard. Sethri hears everything.', finished: true },
       {
         n: 91,
@@ -1398,7 +1398,7 @@ export const QUESTS = {
       {
         n: 10,
         journal:
-          'Varo Hleran has given me a writ of execution against Ryn Sadras of House Redoran, correctly sealed and, he was careful to say, entirely legal. Hlaalu does not murder. Hlaalu files.',
+          'Varo Hleran has given me a writ of execution against Ryn Sadras of House Korran, correctly sealed and, he was careful to say, entirely legal. Varo does not murder. Varo files.',
         enter: [{ k: 'item', v: 'writ_of_execution', n: 1 }],
         paths: [
           {
@@ -1455,8 +1455,8 @@ export const QUESTS = {
           },
         ],
       },
-      { n: 30, journal: 'The writ is served. Redoran has said nothing at all, which from Redoran is the loudest thing available.', finished: true },
-      { n: 31, journal: 'Ryn Sadras is gone to Ald Ruhn with a Redoran escort. Varo Hleran did not raise his voice, and that was worse.', finished: true },
+      { n: 30, journal: 'The writ is served. Korran has said nothing at all, which from Korran is the loudest thing available.', finished: true },
+      { n: 31, journal: 'Ryn Sadras is gone to Ald Ruhn with a Korran escort. Varo Hleran did not raise his voice, and that was worse.', finished: true },
       { n: 32, journal: 'I paid Ryn Sadras\'s debt out of my own purse. Varo filed the receipt. Both Houses think I am a fool and both of them will take my call.', finished: true },
       { n: 33, journal: 'I filed a forged receipt and kept the writ. It is in my pack. It is still sealed, and it is still legal.', finished: true },
     ],
@@ -1512,7 +1512,7 @@ export const QUESTS = {
         ],
       },
       { n: 30, journal: 'First blood on the sand, and Ryn Sadras took it well, which he was obliged to do and did anyway.', finished: true },
-      { n: 31, journal: 'He took first blood off me in four passes. Redoran does not despise a loss, but it remembers one.', finished: true },
+      { n: 31, journal: 'He took first blood off me in four passes. Korran does not despise a loss, but it remembers one.', finished: true },
       { n: 32, journal: 'I said the thing about his mother and he drew in the hall, in front of the ash-watch, which is exactly what I wanted and exactly what Dral Seran did not.', finished: true },
       { n: 33, journal: 'Ryn Sadras withdrew the words before witnesses. Nobody bled and nobody is quite satisfied, which Seran says is what a settled matter feels like.', finished: true },
       {
@@ -1595,7 +1595,7 @@ export const QUESTS = {
           },
         ],
       },
-      { n: 40, journal: 'Nevena paid in coin and in something closer to respect, which from a Mouth of Telvanni is an accounting error in my favour.', finished: true },
+      { n: 40, journal: 'Nevena paid in coin and in something closer to respect, which from a Mouth of Vaelmyr is an accounting error in my favour.', finished: true },
       { n: 41, journal: 'I am keeping the spore. She wants it badly enough to part with a page of the Ash-Wake for it, and pages do not grow back.', finished: true },
       {
         n: 90,
@@ -1617,7 +1617,7 @@ export const QUESTS = {
       {
         n: 10,
         journal:
-          'Ferisa Andalen owes House Hlaalu eight hundred drakes on a note her husband signed and could not read. It falls due at the end of the month. She has sixty drakes and an ancestor ring she will not sell.',
+          'Ferisa Andalen owes House Varo eight hundred drakes on a note her husband signed and could not read. It falls due at the end of the month. She has sixty drakes and an ancestor ring she will not sell.',
         paths: [
           {
             id: 'pay',
@@ -1647,7 +1647,7 @@ export const QUESTS = {
           },
           {
             id: 'house',
-            label: 'Have House Hlaalu forgive it as a favour',
+            label: 'Have House Varo forgive it as a favour',
             kind: 'talk',
             when: [{ k: 'rank', faction: 'hlaalu', min: 5 }],
             to: 43,
@@ -1668,7 +1668,7 @@ export const QUESTS = {
       { n: 40, journal: 'I paid the Andalen note in full. Ferisa keeps her door and the whole of market row watched me do it.', finished: true },
       { n: 41, journal: 'Varo Hleran restruck the note at a rate a widow can carry. He did it because I gave him a reason that cost him nothing, which he pointed out.', finished: true },
       { n: 42, journal: 'The Andalen page is ash. There is no debt because there is no record of a debt, and the counting house will spend a season not understanding that.', finished: true },
-      { n: 43, journal: 'House Hlaalu has forgiven the Andalen note as a courtesy to a kinsman. It cost the House eight hundred drakes and cost me some standing in it.', finished: true },
+      { n: 43, journal: 'House Varo has forgiven the Andalen note as a courtesy to a kinsman. It cost the House eight hundred drakes and cost me some standing in it.', finished: true },
       { n: 44, journal: 'I took the ring off her mantel and settled the note with it. The debt is closed. She knows. She has not said a word to me since and she will not.', finished: true },
       {
         n: 90,
@@ -1682,7 +1682,7 @@ export const QUESTS = {
 
   sq_bad_poetry: {
     id: 'sq_bad_poetry',
-    name: 'A Rhyme for Netch',
+    name: 'A Rhyme for Skerrin',
     giver: 'llevo_versifier',
     faction: null,
     advancement: false,
@@ -1690,7 +1690,7 @@ export const QUESTS = {
       {
         n: 10,
         journal:
-          'Llevo the Versifier is stuck on the twelfth canto of his epic. He requires a rhyme for "netch". Dinara Loras has offered me free lodging for a week if I can get him to stop.',
+          'Llevo the Versifier is stuck on the twelfth canto of his epic. He requires a rhyme for "skerrin". Dinara Loras has offered me free lodging for a week if I can get him to stop.',
         paths: [
           {
             id: 'rhyme',

@@ -79,7 +79,7 @@ export class CreationPanel implements Panel {
   private hair = 0.4;
   private age = 0.35;
 
-  private name = 'Nerevarine';
+  private name = 'Veyrane';
   private gender: 'male' | 'female' = 'male';
   private race: string = LIVE_RACES[4];
   private sign: string = LIVE_BIRTHSIGNS[8];
@@ -491,7 +491,7 @@ export class CreationPanel implements Panel {
     right.appendChild(
       div(
         'ash-blurb',
-        'They will not remember your face. They will remember that you walked into Red Mountain and came out again, or that you did not.',
+        'They will not remember your face. They will remember that you walked into Ember Mount and came out again, or that you did not.',
       ),
     );
     append(this.content, left, right);

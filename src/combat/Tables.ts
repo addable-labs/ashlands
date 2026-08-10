@@ -6,7 +6,7 @@
  * per-creature branches. That is not tidiness for its own sake: an Elder
  * Scrolls game is only systemic if a new weapon material or a new creature is
  * one row, and combinations nobody planned — a silver spear against an armoured
- * netch, thrown chitin darts against a diving cliff racer — fall out of the
+ * skerrin, thrown chitin darts against a diving ash shrike — fall out of the
  * table product rather than out of a special case someone wrote.
  */
 
@@ -383,7 +383,7 @@ export const ARCS: Readonly<Record<AttackKind, ArcDef>> = {
     // fix the review frame that caught the arm leaving the bottom edge, and it
     // is the one number here that cannot move: the tip lands at
     // `hand + to * (pushEnd + reach)`, so a shallower `to` is directly a
-    // shorter and higher reach, and a chop at a kwama — a knee-high creature at
+    // shorter and higher reach, and a chop at a morvek — a knee-high creature at
     // 1.6 m — stops connecting. Measured, and not by eye: the end-to-end
     // playthrough went from 2 hits in 8 swing cycles to 0, i.e. from PASS to
     // PARTIAL, on this number alone. The framing was fixed with `endOffset`
@@ -522,12 +522,12 @@ const FLESH = R({ mundane: 1, silver: 1, enchanted: 1, blunt: 1, slice: 1, pierc
 export const RESISTANCE: Readonly<Record<string, ResistanceDef>> = {
   default: FLESH,
   // Chitinous things shrug off cuts and hate being hit with a hammer.
-  kwama: R({ mundane: 1, silver: 1, enchanted: 1, blunt: 1.35, slice: 0.7, pierce: 0.95 }),
-  nixhound: R({ mundane: 1, silver: 1, enchanted: 1, blunt: 1.2, slice: 0.85, pierce: 1.0 }),
-  cliffracer: R({ mundane: 1, silver: 1, enchanted: 1, blunt: 0.9, slice: 1.15, pierce: 1.1 }),
-  // A netch's gasbag is a bad target for a spear and a fine one for a blade.
-  netch: R({ mundane: 1, silver: 1, enchanted: 1.2, blunt: 0.75, slice: 1.25, pierce: 0.6 }),
-  siltstrider: R({ mundane: 1, silver: 1, enchanted: 1, blunt: 1.3, slice: 0.6, pierce: 0.8 }),
+  morvek: R({ mundane: 1, silver: 1, enchanted: 1, blunt: 1.35, slice: 0.7, pierce: 0.95 }),
+  glassjaw: R({ mundane: 1, silver: 1, enchanted: 1, blunt: 1.2, slice: 0.85, pierce: 1.0 }),
+  ashshrike: R({ mundane: 1, silver: 1, enchanted: 1, blunt: 0.9, slice: 1.15, pierce: 1.1 }),
+  // A skerrin's gasbag is a bad target for a spear and a fine one for a blade.
+  skerrin: R({ mundane: 1, silver: 1, enchanted: 1.2, blunt: 0.75, slice: 1.25, pierce: 0.6 }),
+  fenwalker: R({ mundane: 1, silver: 1, enchanted: 1, blunt: 1.3, slice: 0.6, pierce: 0.8 }),
   // The old rule, kept exactly: the restless dead do not care about steel.
   ghost: R({ mundane: 0, silver: 1, enchanted: 1, blunt: 1, slice: 1, pierce: 1 }),
   ancestorghost: R({ mundane: 0, silver: 1, enchanted: 1, blunt: 1, slice: 1, pierce: 1 }),
@@ -595,32 +595,32 @@ export const CREATURE_DEFAULT: CreatureCombat = C({
 export const CREATURES: Readonly<Record<string, CreatureCombat>> = {
   // Dives from altitude, hits once, and is gone before you can answer — the
   // single most recognisable combat pattern in the whole province.
-  cliffracer: C({
+  ashshrike: C({
     aggression: 0.95, breakAt: 0.12, feint: 0.25, guard: 0.02, reach: 1.5, notice: 55,
     windup: 0.3, active: 0.14, recover: 1.5, damage: [3, 8], style: 'dive',
     armour: 'shell', mass: 26, lunge: 22, cadence: 2.6, callsAllies: true, ranged: false,
   }),
-  nixhound: C({
+  glassjaw: C({
     aggression: 0.85, breakAt: 0.2, feint: 0.3, guard: 0.1, reach: 1.9, notice: 34,
     windup: 0.34, active: 0.14, recover: 0.62, damage: [5, 13], style: 'leap',
     armour: 'chitin', mass: 70, lunge: 12, cadence: 1.0, callsAllies: true, ranged: false,
   }),
-  guar: C({
+  drell: C({
     aggression: 0.2, breakAt: 0.35, feint: 0.05, guard: 0.2, reach: 2.3, notice: 26,
     windup: 0.55, active: 0.2, recover: 0.9, damage: [8, 18], style: 'charge',
     armour: 'hide', mass: 420, lunge: 9, cadence: 2.2, callsAllies: false, ranged: false,
   }),
-  kwama: C({
+  morvek: C({
     aggression: 0.7, breakAt: 0.15, feint: 0.08, guard: 0.05, reach: 1.2, notice: 18,
     windup: 0.3, active: 0.12, recover: 0.44, damage: [3, 8], style: 'brawler',
     armour: 'chitin', mass: 45, lunge: 6, cadence: 0.9, callsAllies: true, ranged: false,
   }),
-  netch: C({
+  skerrin: C({
     aggression: 0.15, breakAt: 0.3, feint: 0.0, guard: 0.0, reach: 3.2, notice: 30,
     windup: 0.9, active: 0.3, recover: 1.4, damage: [10, 22], style: 'drift',
     armour: 'hide', mass: 900, lunge: 3, cadence: 3.0, callsAllies: false, ranged: false,
   }),
-  siltstrider: C({
+  fenwalker: C({
     aggression: 0.02, breakAt: 0.05, feint: 0, guard: 0, reach: 6, notice: 40,
     windup: 1.4, active: 0.4, recover: 2.4, damage: [14, 30], style: 'charge',
     armour: 'shell', mass: 9000, lunge: 4, cadence: 4, callsAllies: false, ranged: false,

@@ -202,7 +202,7 @@ void main() {
   // a few metres it was shading with one roughness. That is exactly the review's
   // global finding, repeated on five separate shots: "no specular event in two
   // megapixels", "wet sand shades identically to dry sand 200m inland", "rock,
-  // chitin, netch flesh and ground all resolve to the same flat matte response".
+  // chitin, skerrin flesh and ground all resolve to the same flat matte response".
   // It is bar item 5 failing not because roughness was never authored but
   // because the filter chain averaged the authoring away.
   //
@@ -546,7 +546,7 @@ export class Synthesizer {
    * measures grain and it is blind to whether the material says anything at the
    * metre scale. Every set in the library passed it, and four separate blockers
    * were still filed for "reads as untextured clay" against surfaces — Red
-   * Mountain's summit, the caldera-rim rock, the Telvanni pod towers, the
+   * Mountain's summit, the caldera-rim rock, the Vaelmyr pod towers, the
    * Daedric monolith — that are all sampled from mip level 4 or beyond. That is
    * the gap this closes, and it is the measurement that attributes the defect:
    * a set that holds contrast here and still renders flat is the consumer's
@@ -621,7 +621,7 @@ export interface EnvParams {
   haze: number;
   /** 0..1 ash cloud coverage. */
   ash: number;
-  /** Ember light thrown up by Red Mountain, in world direction. */
+  /** Ember light thrown up by Ember Mount, in world direction. */
   emberDir: THREE.Vector3;
   emberColor: THREE.Color;
 }
@@ -679,7 +679,7 @@ vec3 skyRadiance(vec3 d) {
   vec3 col = mix(uZenith, uHorizon, t);
 
   // Sulphur murk: the haze band sits just above the horizon and is thickest
-  // there, which is what makes Vvardenfell's sky feel like a lid.
+  // there, which is what makes Ashenreach's sky feel like a lid.
   float band = exp(-abs(up) * 7.0);
   col = mix(col, uHorizon * 1.25, band * uHaze);
 
@@ -694,7 +694,7 @@ vec3 skyRadiance(vec3 d) {
   col += uSunCol * uSunInt * 0.012 * pow(max(sd, 0.0), 20.0);
   col += uSunCol * uSunInt * 0.0016 * pow(max(sd, 0.0), 3.0);
 
-  // Red Mountain never stops burning; it lights the underside of the ash.
+  // Ember Mount never stops burning; it lights the underside of the ash.
   float ed = max(dot(d, uEmberDir), 0.0);
   col += uEmberCol * pow(ed, 6.0) * 0.5 * exp(-max(up, 0.0) * 3.0);
 

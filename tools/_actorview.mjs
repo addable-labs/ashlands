@@ -6,7 +6,7 @@
  * the LOD/staging state never converges and the capture shows a stale tier.
  * This drives N real animation frames instead.
  *
- *   node tools/_actorview.mjs netch --tag before [--hour 6.6] [--dist 26]
+ *   node tools/_actorview.mjs skerrin --tag before [--hour 6.6] [--dist 26]
  */
 import { launch } from 'puppeteer-core';
 import { spawn } from 'node:child_process';
@@ -17,7 +17,7 @@ const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const URL = 'http://127.0.0.1:5178/';
 const argv = process.argv.slice(2);
 const flag = (n, d) => { const i = argv.indexOf(`--${n}`); return i < 0 ? d : argv[i + 1]; };
-const KIND = argv.find((a) => !a.startsWith('--')) ?? 'netch';
+const KIND = argv.find((a) => !a.startsWith('--')) ?? 'skerrin';
 const TAG = flag('tag', 'view');
 const W = 1280, H = 960;
 

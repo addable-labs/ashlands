@@ -158,7 +158,7 @@ export class Feedback {
     }
 
     const f = OUTCOME_FREEZE[r.outcome] * clamp(r.weight, 0.2, 2);
-    // Only freeze for blows the player is party to; two cliff racers scrapping
+    // Only freeze for blows the player is party to; two ash shrikes scrapping
     // across the valley must not stutter the frame.
     if (f > this.freeze && (ev.targetId < 0 || ev.attackerId < 0)) this.freeze = f;
 

@@ -1,7 +1,7 @@
 import type { LocationId, NpcDef, NpcId, ScheduleEntry } from './types';
 
 /**
- * The people of Ald Sethis, a Hlaalu ash-port on the western skirts of Red
+ * The people of Ald Sethis, a Varo ash-port on the western skirts of Red
  * Mountain, and of the country around it.
  *
  * Every NPC carries a schedule keyed to the world clock. A settlement whose
@@ -14,14 +14,14 @@ export const LOCATIONS = {
   sethis_docks: 'Ald Sethis, the ash-docks',
   sethis_market: 'Ald Sethis, market row',
   flagon: 'The Ashen Flagon',
-  fighters_hall: 'Fighters Guild hall',
-  mages_hall: 'Mages Guild hall',
+  fighters_hall: 'Ironring hall',
+  mages_hall: 'Ashen Conclave hall',
   thieves_cellar: 'The cellar beneath the Flagon',
   temple_sethis: 'Shrine of the Three, Ald Sethis',
-  hlaalu_counting: 'Hlaalu counting house',
-  redoran_hall: 'Redoran hall of the ash-watch',
+  hlaalu_counting: 'Varo counting house',
+  redoran_hall: 'Korran hall of the ash-watch',
   tel_muran: 'Tel Muran',
-  shirenamat: 'Shirenamat, the Ashlander camp',
+  shirenamat: 'Shirenamat, the Shirenamat camp',
   ashfall_road: 'The Ashfall road',
   kaldera_mine: 'Kaldera egg mine',
   gate_of_ash: 'The Gate of Ash',
@@ -438,7 +438,7 @@ export const NPCS = {
       { from: 6, to: 20, at: 'sethis_docks' },
       { from: 20, to: 6, at: 'flagon' },
     ],
-    teaches: ['silt_strider', 'ald_sethis', 'ash_storms'],
+    teaches: ['fenwalker', 'ald_sethis', 'ash_storms'],
     services: ['travel'],
     guard: false,
     essentialTo: ['sq_ashfall_caravan'],

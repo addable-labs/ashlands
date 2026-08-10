@@ -38,7 +38,7 @@ const RM_H = 1700;
  * At 235 m against a 1290 m mass the crater was a dimple: it never broke the
  * silhouette from any vantage on the ground, and every review of the mountain
  * came back "no caldera, a near-perfectly symmetrical smooth cone, Mount Fuji
- * rather than Red Mountain". A caldera is not a summit crater — it is a
+ * rather than Ember Mount". A caldera is not a summit crater — it is a
  * *collapse*, and it is the single feature that tells a viewer this cone has
  * erupted. 300 m of radius against a 1290 m mass puts the rim at a quarter of
  * the way out, which is the proportion the real thing carries.
@@ -119,7 +119,7 @@ const FOYADA = 5;
  *
  * The previous value was 12 m — full amplitude only above 24 m, twelve samples
  * per cycle. That is a factor of two of headroom nothing was asking for, and it
- * cost the whole mid-scale band: Red Mountain's spines, the erosion channels and
+ * cost the whole mid-scale band: Ember Mount's spines, the erosion channels and
  * every crag between 6 and 24 m went with it, leaving smooth domes. The
  * aliasing that motivated it came from *bilinear reconstruction*, whose
  * curvature is an impulse on every grid line regardless of what is baked; that
@@ -139,7 +139,7 @@ export const LMIN = 6;
  * agglomerate on a young cone hold 48-52 before they spall. Blending between
  * the two by altitude is a crude proxy for "how much of this is bedrock", but it
  * is the right crude proxy here: the ash apron is low and the cone is high, and
- * a single constant either turns Red Mountain into a dune (soft) or leaves the
+ * a single constant either turns Ember Mount into a dune (soft) or leaves the
  * wastes full of extruded card (hard).
  *
  * tan(35 deg) = 0.700, tan(51 deg) = 1.235.
@@ -172,7 +172,7 @@ function wrapAngle(a: number): number {
 }
 
 /**
- * Pre-erosion tectonics. Red Mountain is a ridged-multifractal cone with a
+ * Pre-erosion tectonics. Ember Mount is a ridged-multifractal cone with a
  * blown caldera and radial spines; the wastes around it are domain-warped fBm;
  * the island silhouette is a warped radial falloff into a shelf. Everything
  * expensive is gated on the mountain mass so open ash costs a third as much.
@@ -1239,7 +1239,7 @@ export class Heightfield {
      * relaxed to (0.85 + 0.30 * dv). Both must stay byte-identical to
      * terrainWeights in TerrainMaterial.
      *
-     * Basalt could not win an argmax anywhere outside Red Mountain's 1290 m
+     * Basalt could not win an argmax anywhere outside Ember Mount's 1290 m
      * radius, and the mechanism was arithmetic rather than aesthetic: its whole
      * weight was multiplied by (0.55 + 0.45 * dv), and dv — volcanic proximity —
      * is exactly zero over the vale, the coast and the western wastes. On a
@@ -1250,8 +1250,8 @@ export class Heightfield {
      * name and the ridge shot failed material differentiation for the same
      * reason: one material was covering rim, face and floor alike.
      *
-     * Basalt is a rock type, not a distance from a vent. Vvardenfell is a basalt
-     * province; what proximity to Red Mountain changes is how much fresh scoria
+     * Basalt is a rock type, not a distance from a vent. Ashenreach is a basalt
+     * province; what proximity to Ember Mount changes is how much fresh scoria
      * and ash lies ON the basalt, which is what the other layers already model.
      * So the volcanism gate becomes a modest bias rather than a switch, and a
      * dedicated slope band takes over above 40 degrees, where the thermal pass
@@ -1322,7 +1322,7 @@ export class Heightfield {
     // is exactly the "rose-brown mud bath" the review named.
     //
     // The physical error behind the number: `lo` is where *gravity* put loose
-    // material. Ash on Vvardenfell falls out of the sky. It blankets everything
+    // material. Ash on Ashenreach falls out of the sky. It blankets everything
     // below the angle of repose whether or not anything slid there, so thermal
     // deposition modulates it — drifts bank deeper against a talus slope — but
     // cannot gate it. Floor raised to 0.70 and the overall level to 1.30, which

@@ -126,7 +126,7 @@ feel: every swing must connect visually and every outcome must be legible.
   to harm certain creatures — a real Elder Scrolls rule), and damage-over-time effects.
 - **Enemy AI combat**: approach, circle, feint, block, back off when low, flee, call allies.
   Read actors from ctx.get('actors') and use its damage() API. Different creatures fight
-  differently: cliff racers dive-attack and retreat, nix-hounds leap, guar charge.
+  differently: ash shrikes dive-attack and retreat, glassjaws leap, drell charge.
 - Drive ctx.get('vfx') for impact effects and ctx.get('player').shake() for impact feedback.`,
   },
   {
@@ -149,7 +149,7 @@ Write ${ROOT}/src/quest/Quests.ts exporting \`class QuestSystem\` implementing S
   Persuasion attempts (admire / intimidate / taunt / bribe) that can succeed or backfire.
   Taunting an NPC into attacking you must be possible.
 - **Factions**: at least six (a Fighters/Warriors guild, a Mages guild, a Thieves guild, and
-  three Great Houses in the Dunmer style) with ranks, rank requirements expressed as
+  three Great Houses in the Cindren style) with ranks, rank requirements expressed as
   attribute+skill thresholds, advancement quests, and mutual exclusivity between rival houses.
   Faction reputation and expulsion.
 - **Quests** as data: stages, objectives, journal entries keyed by stage, multiple solution
@@ -224,10 +224,10 @@ network. This is a hard constraint and also an opportunity: procedural audio can
 parameterised by game state in ways samples cannot.
 
 - **Ambience beds** that crossfade with biome, weather and time of day: wind through ash (
-  filtered noise with a slowly modulated resonant band), the low seismic rumble of Red Mountain,
+  filtered noise with a slowly modulated resonant band), the low seismic rumble of Ember Mount,
   distant surf at the coast, insect and spore-fall chittering near fungal groves at night,
   the rising howl and grit-blast of an ash storm. Read weather from ctx.get('sky').
-- **Music**: a generative score, not a loop. Modal (Dorian/Phrygian for the Dunmer flavour),
+- **Music**: a generative score, not a loop. Modal (Dorian/Phrygian for the Cindren flavour),
   slow, sparse, built from synthesised strings/lute/low drone/soft percussion. It must respond
   to state — combat raises intensity, discovery swells, night thins the texture — and must
   transition musically on phrase boundaries, never by hard cut or crossfade mid-bar.
@@ -239,8 +239,8 @@ parameterised by game state in ways samples cannot.
 - **Magic**: per-school timbres — destruction fire is a roaring saturated noise burst, frost a
   crystalline ringing cluster, shock a bright transient with a decaying buzz; restoration a
   warm consonant swell; illusion a detuned shimmer.
-- **Creatures**: cliff racer screech (the sound most hated in gaming history — reproduce it
-  faithfully, it is iconic), netch groan, guar chirp, kwama clicking.
+- **Creatures**: ash shrike screech (the sound most hated in gaming history — reproduce it
+  faithfully, it is iconic), skerrin groan, drell chirp, morvek clicking.
 - **3D spatialisation** via PannerNode with distance attenuation and a proper cone for directional
   sources; a listener locked to the camera.
 - **Reverb**: generate impulse responses procedurally for outdoor / cave / interior / underwater

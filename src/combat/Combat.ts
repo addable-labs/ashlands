@@ -495,7 +495,7 @@ export class CombatSystem implements System {
    * between last frame's arc parameter and this frame's, and each pose is a
    * capsule tested against every candidate body capsule. This is the reason a
    * fast swing cannot pass through a target, and the reason a spear tip that
-   * visibly clears a nix-hound's back does not register.
+   * visibly clears a glassjaw's back does not register.
    */
   private sweep(ctx: Ctx): void {
     const frame = ctx.time.frame;
@@ -602,7 +602,7 @@ export class CombatSystem implements System {
       condition: rpg.condition(this.weapon.id),
       // A blow landed on something that has not noticed you is a different
       // proposition entirely — the sneak multiplier is the whole reason to
-      // approach a silt strider from behind.
+      // approach a fenwalker from behind.
       sneak: this.ai.guardOf(a).guard < 0.05 && this.ai.fighter(a).aggro < 0.1 ? 1.8 : 1,
     };
   }
@@ -620,7 +620,7 @@ export class CombatSystem implements System {
       guardAge: g.age,
       shield: shieldOf('parry'),
       guardFacing: facing,
-      // Light, alert creatures slip a blow; a silt strider cannot.
+      // Light, alert creatures slip a blow; a fenwalker cannot.
       evade: clamp(0.34 - prof.mass / 1400, 0.02, 0.34) * (f.aggro > 0.2 ? 1 : 0.45),
       staggered: f.stagger > 0,
       mass: prof.mass,

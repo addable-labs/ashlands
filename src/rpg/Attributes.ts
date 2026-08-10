@@ -307,7 +307,7 @@ export type SkillClassKind = 'major' | 'minor' | 'misc';
 /**
  * Practice needed to advance a skill by one point. Higher skill costs more,
  * class focus costs less, and a specialisation match costs less still — this
- * is why a Nord who fights with an axe is an axeman by level five and a Nord
+ * is why a Skarn who fights with an axe is an axeman by level five and a Skarn
  * who dabbles in Alchemy is still a bad alchemist at level twenty.
  */
 export const CLASS_PROGRESS_FACTOR: Readonly<Record<SkillClassKind, number>> = {

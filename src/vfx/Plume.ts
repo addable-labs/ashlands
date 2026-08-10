@@ -114,7 +114,7 @@ void main() {
   // means that from anywhere near the mountain it is ABOVE the top of the
   // frame: the vent alone subtends more than forty degrees of elevation, and a
   // camera that frames the mountain cannot also frame the thing venting off the
-  // top of it. A shot named for Red Mountain that shows a bare cone is the
+  // top of it. A shot named for Ember Mount that shows a bare cone is the
   // result, and no amount of density on the column fixes it, because the column
   // is not in the picture.
   //

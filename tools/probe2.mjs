@@ -15,7 +15,7 @@ console.log('pointerLocked granted by headless:', await p.evaluate(()=>window.en
 const setup = await p.evaluate(async ()=>{
   const ctx=window.engine.ctx, pl=ctx.get('player'), A=ctx.get('actors'), C=ctx.get('combat');
   ctx.input.pointerLocked = true; pl.freefly=false; C.equip(0);
-  const t = A.all().find(a=>a.alive && a.kind!=='dunmer' && a.kind!=='siltstrider' && a.position.y>-20);
+  const t = A.all().find(a=>a.alive && a.kind!=='dunmer' && a.kind!=='fenwalker' && a.position.y>-20);
   pl.teleport(t.position.x+1.5, t.position.z, 0.2);
   const dx=t.position.x-pl.position.x, dz=t.position.z-pl.position.z;
   pl.setLook(Math.atan2(dx,dz)+Math.PI, 0);

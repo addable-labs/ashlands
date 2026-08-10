@@ -46,7 +46,7 @@ export type { SkyParams } from './Weather';
  * from a sea-level eye the true sky irradiance is (1.21, 1.04, 1.04) and the
  * anchor claimed (0.096, 0.139, 0.262) — an eighth of the magnitude and a
  * strongly blue chroma where the honest answer is nearly neutral, because a low
- * observer on Vvardenfell is looking through the whole ash boundary layer in
+ * observer on Ashenreach is looking through the whole ash boundary layer in
  * every direction but straight up. From the ridge at 1320 m, above most of that
  * layer, the true answer IS blue — (0.64, 0.74, 1.01), hue 223 — and the anchor
  * gave the same fixed chroma at both, so the one vantage in the game with a

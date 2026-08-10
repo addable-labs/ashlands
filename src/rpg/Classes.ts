@@ -50,7 +50,7 @@ export const CLASS_DEFS: Readonly<Record<BuiltinClassId, ClassDef>> = {
   warrior: cls(
     'warrior',
     'Warrior',
-    'Warriors are the professional men-at-arms of Tamriel, and trust to steel over sorcery.',
+    'Warriors are the professional men-at-arms of Ammaris, and trust to steel over sorcery.',
     'combat',
     ['strength', 'endurance'],
     ['bluntWeapon', 'longBlade', 'heavyArmor', 'block', 'athletics'],
@@ -59,7 +59,7 @@ export const CLASS_DEFS: Readonly<Record<BuiltinClassId, ClassDef>> = {
   knight: cls(
     'knight',
     'Knight',
-    'Knights are the elite of the Imperial nobility, sworn to courtesy as much as to combat.',
+    'Knights are the elite of the Valmori nobility, sworn to courtesy as much as to combat.',
     'combat',
     ['personality', 'strength'],
     ['longBlade', 'heavyArmor', 'block', 'speechcraft', 'restoration'],
@@ -152,7 +152,7 @@ export function classify(def: ClassDef, skill: SkillId): SkillClassKind {
 
 /**
  * Starting skills: base, plus class focus, plus specialisation, plus race.
- * A Redguard Warrior swings a Long Blade at 45 on day one; a Breton Healer
+ * A Sahiri Warrior swings a Long Blade at 45 on day one; a Halvorn Healer
  * swings the same blade at 5 and will bleed for every point of it.
  */
 export function startingSkills(def: ClassDef, race: RaceId): SkillSet {

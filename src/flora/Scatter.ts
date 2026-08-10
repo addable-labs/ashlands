@@ -341,7 +341,7 @@ export const SPECIES: SpeciesRule[] = [
       // sheltered vale, not on an exposed strand. Weighting it toward the
       // waterline put one directly across the coast and night vantages — a
       // trunk two metres from the lens, blocking the entire composition — and
-      // no headland in Vvardenfell is a mushroom forest. Hold them back from
+      // no headland in Ashenreach is a mushroom forest. Hold them back from
       // the shore and let the vale floor keep them.
       if (y < 7) return 0;
       const sheltered = smoothstep(8, 22, y) * (1 - smoothstep(90, 190, y) * 0.55);
@@ -414,7 +414,7 @@ export const SPECIES: SpeciesRule[] = [
        * The high ash wastes are the trama root's HOME, and it was excluded from
        * them.
        *
-       * The ridge vantage sits at roughly 800 m on the flank of Red Mountain and
+       * The ridge vantage sits at roughly 800 m on the flank of Ember Mount and
        * the review's verdict on it was "there is not a single plant in the frame
        * ... the single biggest reason it reads as a heightfield tech demo". The
        * ceiling at 320-760 m is most of the reason: it put the one species with a

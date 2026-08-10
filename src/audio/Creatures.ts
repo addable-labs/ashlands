@@ -2,13 +2,13 @@ import type { AudioGraph } from './Graph';
 import { Rng, ad, ahr, clamp01, glide, lerp, saturationCurve, type Vec3 } from './dsp';
 
 export type CreatureKind =
-  | 'cliffracer'
-  | 'netch'
-  | 'guar'
-  | 'kwama'
-  | 'nixhound'
-  | 'siltstrider'
-  | 'scrib';
+  | 'ashshrike'
+  | 'skerrin'
+  | 'drell'
+  | 'morvek'
+  | 'glassjaw'
+  | 'fenwalker'
+  | 'vekling';
 
 export type Call = 'idle' | 'alert' | 'attack' | 'hurt' | 'die';
 
@@ -22,20 +22,20 @@ interface Presence {
 }
 
 const PRESENCE: Record<CreatureKind, Presence> = {
-  cliffracer: { ref: 18, max: 900, rolloff: 0.8, cone: 0.4, reverb: 0.4 },
-  netch: { ref: 16, max: 900, rolloff: 0.7, cone: 0.6, reverb: 0.5 },
-  guar: { ref: 8, max: 300, rolloff: 1.1, cone: 0.5, reverb: 0.25 },
-  kwama: { ref: 7, max: 120, rolloff: 1.2, cone: 0.6, reverb: 0.3 },
-  nixhound: { ref: 6, max: 220, rolloff: 1.2, cone: 0.45, reverb: 0.28 },
-  siltstrider: { ref: 30, max: 2400, rolloff: 0.55, cone: 0.8, reverb: 0.6 },
-  scrib: { ref: 7, max: 110, rolloff: 1.2, cone: 0.7, reverb: 0.25 },
+  ashshrike: { ref: 18, max: 900, rolloff: 0.8, cone: 0.4, reverb: 0.4 },
+  skerrin: { ref: 16, max: 900, rolloff: 0.7, cone: 0.6, reverb: 0.5 },
+  drell: { ref: 8, max: 300, rolloff: 1.1, cone: 0.5, reverb: 0.25 },
+  morvek: { ref: 7, max: 120, rolloff: 1.2, cone: 0.6, reverb: 0.3 },
+  glassjaw: { ref: 6, max: 220, rolloff: 1.2, cone: 0.45, reverb: 0.28 },
+  fenwalker: { ref: 30, max: 2400, rolloff: 0.55, cone: 0.8, reverb: 0.6 },
+  vekling: { ref: 7, max: 110, rolloff: 1.2, cone: 0.7, reverb: 0.25 },
 };
 
 export class Creatures {
   private rng = new Rng(0xcafe17);
   private harsh = saturationCurve(6);
   /**
-   * Gentler than `harsh` and used only by the cliff racer. tanh(6) on a
+   * Gentler than `harsh` and used only by the ash shrike. tanh(6) on a
    * sawtooth generates harmonics well past Nyquist, which fold back as
    * inharmonic aliases — the one kind of distortion that really does turn a
    * pitched source into noise, and it measured a 4.8 kHz centroid.
@@ -46,23 +46,23 @@ export class Creatures {
 
   call(kind: CreatureKind, call: Call = 'idle', position?: Vec3 | null, dir?: Vec3 | null): void {
     switch (kind) {
-      case 'cliffracer':
+      case 'ashshrike':
         this.cliffRacer(call, position, dir);
         break;
-      case 'netch':
-        this.netch(call, position, dir);
+      case 'skerrin':
+        this.skerrin(call, position, dir);
         break;
-      case 'guar':
-        this.guar(call, position, dir);
+      case 'drell':
+        this.drell(call, position, dir);
         break;
-      case 'kwama':
-      case 'scrib':
-        this.kwama(call, position, dir, kind);
+      case 'morvek':
+      case 'vekling':
+        this.morvek(call, position, dir, kind);
         break;
-      case 'nixhound':
+      case 'glassjaw':
         this.nixHound(call, position, dir);
         break;
-      case 'siltstrider':
+      case 'fenwalker':
         this.siltStrider(call, position, dir);
         break;
     }
@@ -87,7 +87,7 @@ export class Creatures {
   }
 
   /**
-   * The cliff racer. A voiced shriek, not a hiss: two detuned sawtooths supply
+   * The ash shrike. A voiced shriek, not a hiss: two detuned sawtooths supply
    * a dense harmonic series, two peaking formants give it a throat, and a
    * ring modulator adds the rasp.
    *
@@ -113,7 +113,7 @@ export class Creatures {
     const twice = call !== 'die' && this.rng.chance(0.55);
     const gap = dur + this.rng.range(0.1, 0.26);
     const end = twice ? gap + 0.36 : dur + 0.1;
-    const v = this.open('cliffracer', call === 'idle' ? 2.2 : 3.0, position, dir);
+    const v = this.open('ashshrike', call === 'idle' ? 2.2 : 3.0, position, dir);
     if (!v) return;
     const t = v.t;
 
@@ -232,7 +232,7 @@ export class Creatures {
     dc.stop(t + end);
     for (const n of [shaper, f1, f2, hp, lp, ring, dc, gn]) v.keep(n);
 
-    // The second, shorter cry. Cliff racers do not call once.
+    // The second, shorter cry. Ash shrikes do not call once.
     if (twice) {
       const o = ctx.createOscillator();
       o.type = 'sawtooth';
@@ -254,13 +254,13 @@ export class Creatures {
     v.release(dur + 0.4);
   }
 
-  /** Netch: a vast, slow, gas-filled groan. Almost all of it is below 200 Hz. */
-  private netch(call: Call, position?: Vec3 | null, dir?: Vec3 | null): void {
+  /** Skerrin: a vast, slow, gas-filled groan. Almost all of it is below 200 Hz. */
+  private skerrin(call: Call, position?: Vec3 | null, dir?: Vec3 | null): void {
     const g = this.graph;
     const ctx = g.ctx;
     if (!ctx) return;
     const dur = call === 'die' ? 3.4 : 2.6;
-    const v = this.open('netch', 0.66, position, dir);
+    const v = this.open('skerrin', 0.66, position, dir);
     if (!v) return;
     const t = v.t;
     const base = this.rng.range(38, 48);
@@ -322,13 +322,13 @@ export class Creatures {
     v.release(dur + 0.6);
   }
 
-  /** Guar: a short warbling FM chirp. Domestic, faintly ridiculous, likeable. */
-  private guar(call: Call, position?: Vec3 | null, dir?: Vec3 | null): void {
+  /** Drell: a short warbling FM chirp. Domestic, faintly ridiculous, likeable. */
+  private drell(call: Call, position?: Vec3 | null, dir?: Vec3 | null): void {
     const g = this.graph;
     const ctx = g.ctx;
     if (!ctx) return;
     const dur = call === 'hurt' ? 0.34 : 0.24;
-    const v = this.open('guar', call === 'idle' ? 0.8 : 1.05, position, dir);
+    const v = this.open('drell', call === 'idle' ? 0.8 : 1.05, position, dir);
     if (!v) return;
     const t = v.t;
     const carrier = this.rng.range(360, 470) * (call === 'die' ? 0.7 : 1);
@@ -379,8 +379,8 @@ export class Creatures {
     v.release(dur + 0.6);
   }
 
-  /** Kwama and scrib: chitinous clicking, irregular, in bursts. */
-  private kwama(call: Call, position: Vec3 | null | undefined, dir: Vec3 | null | undefined, kind: CreatureKind): void {
+  /** Morvek and vekling: chitinous clicking, irregular, in bursts. */
+  private morvek(call: Call, position: Vec3 | null | undefined, dir: Vec3 | null | undefined, kind: CreatureKind): void {
     const g = this.graph;
     const ctx = g.ctx;
     if (!ctx) return;
@@ -388,7 +388,7 @@ export class Creatures {
     if (!v) return;
     const t = v.t;
     const n = call === 'attack' ? 5 + this.rng.int(6) : 3 + this.rng.int(5);
-    const pitch = kind === 'scrib' ? 1.5 : 1;
+    const pitch = kind === 'vekling' ? 1.5 : 1;
     let at = 0;
     for (let i = 0; i < n; i++) {
       const src = ctx.createBufferSource();
@@ -410,13 +410,13 @@ export class Creatures {
     v.release(at + 0.3);
   }
 
-  /** Nix-hound: a low rasping growl with a fast amplitude flutter. */
+  /** Glassjaw: a low rasping growl with a fast amplitude flutter. */
   private nixHound(call: Call, position?: Vec3 | null, dir?: Vec3 | null): void {
     const g = this.graph;
     const ctx = g.ctx;
     if (!ctx) return;
     const dur = call === 'attack' ? 0.5 : 0.95;
-    const v = this.open('nixhound', 0.6, position, dir);
+    const v = this.open('glassjaw', 0.6, position, dir);
     if (!v) return;
     const t = v.t;
     const base = this.rng.range(62, 82);
@@ -468,13 +468,13 @@ export class Creatures {
     v.release(dur + 0.5);
   }
 
-  /** Silt strider: the long mournful moan that carries across a whole region. */
+  /** Fenwalker: the long mournful moan that carries across a whole region. */
   private siltStrider(call: Call, position?: Vec3 | null, dir?: Vec3 | null): void {
     const g = this.graph;
     const ctx = g.ctx;
     if (!ctx) return;
     const dur = 4.2;
-    const v = this.open('siltstrider', 0.7, position, dir);
+    const v = this.open('fenwalker', 0.7, position, dir);
     if (!v) return;
     const t = v.t;
     const base = this.rng.range(58, 68);

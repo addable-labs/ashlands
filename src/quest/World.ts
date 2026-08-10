@@ -729,7 +729,7 @@ export class World implements WorldMut {
     if (seen) {
       this.addBounty(amount);
       this.outbox.notices.push(`Your crime has been reported. Bounty: ${this.bounty}.`);
-      // Guild loyalty is not the same as immunity, but the Thieves Guild does
+      // Guild loyalty is not the same as immunity, but the Quiet Hand does
       // not mind, and the Legion minds a great deal.
       this.addFactionRep('legion', -2);
       if (this.rank('thieves') >= 0 && kind !== 'murder') this.addFactionRep('thieves', 1);

@@ -5,7 +5,7 @@ import { fbm2, noise2Tiled, worley2 } from './noise';
 /**
  * Procedural PBR atlas for the player avatar. Four horizontal bands, addressed
  * by the v coordinate the mesh builder assigns per part:
- *   0.00-0.44 dyed wool / netch-leather robe
+ *   0.00-0.44 dyed wool / skerrin-leather robe
  *   0.44-0.62 chitin plate
  *   0.62-0.78 tanned strapping
  *   0.78-1.00 dunmer skin
@@ -59,7 +59,7 @@ export function buildAvatarTextures(size: number, anisotropy: number): AvatarTex
       let m = 0;
 
       if (v < 0.44) {
-        // Wool woven over netch leather. Warp and weft at different pitches so
+        // Wool woven over skerrin leather. Warp and weft at different pitches so
         // the weave never resolves into a regular grid at grazing angles.
         const warp = 0.5 + 0.5 * Math.sin(su * 26.0);
         const weft = 0.5 + 0.5 * Math.sin(sv * 31.0 + 1.1);
@@ -114,7 +114,7 @@ export function buildAvatarTextures(size: number, anisotropy: number): AvatarTex
         h = smoothstep(0.0, 0.6, crack) * 0.7 + grain * 0.2;
         r = clamp(0.58 + 0.22 * (1 - crack) + grain * 0.1, 0.4, 0.92);
       } else {
-        // Dunmer skin: ashen grey with a violet undertone, never pink.
+        // Cindren skin: ashen grey with a violet undertone, never pink.
         const pore = noise2Tiled(su * 130, sv * 130, NU * 130, NU * 130);
         const blotch = nz(su * 3.4, sv * 4.0, 4);
         const base = lerp(0.105, 0.150, blotch);

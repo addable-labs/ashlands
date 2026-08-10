@@ -6,7 +6,7 @@ import { AERIAL_GLSL, aerialUniforms } from '../sky/Atmosphere';
  * Ground contact for actors.
  *
  * The shadow cascade cannot solve this on its own. A cascade wide enough to
- * cover the streaming radius resolves a kwama's foot at well under a texel, so
+ * cover the streaming radius resolves a morvek's foot at well under a texel, so
  * past a few tens of metres a creature's own shadow simply disappears and it
  * starts to hover — and where the ground is water there is no shadow receiver in
  * the cascade at all. Hovering objects are the single loudest amateur tell in

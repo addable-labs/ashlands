@@ -88,7 +88,7 @@ export const ARMOR_CLASS_SKILL: Readonly<Record<ArmorClass, SkillId>> = {
 
 export const MATERIALS = [
   'fur',
-  'netch',
+  'skerrin',
   'chitin',
   'bonemold',
   'iron',
@@ -122,14 +122,14 @@ export interface MaterialDef {
 
 export const MATERIAL_DEFS: Readonly<Record<MaterialId, MaterialDef>> = {
   fur: { name: 'Fur', weight: 0.45, value: 0.3, condition: 0.5, damage: 0.5, armor: 0.35, enchant: 0.7, armorClass: 'light', tier: 0 },
-  netch: { name: 'Netch Leather', weight: 0.55, value: 0.55, condition: 0.7, damage: 0.6, armor: 0.55, enchant: 1.0, armorClass: 'light', tier: 1 },
+  skerrin: { name: 'Skerrin Leather', weight: 0.55, value: 0.55, condition: 0.7, damage: 0.6, armor: 0.55, enchant: 1.0, armorClass: 'light', tier: 1 },
   chitin: { name: 'Chitin', weight: 0.5, value: 0.5, condition: 0.65, damage: 0.75, armor: 0.5, enchant: 1.2, armorClass: 'light', tier: 1 },
   bonemold: { name: 'Bonemold', weight: 0.8, value: 0.9, condition: 0.9, damage: 0.85, armor: 0.85, enchant: 1.3, armorClass: 'medium', tier: 2 },
   iron: { name: 'Iron', weight: 1.0, value: 0.6, condition: 0.8, damage: 0.8, armor: 0.7, enchant: 0.6, armorClass: 'heavy', tier: 1 },
   steel: { name: 'Steel', weight: 0.95, value: 1.0, condition: 1.0, damage: 1.0, armor: 1.0, enchant: 0.8, armorClass: 'heavy', tier: 2 },
   silver: { name: 'Silver', weight: 0.9, value: 1.6, condition: 0.9, damage: 0.95, armor: 0.95, enchant: 2.0, armorClass: 'heavy', tier: 3, bane: 'undead' },
   dwarven: { name: 'Dwarven', weight: 1.1, value: 2.4, condition: 1.5, damage: 1.25, armor: 1.35, enchant: 1.5, armorClass: 'medium', tier: 3 },
-  orcish: { name: 'Orcish', weight: 1.25, value: 2.8, condition: 1.7, damage: 1.35, armor: 1.5, enchant: 1.2, armorClass: 'medium', tier: 4 },
+  orcish: { name: 'Groshic', weight: 1.25, value: 2.8, condition: 1.7, damage: 1.35, armor: 1.5, enchant: 1.2, armorClass: 'medium', tier: 4 },
   adamantium: { name: 'Adamantium', weight: 0.9, value: 3.4, condition: 2.0, damage: 1.4, armor: 1.6, enchant: 1.8, armorClass: 'medium', tier: 4 },
   glass: { name: 'Glass', weight: 0.4, value: 5.0, condition: 1.2, damage: 1.55, armor: 1.7, enchant: 3.2, armorClass: 'light', tier: 5 },
   ebony: { name: 'Ebony', weight: 1.4, value: 6.5, condition: 2.6, damage: 1.7, armor: 2.0, enchant: 3.6, armorClass: 'heavy', tier: 5 },
@@ -520,11 +520,11 @@ const INGREDIENT_ROWS: readonly IngredientRow[] = [
   { id: 'ingredient:bloat', name: 'Bloat', weight: 0.5, value: 5, effects: [ing('restoreFatigue'), ing('drainAttribute', { attribute: 'agility' }), ing('lightSpell'), ing('paralyze')] },
   { id: 'ingredient:corkbulb', name: 'Corkbulb Root', weight: 1, value: 4, effects: [ing('restoreHealth'), ing('drainAttribute', { attribute: 'intelligence' }), ing('cureParalyzation'), ing('fortifyAttribute', { attribute: 'endurance' })] },
   { id: 'ingredient:comberry', name: 'Comberry', weight: 0.1, value: 3, effects: [ing('restoreMagicka'), ing('drainFatigue'), ing('fireDamage'), ing('resistMagicka')] },
-  { id: 'ingredient:kwamaCuttle', name: 'Kwama Cuttle', weight: 0.5, value: 3, effects: [ing('restoreHealth'), ing('drainAttribute', { attribute: 'agility' }), ing('curePoison'), ing('damageAttribute', { attribute: 'personality' })] },
+  { id: 'ingredient:kwamaCuttle', name: 'Morvek Cuttle', weight: 0.5, value: 3, effects: [ing('restoreHealth'), ing('drainAttribute', { attribute: 'agility' }), ing('curePoison'), ing('damageAttribute', { attribute: 'personality' })] },
   { id: 'ingredient:marshmerrow', name: 'Marshmerrow', weight: 1, value: 2, effects: [ing('restoreHealth'), ing('drainAttribute', { attribute: 'speed' }), ing('restoreMagicka'), ing('drainAttribute', { attribute: 'willpower' })] },
   { id: 'ingredient:muck', name: 'Muck', weight: 1, value: 1, effects: [ing('drainAttribute', { attribute: 'strength' }), ing('resistCommonDisease'), ing('drainAttribute', { attribute: 'speed' }), ing('poison')] },
   { id: 'ingredient:saltrice', name: 'Saltrice', weight: 0.5, value: 4, effects: [ing('restoreFatigue'), ing('restoreHealth'), ing('drainAttribute', { attribute: 'luck' }), ing('fortifyFatigue')] },
-  { id: 'ingredient:scribJelly', name: 'Scrib Jelly', weight: 0.5, value: 6, effects: [ing('restoreFatigue'), ing('cureCommonDisease'), ing('curePoison'), ing('restoreHealth')] },
+  { id: 'ingredient:scribJelly', name: 'Vekling Jelly', weight: 0.5, value: 6, effects: [ing('restoreFatigue'), ing('cureCommonDisease'), ing('curePoison'), ing('restoreHealth')] },
   { id: 'ingredient:trama', name: 'Trama Root', weight: 1, value: 2, effects: [ing('drainAttribute', { attribute: 'willpower' }), ing('telekinesis'), ing('lightSpell'), ing('drainAttribute', { attribute: 'personality' })] },
   { id: 'ingredient:willowAnther', name: 'Willow Anther', weight: 0.1, value: 4, effects: [ing('restoreFatigue'), ing('resistBlightDisease'), ing('curePoison'), ing('fortifyAttribute', { attribute: 'speed' })] },
   { id: 'ingredient:hacklelo', name: 'Hackle-lo Leaf', weight: 1, value: 5, effects: [ing('restoreFatigue'), ing('restoreHealth'), ing('drainAttribute', { attribute: 'intelligence' }), ing('paralyze')] },
@@ -533,7 +533,7 @@ const INGREDIENT_ROWS: readonly IngredientRow[] = [
   { id: 'ingredient:firePetal', name: 'Fire Petal', weight: 0.1, value: 8, effects: [ing('fireDamage'), ing('resistFire'), ing('fortifyAttribute', { attribute: 'willpower' }), ing('lightSpell')] },
   { id: 'ingredient:stoneflower', name: 'Stoneflower Petals', weight: 0.1, value: 3, effects: [ing('restoreFatigue'), ing('fortifyAttribute', { attribute: 'strength' }), ing('drainAttribute', { attribute: 'intelligence' }), ing('restoreAttribute', { attribute: 'strength' })] },
   { id: 'ingredient:blackLichen', name: 'Black Lichen', weight: 1, value: 6, effects: [ing('drainAttribute', { attribute: 'endurance' }), ing('resistPoison'), ing('drainAttribute', { attribute: 'agility' }), ing('restoreAttribute', { attribute: 'intelligence' })] },
-  { id: 'ingredient:daedraHeart', name: "Daedra's Heart", weight: 3, value: 60, effects: [ing('restoreHealth'), ing('fortifyAttribute', { attribute: 'strength' }), ing('drainAttribute', { attribute: 'personality' }), ing('damageHealth')] },
+  { id: 'ingredient:daedraHeart', name: "Aetherim's Heart", weight: 3, value: 60, effects: [ing('restoreHealth'), ing('fortifyAttribute', { attribute: 'strength' }), ing('drainAttribute', { attribute: 'personality' }), ing('damageHealth')] },
   { id: 'ingredient:voidSalts', name: 'Void Salts', weight: 0.2, value: 90, effects: [ing('drainHealth'), ing('resistParalysis'), ing('spellAbsorption'), ing('damageAttribute', { attribute: 'endurance' })] },
   { id: 'ingredient:bonemeal', name: 'Bonemeal', weight: 1, value: 15, effects: [ing('restoreFatigue'), ing('resistCommonDisease'), ing('drainAttribute', { attribute: 'willpower' }), ing('summonAncestralGhost')] },
   { id: 'ingredient:diamond', name: 'Diamond', weight: 0.2, value: 400, effects: [ing('restoreAttribute', { attribute: 'endurance' }), ing('shield'), ing('drainAttribute', { attribute: 'luck' }), ing('reflect')] },
@@ -602,16 +602,16 @@ const STATIC_MISC: readonly ItemDef[] = [
 ];
 
 const STATIC_BOOKS: readonly BookItem[] = [
-  { id: 'book:36lessons', name: 'The 36 Lessons of Vivec, Sermon One', kind: 'book', weight: 3, value: 50, text: 'And the Hortator said unto the ash: I am the sword and the wound both.' },
-  { id: 'book:wolfQueen', name: 'The Wolf Queen, Book One', kind: 'book', weight: 3, value: 40, text: 'Potema stood at the window of her chambers and watched the Imperial City burn.', teaches: 'speechcraft' },
+  { id: 'book:36lessons', name: 'The Forty Verses of Suneth, Verse One', kind: 'book', weight: 3, value: 50, text: 'And the Hortator said unto the ash: I am the sword and the wound both.' },
+  { id: 'book:wolfQueen', name: 'The Ash Queen, Book One', kind: 'book', weight: 3, value: 40, text: 'Vaelith stood at the window of her chambers and watched the Valmori City burn.', teaches: 'speechcraft' },
   { id: 'book:armorersChallenge', name: "The Armorer's Challenge", kind: 'book', weight: 3, value: 90, text: 'Heat, fold, quench. There is no fourth step and no shortcut past the second.', teaches: 'armorer' },
-  { id: 'book:withersnap', name: 'Withershins', kind: 'book', weight: 3, value: 90, text: 'A treatise on walking the wrong way round a shrine, and what answers.', teaches: 'alteration' },
-  { id: 'book:mysteriousAkavir', name: 'Mysterious Akavir', kind: 'book', weight: 3, value: 90, text: 'Of the four nations of Akavir, only the Tsaesci are known to still exist.', teaches: 'longBlade' },
+  { id: 'book:withersnap', name: 'Counterturn', kind: 'book', weight: 3, value: 90, text: 'A treatise on walking the wrong way round a shrine, and what answers.', teaches: 'alteration' },
+  { id: 'book:mysteriousAkavir', name: 'Mysterious Oth-Karan', kind: 'book', weight: 3, value: 90, text: 'Of the four nations of Oth-Karan, only the Tsaesci are known to still exist.', teaches: 'longBlade' },
 ];
 
 /** Loot-table shapes, kept honest: a place is as dangerous as it is. */
 export const LOOT_TIERS: readonly (readonly MaterialId[])[] = [
-  ['fur', 'netch', 'iron', 'chitin'],
+  ['fur', 'skerrin', 'iron', 'chitin'],
   ['iron', 'steel', 'chitin', 'bonemold'],
   ['steel', 'bonemold', 'silver', 'dwarven'],
   ['dwarven', 'silver', 'orcish', 'adamantium'],
@@ -639,7 +639,7 @@ const ENCHANT_SUFFIX: Readonly<Partial<Record<keyof typeof EFFECTS, string>>> = 
   frostShield: 'the Rime',
   lightningShield: 'the Tempest',
   levitate: 'the Kite',
-  jump: 'the Cliff Racer',
+  jump: 'the Ash Shrike',
   feather: 'the Porter',
   waterWalking: 'the Strider',
   waterBreathing: 'the Drowned',

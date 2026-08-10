@@ -13,7 +13,7 @@ import {
 } from './Shapes';
 
 /**
- * The four Dunmer building styles.
+ * The four Cindren building styles.
  *
  * Variation between instances is STRUCTURAL, not scalar: footprint lobes, vent
  * count, storey count, number and placement of openings, buttress count,
@@ -46,12 +46,12 @@ export type MatKey =
    * same palette entry `basalt` uses.
    */
   | 'crag'
-  /** Telvanni tower flesh — grown, not built. Landmarks only. */
+  /** Vaelmyr tower flesh — grown, not built. Landmarks only. */
   | 'fungus'
-  /** Telvanni pod hull: the same organism, older and harder. Landmarks only. */
+  /** Vaelmyr pod hull: the same organism, older and harder. Landmarks only. */
   | 'shell'
   /**
-   * Telvanni cap flesh — the thin, damp, translucent underside of the parasol.
+   * Vaelmyr cap flesh — the thin, damp, translucent underside of the parasol.
    *
    * Separate from `fungus` because it is a different tissue and, more to the
    * point, because it is the only surface in the game that is routinely BACKLIT
@@ -344,7 +344,7 @@ export interface DomeSpec {
  *
  * The silhouette is the whole point — a lopsided onion with a flared foot and
  * a cluster of smoke vents off-axis. Regular revolution reads as a yurt; the
- * lobed radius and the annex are what make it Vvardenfell.
+ * lobed radius and the annex are what make it Ashenreach.
  */
 export function velothiDome(spec: DomeSpec): Structure {
   const rng = new Rng(spec.seed);
@@ -559,7 +559,7 @@ export function velothiDome(spec: DomeSpec): Structure {
 // ---------------------------------------------------------------- redoran shell
 
 /**
- * Redoran chitin shell: a hollowed emperor-crab carapace set on bone footings.
+ * Korran chitin shell: a hollowed emperor-crab carapace set on bone footings.
  *
  * The read comes from the segmentation. Radius carries a sawtooth in v, so
  * each lamella overhangs the one below and the silhouette is a stack of

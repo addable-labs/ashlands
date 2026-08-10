@@ -3,7 +3,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { noise2 } from './Rng';
 
 /**
- * Procedural mesh toolkit for Dunmer architecture.
+ * Procedural mesh toolkit for Cindren architecture.
  *
  * The centrepiece is `buildShell`: a parametric surface with REAL openings cut
  * through it. A textured blob reads as a prop; a wall with a doorway you can
@@ -161,7 +161,7 @@ export interface Opening {
   u1: number;
   v0: number;
   v1: number;
-  /** Round the head of the opening into an arch. Dunmer doors are never square. */
+  /** Round the head of the opening into an arch. Cindren doors are never square. */
   arch?: boolean;
   /** >0 makes a blind recessed panel of this depth instead of a through-hole. */
   recess?: number;
@@ -1272,7 +1272,7 @@ export function sweep(
  * A drift of ash banked against ONE support, in structure-local coordinates.
  *
  * The foundation skirt only covers the shell's own footprint. Everything that
- * stands on legs — a Telvanni tower's roots, a fallen Dwemer machine's shorn
+ * stands on legs — a Vaelmyr tower's roots, a fallen Deshan machine's shorn
  * struts, a shrine's gate pylons — puts its feet metres OUTSIDE that ring, and
  * a leg entering bare ground on a clean silhouette edge is read as a leg
  * ending in air whether or not the vertex is technically below the surface. It

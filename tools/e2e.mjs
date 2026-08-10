@@ -106,9 +106,9 @@ await check('Swim in the sea', async () => {
 await check('Melee attack lands on a creature', async () => {
   const r = await page.evaluate(async () => {
     const ctx = window.engine.ctx, p = ctx.get('player'), A = ctx.get('actors'), C = ctx.get('combat');
-    // Ground creatures only: cliff racers and netch hover above a blade's arc, so
+    // Ground creatures only: ash shrikes and skerrin hover above a blade's arc, so
     // swinging at them correctly misses and tells us nothing about the hit path.
-    const GROUND = ['kwama', 'guar', 'nixhound'];
+    const GROUND = ['morvek', 'drell', 'glassjaw'];
     const list = A.all().filter((a) => a.alive && GROUND.includes(a.kind));
     if (!list.length) return { none: true };
     const best = list[0];

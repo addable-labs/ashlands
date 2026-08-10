@@ -160,7 +160,7 @@ export function softAbs(v: number, k: number): number {
 /**
  * Ridged multifractal. The per-octave weight term is what makes ridges sharpen
  * where the previous octave was already high — that self-similar crest network
- * is what gives Red Mountain its radial spines rather than lumpy blobs.
+ * is what gives Ember Mount its radial spines rather than lumpy blobs.
  */
 export function ridged2(
   x: number,

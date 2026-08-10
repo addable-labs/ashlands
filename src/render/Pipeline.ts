@@ -433,7 +433,7 @@ export class RenderPipeline implements IPipeline {
    * 0.46 specifically. The gain that restores the midtone is 1/(1 - this), so
    * the number sets the whole frame's contrast, not just its floor — and at
    * 0.55 the 2.2x gain that followed drove the sulphur horizon to 246/255 on
-   * three shots and Red Mountain's near slope to a 1st percentile of 8. The
+   * three shots and Ember Mount's near slope to a 1st percentile of 8. The
    * bible forbids a clipped white sky and a crushed pure black in the same
    * breath, and 0.55 was producing both in one frame. At 0.46 the gain is 1.85,
    * the toe still reaches the basalt band (p1 lands 20-40 on the daylight set,
@@ -534,7 +534,7 @@ export class RenderPipeline implements IPipeline {
   readonly cocDeadband = 1.15;
 
   /**
-   * 0.075, was 0.055. The review found Red Mountain's fissures reading as
+   * 0.075, was 0.055. The review found Ember Mount's fissures reading as
    * "pale pink threads ... with no meaningful bloom"; the colour half of that
    * is the tonemapper (see valueCurve in shaders.ts) and this is the other
    * half. The bright-pass threshold sits two stops over the metered key, which

@@ -15457,7 +15457,7 @@ new Vector3();
 */
 /**
 * Skin, per race, read from the RPG layer at runtime. Values are sRGB and sit
-* where the third-person avatar's atlas puts Dunmer skin (linear ~0.13 with a
+* where the third-person avatar's atlas puts Cindren skin (linear ~0.13 with a
 * violet undertone, never pink) so first and third person cannot disagree about
 * whose hands these are.
 */
@@ -18003,7 +18003,7 @@ function skinTextures() {
 *    `askin.x` — fingertips, pads, the thumb web, the interdigital webs — and
 *    weighted by grazing angle, so it is strongest exactly where a real hand
 *    lights up: the rim of a finger seen against the sky. It is tinted toward
-*    ember rather than pink, because these are Dunmer.
+*    ember rather than pink, because these are Cindren.
 *
 * 2. GRAIN DENSITY. The one tiling detail normal is sampled TWICE, at 1x and at
 *    3.1x, and mixed by `askin.y`: fine pores on the flexor forearm and the

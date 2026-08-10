@@ -9,7 +9,7 @@ import type { GreetingDef, ResponseDef, TopicDef, TopicId } from './types';
  * traverse: the interesting move is not "which reply do I pick" but "who else
  * can I ask about this, and will they contradict the last one".
  *
- * Contradiction is deliberate. The Temple, the Ashlanders and the Dissidents
+ * Contradiction is deliberate. The Temple, the Shirenamat and the Dissidents
  * each tell a whole and self-consistent story about the Ash-Wake, and at most
  * one of them can be right. No narrator ever adjudicates.
  */
@@ -28,14 +28,14 @@ export const TOPICS: Record<TopicId, TopicDef> = {
   four_verses: { id: 'four_verses', label: 'the Four Verses' },
   the_ashen_gate: { id: 'the_ashen_gate', label: 'the Gate of Ash' },
   dissident_saints: { id: 'dissident_saints', label: 'the Dissident Saints' },
-  tribunal_temple: { id: 'tribunal_temple', label: 'the Tribunal Temple' },
-  ashlanders: { id: 'ashlanders', label: 'Ashlanders' },
-  house_hlaalu: { id: 'house_hlaalu', label: 'House Hlaalu' },
-  house_redoran: { id: 'house_redoran', label: 'House Redoran' },
-  house_telvanni: { id: 'house_telvanni', label: 'House Telvanni' },
-  fighters_guild: { id: 'fighters_guild', label: 'Fighters Guild' },
-  mages_guild: { id: 'mages_guild', label: 'Mages Guild' },
-  thieves_guild: { id: 'thieves_guild', label: 'the Thieves Guild' },
+  tribunal_temple: { id: 'tribunal_temple', label: 'the Temple of the Trine' },
+  ashlanders: { id: 'ashlanders', label: 'Shirenamat' },
+  house_hlaalu: { id: 'house_hlaalu', label: 'House Varo' },
+  house_redoran: { id: 'house_redoran', label: 'House Korran' },
+  house_telvanni: { id: 'house_telvanni', label: 'House Vaelmyr' },
+  fighters_guild: { id: 'fighters_guild', label: 'Ironring' },
+  mages_guild: { id: 'mages_guild', label: 'Ashen Conclave' },
+  thieves_guild: { id: 'thieves_guild', label: 'the Quiet Hand' },
   advancement: { id: 'advancement', label: 'advancement' },
   blight: { id: 'blight', label: 'the blight' },
   ash_storms: { id: 'ash_storms', label: 'ash storms' },
@@ -43,13 +43,13 @@ export const TOPICS: Record<TopicId, TopicDef> = {
   kaldera_mine: { id: 'kaldera_mine', label: 'Kaldera mine' },
   the_widow: { id: 'the_widow', label: "the widow's debt" },
   bad_poetry: { id: 'bad_poetry', label: 'bad poetry' },
-  hlaalu_ledger: { id: 'hlaalu_ledger', label: 'the Hlaalu ledger' },
+  hlaalu_ledger: { id: 'hlaalu_ledger', label: 'the Varo ledger' },
   stolen_goods: { id: 'stolen_goods', label: 'stolen goods' },
   my_bounty: { id: 'my_bounty', label: 'my bounty' },
-  silt_strider: { id: 'silt_strider', label: 'silt strider' },
+  fenwalker: { id: 'fenwalker', label: 'fenwalker' },
   missing_apprentice: { id: 'missing_apprentice', label: 'the missing apprentice' },
   duel_of_honour: { id: 'duel_of_honour', label: 'a duel of honour' },
-  red_mountain: { id: 'red_mountain', label: 'Red Mountain' },
+  red_mountain: { id: 'red_mountain', label: 'Ember Mount' },
   books: { id: 'books', label: 'books' },
 };
 
@@ -66,19 +66,19 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'ald_sethis',
     when: [{ k: 'race', v: 'dunmer' }, { k: 'speakerFaction', v: 'hlaalu' }],
-    text: 'A port. Ash on one side, water on the other, and a customs house in between taking its cut of both. Hlaalu built the docks when the Empire said there would be no docks. Draw your own conclusion about who runs Ald Sethis.',
+    text: 'A port. Ash on one side, water on the other, and a customs house in between taking its cut of both. Varo built the docks when the Concord said there would be no docks. Draw your own conclusion about who runs Ald Sethis.',
     effects: [{ k: 'topic', v: 'house_hlaalu' }],
   },
   {
     topic: 'ald_sethis',
     when: [{ k: 'speakerFaction', v: 'redoran' }],
-    text: 'A town of scales and short memories. Redoran keeps the ash-watch here because somebody must, and Hlaalu bills us for the lamp oil.',
+    text: 'A town of scales and short memories. Korran keeps the ash-watch here because somebody must, and Varo bills us for the lamp oil.',
     effects: [{ k: 'topic', v: 'house_redoran' }],
   },
   {
     topic: 'ald_sethis',
     when: [{ k: 'speakerFaction', v: 'ashlanders' }],
-    text: 'You call that stone heap a place. We buried three generations under it before the first Hlaalu counted a coin there. The ash will have it back.',
+    text: 'You call that stone heap a place. We buried three generations under it before the first Varo counted a coin there. The ash will have it back.',
   },
   {
     topic: 'ald_sethis',
@@ -88,7 +88,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'ald_sethis',
     when: [],
-    text: 'Ald Sethis. Egg mines up the road, silt strider port on the flat, a shrine, a guildhall or two, and more ash than anyone wants. It is not much, but you can eat here.',
+    text: 'Ald Sethis. Egg mines up the road, fenwalker port on the flat, a shrine, a guildhall or two, and more ash than anyone wants. It is not much, but you can eat here.',
   },
 
   /* ---------------------------------------------------------- small talk */
@@ -106,13 +106,13 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'little_advice',
     when: [{ k: 'weather', v: 'ashstorm' }],
-    text: 'In a storm like this, stay off the flats. The ash gets into the eyes and then into the lungs, and the guar will walk you off a ledge trying to find shelter.',
+    text: 'In a storm like this, stay off the flats. The ash gets into the eyes and then into the lungs, and the drell will walk you off a ledge trying to find shelter.',
     effects: [{ k: 'topic', v: 'ash_storms' }],
   },
   {
     topic: 'little_advice',
     when: [{ k: 'race', v: 'dunmer' }, { k: 'not', of: { k: 'faction', v: 'hlaalu' } }],
-    text: 'Do not take a Hlaalu contract you have not read twice. And do not read it in front of the Hlaalu.',
+    text: 'Do not take a Varo contract you have not read twice. And do not read it in front of the Varo.',
   },
   {
     topic: 'little_advice',
@@ -135,7 +135,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'latest_rumours',
     when: [{ k: 'npc', v: 'dinara_loras' }],
-    text: 'The egg mine is short two workers and the Mages Guild is short one apprentice, and nobody has drawn the obvious line between those two facts. Also Llevo has written another poem. I am told it rhymes in places.',
+    text: 'The egg mine is short two workers and the Ashen Conclave is short one apprentice, and nobody has drawn the obvious line between those two facts. Also Llevo has written another poem. I am told it rhymes in places.',
     effects: [
       { k: 'topic', v: 'missing_apprentice' },
       { k: 'topic', v: 'bad_poetry' },
@@ -162,7 +162,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'background',
     when: [{ k: 'npc', v: 'sethri_quiet' }, { k: 'faction', v: 'thieves' }],
-    text: 'Khajiit was born on a boat and has been leaving places ever since. Do not ask which places. You are one of us now; that is enough family.',
+    text: 'Rrasa was born on a boat and has been leaving places ever since. Do not ask which places. You are one of us now; that is enough family.',
   },
   {
     topic: 'background',
@@ -172,7 +172,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'background',
     when: [{ k: 'race', v: 'nord' }],
-    text: 'Skyrim, then a boat, then a bad winter, then here. Same story as every Nord south of the pass, and we all tell it like it is ours alone.',
+    text: 'Skarnhold, then a boat, then a bad winter, then here. Same story as every Skarn south of the pass, and we all tell it like it is ours alone.',
   },
   {
     topic: 'background',
@@ -183,7 +183,7 @@ export const RESPONSES: readonly ResponseDef[] = [
     topic: 'my_trade',
     when: [{ k: 'npc', v: 'bemis_alen' }],
     text: 'I keep the strider. Twenty years on the same beast. She knows the Ashfall road better than the road knows itself, and she is worth more than the town.',
-    effects: [{ k: 'topic', v: 'silt_strider' }],
+    effects: [{ k: 'topic', v: 'fenwalker' }],
   },
   {
     topic: 'my_trade',
@@ -255,7 +255,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'the_ash_wake',
     when: [{ k: 'speakerFaction', v: 'temple' }],
-    text: 'An Ashlander superstition. The Temple has answered the question of prophecy once and for all, and the answer is that it is finished. Do not carry that word about the shrine.',
+    text: 'An Shirenamat superstition. The Temple has answered the question of prophecy once and for all, and the answer is that it is finished. Do not carry that word about the shrine.',
     effects: [{ k: 'factionRep', faction: 'temple', v: -1 }],
   },
   {
@@ -275,12 +275,12 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'the_ash_wake',
     when: [],
-    text: 'Ashlander talk. Ash wakes, sleeper stirs, sky goes the colour of a bruise. They have been saying it since my grandmother and the sky has been that colour the whole time.',
+    text: 'Shirenamat talk. Ash wakes, sleeper stirs, sky goes the colour of a bruise. They have been saying it since my grandmother and the sky has been that colour the whole time.',
   },
   {
     topic: 'four_verses',
     when: [{ k: 'npc', v: 'zabamat' }, { k: 'stage', quest: 'mq2_four_verses', min: 10 }],
-    text: 'Ash, Blood, Name, Deed. The verse of Ash is kept at the shrine and they will not admit it. The verse of Blood is in a Telvanni library and Nevena Telvo will want paying. The verse of Name is ours, and you must earn it. The verse of Deed a smuggler sold for forty drakes, which tells you what the world is worth.',
+    text: 'Ash, Blood, Name, Deed. The verse of Ash is kept at the shrine and they will not admit it. The verse of Blood is in a Vaelmyr library and Nevena Telvo will want paying. The verse of Name is ours, and you must earn it. The verse of Deed a smuggler sold for forty drakes, which tells you what the world is worth.',
   },
   {
     topic: 'four_verses',
@@ -296,7 +296,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'four_verses',
     when: [],
-    text: 'Four scraps of Ashlander verse. Collectors pay for them, which is the only reason anyone in a town has heard of them.',
+    text: 'Four scraps of Shirenamat verse. Collectors pay for them, which is the only reason anyone in a town has heard of them.',
   },
   {
     topic: 'hollow_star',
@@ -311,12 +311,12 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'hollow_star',
     when: [{ k: 'speakerFaction', v: 'mages' }],
-    text: 'Astronomically? Secunda occults nothing. What the Ashlanders call the Hollow Star is a period of low albedo we can predict to the hour. That it lines up with their verse is the kind of coincidence prophecy is *made* of.',
+    text: 'Astronomically? Secunda occults nothing. What the Shirenamat call the Hollow Star is a period of low albedo we can predict to the hour. That it lines up with their verse is the kind of coincidence prophecy is *made* of.',
   },
   {
     topic: 'hollow_star',
     when: [],
-    text: 'A dark moon. Farmers keep their guar in. That is the whole of it, as far as I ever heard.',
+    text: 'A dark moon. Farmers keep their drell in. That is the whole of it, as far as I ever heard.',
   },
   {
     topic: 'the_ashen_gate',
@@ -326,7 +326,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'the_ashen_gate',
     when: [{ k: 'speakerFaction', v: 'redoran' }],
-    text: 'The ash-watch has standing orders about that place: mark it, do not enter it, do not report it to Hlaalu. Nobody has ever explained the third order to me.',
+    text: 'The ash-watch has standing orders about that place: mark it, do not enter it, do not report it to Varo. Nobody has ever explained the third order to me.',
   },
   {
     topic: 'the_ashen_gate',
@@ -341,7 +341,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'red_mountain',
     when: [],
-    text: 'Red Mountain. You can see it from the docks on a clear day, which is not often, and you would rather not, which is always.',
+    text: 'Ember Mount. You can see it from the docks on a clear day, which is not often, and you would rather not, which is always.',
     effects: [{ k: 'topic', v: 'blight' }],
   },
 
@@ -354,7 +354,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'tribunal_temple',
     when: [{ k: 'speakerFaction', v: 'temple' }],
-    text: 'The Three are Almalexia the mother, Sotha Sil the mystery, Vivec the poet-king. They walk still, in their fashion, and the shrine is open from the fifth hour.',
+    text: 'The Three are Almalexia the mother, Sotha Sil the mystery, Suneth the poet-king. They walk still, in their fashion, and the shrine is open from the fifth hour.',
   },
   {
     topic: 'tribunal_temple',
@@ -365,7 +365,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'tribunal_temple',
     when: [],
-    text: 'The Temple. You pay it, you kneel to it, and when you are sick it does mend you, which is more than the Empire manages.',
+    text: 'The Temple. You pay it, you kneel to it, and when you are sick it does mend you, which is more than the Concord manages.',
   },
   {
     topic: 'dissident_saints',
@@ -381,7 +381,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'dissident_saints',
     when: [{ k: 'speakerFaction', v: 'temple' }],
-    text: 'A polite word for people who ought to be in a cell. They preach that the Three are silent because the Three are gone. Say that in the nave and the Ordinators will explain the difference between doubt and slander.',
+    text: 'A polite word for people who ought to be in a cell. They preach that the Three are silent because the Three are gone. Say that in the nave and the Wardens will explain the difference between doubt and slander.',
   },
   {
     topic: 'dissident_saints',
@@ -413,17 +413,17 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'great_houses',
     when: [{ k: 'faction', v: 'hlaalu' }],
-    text: 'You wear Hlaalu colours, so you know the joke already: Redoran has honour, Telvanni has power, Hlaalu has the harbour. Guess which one the other two need.',
+    text: 'You wear Varo colours, so you know the joke already: Korran has honour, Vaelmyr has power, Varo has the harbour. Guess which one the other two need.',
   },
   {
     topic: 'great_houses',
     when: [{ k: 'faction', v: 'redoran' }],
-    text: 'Three Houses on Vvardenfell and only one of them stands its watch. Do not let a Hlaalu tell you that the docks are the frontier.',
+    text: 'Three Houses on Ashenreach and only one of them stands its watch. Do not let a Varo tell you that the docks are the frontier.',
   },
   {
     topic: 'great_houses',
     when: [],
-    text: 'Hlaalu trades, Redoran fights, Telvanni does as it pleases and calls the pleasing a philosophy. You may join one. Only one — swear to a second and the first will hear of it before you finish the sentence.',
+    text: 'Varo trades, Korran fights, Vaelmyr does as it pleases and calls the pleasing a philosophy. You may join one. Only one — swear to a second and the first will hear of it before you finish the sentence.',
     effects: [
       { k: 'topic', v: 'house_hlaalu' },
       { k: 'topic', v: 'house_redoran' },
@@ -433,13 +433,13 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'house_hlaalu',
     when: [{ k: 'npc', v: 'varo_hleran' }, { k: 'rank', faction: 'hlaalu', min: 2 }],
-    text: 'Now that you are ours, the honest version: we do not bribe the Empire, we *invoice* it. Every writ that leaves this house is legal. Whether it is right is a question for Redoran, who can afford it.',
+    text: 'Now that you are ours, the honest version: we do not bribe the Concord, we *invoice* it. Every writ that leaves this house is legal. Whether it is right is a question for Korran, who can afford it.',
     effects: [{ k: 'topic', v: 'advancement' }],
   },
   {
     topic: 'house_hlaalu',
     when: [{ k: 'faction', v: 'redoran' }],
-    text: 'Do not speak that name in this hall. Kinsman of Redoran does not drink with the harbour.',
+    text: 'Do not speak that name in this hall. Kinsman of Korran does not drink with the harbour.',
     effects: [{ k: 'disposition', v: -4 }],
   },
   {
@@ -456,7 +456,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'house_redoran',
     when: [{ k: 'npc', v: 'dral_seran' }, { k: 'rank', faction: 'redoran', min: 3 }],
-    text: 'You have held the line long enough to be told: half the ash-watch is unpaid. Hlaalu holds the levy and we hold the wall, and we do not speak of it because speaking of it is how a House dies.',
+    text: 'You have held the line long enough to be told: half the ash-watch is unpaid. Varo holds the levy and we hold the wall, and we do not speak of it because speaking of it is how a House dies.',
   },
   {
     topic: 'house_redoran',
@@ -471,7 +471,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'house_telvanni',
     when: [{ k: 'npc', v: 'nevena_telvo' }],
-    text: 'I am a Mouth. The Master has not spoken in eleven years and I speak for him, which is either the highest office in the House or an elaborate way of being alone. Telvanni law: what you can hold, you own.',
+    text: 'I am a Mouth. The Master has not spoken in eleven years and I speak for him, which is either the highest office in the House or an elaborate way of being alone. Vaelmyr law: what you can hold, you own.',
   },
   {
     topic: 'house_telvanni',
@@ -486,7 +486,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'fighters_guild',
     when: [{ k: 'npc', v: 'hrafna_gulhild' }, { k: 'rank', faction: 'fighters', min: 3 }],
-    text: 'Between us: half our contracts come through Hlaalu and half of those are debt collection with the word filed off. I take the honest half. That is a choice I make every morning and you will make it too.',
+    text: 'Between us: half our contracts come through Varo and half of those are debt collection with the word filed off. I take the honest half. That is a choice I make every morning and you will make it too.',
     effects: [{ k: 'topic', v: 'advancement' }],
   },
   {
@@ -508,7 +508,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'mages_guild',
     when: [{ k: 'faction', v: 'telvanni' }],
-    text: 'You are Telvanni. The Guild will smile at you and write your name down. Both of those are the same gesture.',
+    text: 'You are Vaelmyr. The Guild will smile at you and write your name down. Both of those are the same gesture.',
   },
   {
     topic: 'mages_guild',
@@ -613,7 +613,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'kaldera_mine',
     when: [],
-    text: 'Egg mine, half an hour up the ash road. Kwama queen, four galleries, one of them shut. Gadan Sarothril runs it and he runs it hard.',
+    text: 'Egg mine, half an hour up the ash road. Morvek queen, four galleries, one of them shut. Gadan Sarothril runs it and he runs it hard.',
   },
   {
     topic: 'the_widow',
@@ -633,7 +633,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'the_widow',
     when: [{ k: 'failed', quest: 'sq_widows_debt' }],
-    text: 'The Andalen house is Hlaalu property now. She went to her sister in Suran, they say. Nobody has seen her since the strider left.',
+    text: 'The Andalen house is Varo property now. She went to her sister in Suran, they say. Nobody has seen her since the strider left.',
   },
   {
     topic: 'the_widow',
@@ -644,7 +644,7 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'bad_poetry',
     when: [{ k: 'npc', v: 'llevo_versifier' }],
-    text: 'Bad? BAD? The Ashen Flagon has heard eleven of my cantos and applauded nine. I am composing the twelfth. It requires a rhyme for "netch" and I will find one if it takes the season.',
+    text: 'Bad? BAD? The Ashen Flagon has heard eleven of my cantos and applauded nine. I am composing the twelfth. It requires a rhyme for "skerrin" and I will find one if it takes the season.',
     effects: [{ k: 'stage', quest: 'sq_bad_poetry', v: 10 }],
   },
   {
@@ -660,13 +660,13 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'hlaalu_ledger',
     when: [{ k: 'npc', v: 'sethri_quiet' }, { k: 'faction', v: 'thieves' }],
-    text: 'The counting house keeps two ledgers, and only one of them goes to the Empire. Bring me the other and every debt in this town changes hands, quietly, in our favour.',
+    text: 'The counting house keeps two ledgers, and only one of them goes to the Concord. Bring me the other and every debt in this town changes hands, quietly, in our favour.',
     effects: [{ k: 'stage', quest: 'tg1_ledger', v: 10 }],
   },
   {
     topic: 'hlaalu_ledger',
     when: [{ k: 'npc', v: 'varo_hleran' }],
-    text: 'The house ledger is the property of House Hlaalu and is not a topic of conversation. Who told you that word?',
+    text: 'The house ledger is the property of House Varo and is not a topic of conversation. Who told you that word?',
     effects: [{ k: 'disposition', v: -6 }],
   },
   {
@@ -717,17 +717,17 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'guards',
     when: [],
-    text: 'Legion troopers in the square, Redoran ash-watch on the wall. They will demand your fine, take you in, or take you down, in that order and no other.',
+    text: 'Legion troopers in the square, Korran ash-watch on the wall. They will demand your fine, take you in, or take you down, in that order and no other.',
   },
   {
-    topic: 'silt_strider',
+    topic: 'fenwalker',
     when: [{ k: 'npc', v: 'bemis_alen' }],
     text: 'She will carry you as far as the Ashfall crossing, weather permitting. In a storm she stands and I stand with her, and no fee will move either of us.',
   },
   {
-    topic: 'silt_strider',
+    topic: 'fenwalker',
     when: [],
-    text: 'The great beast at the port. Bemis drives her. Cheaper than a guar and it does not stop to eat.',
+    text: 'The great beast at the port. Bemis drives her. Cheaper than a drell and it does not stop to eat.',
   },
   {
     topic: 'missing_apprentice',
@@ -753,12 +753,12 @@ export const RESPONSES: readonly ResponseDef[] = [
   {
     topic: 'duel_of_honour',
     when: [{ k: 'npc', v: 'dral_seran' }],
-    text: 'A Redoran matter is settled on the sand, before witnesses, to first blood or to the end. Not in an alley. Not with a hireling. If you cannot tell the difference you are not Redoran.',
+    text: 'A Korran matter is settled on the sand, before witnesses, to first blood or to the end. Not in an alley. Not with a hireling. If you cannot tell the difference you are not Korran.',
   },
   {
     topic: 'duel_of_honour',
     when: [],
-    text: 'Redoran business. They still fight them, and the Legion still pretends not to notice.',
+    text: 'Korran business. They still fight them, and the Legion still pretends not to notice.',
   },
   {
     topic: 'books',
@@ -822,11 +822,11 @@ export const GREETINGS: readonly GreetingDef[] = [
   },
   {
     when: [{ k: 'faction', v: 'redoran' }, { k: 'speakerFaction', v: 'hlaalu' }],
-    text: 'Redoran. In a counting house. Well, the door is a door.',
+    text: 'Korran. In a counting house. Well, the door is a door.',
   },
   {
     when: [{ k: 'faction', v: 'hlaalu' }, { k: 'speakerFaction', v: 'redoran' }],
-    text: 'Hlaalu colours in the hall of the watch. State your business and keep your hands where the lamp is.',
+    text: 'Varo colours in the hall of the watch. State your business and keep your hands where the lamp is.',
   },
   {
     when: [{ k: 'disposition', max: 15 }],

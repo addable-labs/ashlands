@@ -61,7 +61,7 @@ export const MAX_SKINNED = 24;
  * Distance bands scaled by a hand-tuned per-species constant were measuring the
  * wrong thing. What decides whether a mesh is worth drawing is how many pixels
  * it covers, and that is `size / (depth * pixelWorld)` — one expression that is
- * already correct for a 0.5 m kwama, an 8 m netch and a 20 m silt strider, at
+ * already correct for a 0.5 m morvek, an 8 m skerrin and a 20 m fenwalker, at
  * any field of view and any resolution, with nothing to tune per species.
  *
  * The band that costs real money is PX_MESH: below it the creature draws as one
@@ -89,7 +89,7 @@ const LOD_IMPOSTOR = 900;
  *
  * Contact.ts's whole premise is that contact "cannot be something that switches
  * off with distance", and a fixed metre cut-off broke exactly that promise: a
- * kwama's pool is sub-pixel noise by 150 m while a netch's is still fourteen
+ * morvek's pool is sub-pixel noise by 150 m while a skerrin's is still fourteen
  * pixels wide at 450 m, and no single distance can be right for both. Pooling
  * on the projected diameter is the same measure the LOD bands already use and
  * needs no per-species tuning. Below PX_MIN the pool cannot resolve and is
@@ -106,7 +106,7 @@ const PER_FOOT_ACTORS = 10;
  * distance at which contrast falls to 2%) that an actor may be staged at.
  *
  * Staging distance has to know how far you can actually see. In an ash storm the
- * useful depth of the world is around 150 m; a silt strider placed at 290 m in
+ * useful depth of the world is around 150 m; a fenwalker placed at 290 m in
  * one is a grey smudge that no amount of shading can rescue, and the fix is to
  * bring the animal to where the air is still transparent rather than to fight
  * the atmosphere.
@@ -120,7 +120,7 @@ const CLEAR_EXTINCTION = 1e-4;
  * is pulled back out.
  *
  * The band had only ever been enforced on its far side, and the consequence is
- * the one the review opened with. A cliff racer's band starts at 40 m because
+ * the one the review opened with. A ash shrike's band starts at 40 m because
  * that is the distance at which a three-metre animal reads as an animal; nothing
  * stopped one from flying to twelve. At twelve metres, with a fourteen-metre
  * altitude ceiling above a camera that is pitched up at a mountain, its wing
@@ -128,7 +128,7 @@ const CLEAR_EXTINCTION = 1e-4;
  * peak — and no amount of shading fixes a creature that is simply in the wrong
  * place. Composition is a staging problem, so it is solved where staging lives.
  *
- * Ground animals are exempt: the player must be able to walk up to a guar, and
+ * Ground animals are exempt: the player must be able to walk up to a drell, and
  * an actor that teleports away as you approach it is a far worse defect than a
  * badly framed one. Only actors with an authored altitude band — the fliers,
  * whose AI moves them independently of the player and whose staging band is
@@ -378,7 +378,7 @@ export class ActorSystem implements System {
    * (authored per species as `def.stage`, because on-screen height is
    * size/(distance*pixelWorld) and nothing else) and how far the air lets you
    * see today. Both have to be in the answer, or the same band that stages a
-   * silt strider as a landmark on a clear morning stages it as a smudge in an
+   * fenwalker as a landmark on a clear morning stages it as a smudge in an
    * ash storm.
    */
   private stageBand(def: SpeciesDef): void {
@@ -389,7 +389,7 @@ export class ActorSystem implements System {
     // ------------------------------------------- the near edge in thick air
     //
     // Only the far edge tracked the weather, and that is half an answer. The
-    // review measured the ash-storm cliff racer at fifty percent contrast where
+    // review measured the ash-storm ash shrike at fifty percent contrast where
     // its depth allows ten, and a shader probe (applyAerial with the surface
     // term forced to zero) shows why: ground actors at 90-105 m converge to 0.90
     // of the background, exactly what the extinction says, so the fog function,
@@ -423,7 +423,7 @@ export class ActorSystem implements System {
       for (let i = 0; i < def.population; i++) {
         const seed = this.nextId * 7.13 + i;
         // Herd species arrive in loose clusters; solitaries scatter.
-        const herd = def.kind === 'kwama' || def.kind === 'nixhound' || def.kind === 'guar';
+        const herd = def.kind === 'morvek' || def.kind === 'glassjaw' || def.kind === 'drell';
         const cluster = herd && last !== null && hash(seed) < 0.65;
         _v.copy(cluster ? last!.position : _anchor);
         // A cluster member is placed against its neighbour; everything else is
@@ -558,7 +558,7 @@ export class ActorSystem implements System {
     if (agent.def === undefined || !agent.alive) return;
     agent.health = Math.max(0, agent.health - amount);
     agent.brain.alarm = 1;
-    // Knockback scaled by a mass proxy: a kwama flies, a strider does not notice.
+    // Knockback scaled by a mass proxy: a morvek flies, a strider does not notice.
     const mass = Math.max(0.25, agent.def.radius * agent.scale);
     _v.copy(dir);
     _v.y = 0;
@@ -624,9 +624,9 @@ export class ActorSystem implements System {
     // LOD assignment, largest ON SCREEN first. Capping the skinned tier is what
     // keeps a crowd from becoming a frame-time cliff, but the cap has to be
     // spent on the actors that are worth it — and that is decided by projected
-    // size, not by distance. Sorted by distance, twenty-four half-metre kwama
+    // size, not by distance. Sorted by distance, twenty-four half-metre morvek
     // foraging at fifteen metres exhausted the whole bone budget and demoted a
-    // twenty-metre silt strider filling a third of the frame to the reduced-rate
+    // twenty-metre fenwalker filling a third of the frame to the reduced-rate
     // tier. The landmark must outbid the beetles.
     this.sorted.length = 0;
     for (const a of this.agents) {
@@ -666,7 +666,7 @@ export class ActorSystem implements System {
 
       // Streaming runs at EVERY tier. Gating it on lod >= 3 meant a landmark
       // species — whose whole point is that it stays skinned at range — could
-      // never be restaged at all: a netch at 450 m is still lod 1, so it was
+      // never be restaged at all: a skerrin at 450 m is still lod 1, so it was
       // never even considered for recycling.
       this.recycle(a, cam.position, d, onScreen);
 
@@ -737,9 +737,9 @@ export class ActorSystem implements System {
    *   CAST  the sun the body hides, which lands where the sun ray through the
    *         animal meets the ground — NOT underneath it. Its darkness is set by
    *         the sun/sky ratio and by nothing else: the sun subtends half a
-   *         degree, so a three-metre netch keeps a full umbra until it is some
+   *         degree, so a three-metre skerrin keeps a full umbra until it is some
    *         six hundred metres up. The old code faded this by 1/(1 + 0.16h) and
-   *         pinned it under the animal, which is why a netch at fifteen metres
+   *         pinned it under the animal, which is why a skerrin at fifteen metres
    *         had a 16%-strength shadow in the one place a shadow could never be.
    *         The OFFSET is the whole altitude cue.
    */
@@ -748,7 +748,7 @@ export class ActorSystem implements System {
     const terrain = this.terrain;
     if (c === null || terrain === null) return;
 
-    // The occluder's centre, not its root. A silt strider's root sits on the
+    // The occluder's centre, not its root. A fenwalker's root sits on the
     // ground while nine metres of shell sits above it, and it is the shell that
     // casts. Fliers already carry their altitude in position.y.
     const bodyY =
@@ -785,8 +785,8 @@ export class ActorSystem implements System {
     // softens a high shadow is the sky's share of the light, and that is `soft`.
     const cast = r * 1.05 + alt * 0.02;
     // Fade on the pool's PROJECTED DIAMETER, never on raw distance — see
-    // CONTACT_PX_MIN. This is what keeps a 15 m netch grounded at 400 m (its
-    // pool is still fourteen pixels across) while a kwama's two-pixel smudge is
+    // CONTACT_PX_MIN. This is what keeps a 15 m skerrin grounded at 400 m (its
+    // pool is still fourteen pixels across) while a morvek's two-pixel smudge is
     // correctly dropped at a fifth of that range.
     const px = (2 * cast) / Math.max(1e-6, dist * pixelWorld);
     const range = THREE.MathUtils.clamp((px - CONTACT_PX_MIN) / (CONTACT_PX_FULL - CONTACT_PX_MIN), 0, 1);
@@ -837,7 +837,7 @@ export class ActorSystem implements System {
    * empty. Terrain never notices, because terrain faces up. A creature is the
    * one class of object in the frame with large downward-facing surfaces, and
    * with nothing below the horizon every one of them resolves to black: the
-   * netch underside the review called an opaque tarp, the guar on the coast
+   * skerrin underside the review called an opaque tarp, the drell on the coast
    * hillside it could not read at all, and all six of the hero strider's legs.
    *
    * So it is reconstructed here from quantities the sky already publishes, in
@@ -918,7 +918,7 @@ export class ActorSystem implements System {
 
     // ------------------------------------------------------------ standoff
     //
-    // A cliff racer is a predator, so AI.steer puts it in 'approach' inside 48 m
+    // A ash shrike is a predator, so AI.steer puts it in 'approach' inside 48 m
     // and 'dive' stoops it straight at the player — which in a screenshot, where
     // the player IS the camera, means it flies into the lens and parks there.
     // That is the whole of the review's first defect: a wing at a dozen metres,
@@ -929,7 +929,7 @@ export class ActorSystem implements System {
     // teleport: it adds an outward component that ramps in over the last of the
     // standoff radius, so a stoop still reads as a stoop and then pulls up and
     // past. Ground actors have a zero standoff and are untouched — walking up to
-    // a guar has to keep working.
+    // a drell has to keep working.
     if (a.standoff > 0) {
       _v2.subVectors(a.position, ctx.camera.position);
       _v2.y = 0;
@@ -958,8 +958,8 @@ export class ActorSystem implements System {
     a.position.x = THREE.MathUtils.clamp(a.position.x, -e, e);
     a.position.z = THREE.MathUtils.clamp(a.position.z, -e, e);
 
-    // Yaw follows velocity under a species turn limit. A silt strider that can
-    // spin like a kwama destroys its own sense of scale.
+    // Yaw follows velocity under a species turn limit. A fenwalker that can
+    // spin like a morvek destroys its own sense of scale.
     const horiz = Math.hypot(a.vel.x, a.vel.z);
     const maxTurn = THREE.MathUtils.clamp(3.4 / Math.max(0.4, def.radius * 0.7), 0.22, 3.2);
     if (horiz > 0.05) {
@@ -1108,7 +1108,7 @@ export class ActorSystem implements System {
         solveTwoBone(rig, li.upper, li.lower, st.target, _pole, a.scale);
 
         // Point the toe at the ground contact, so an insect leg ends on a tip
-        // and a guar foot lies flat, without paying for a third IK segment.
+        // and a drell foot lies flat, without paying for a third IK segment.
         const foot = rig.bones[li.foot];
         const parent = foot.parent;
         if (parent !== null) {
@@ -1142,7 +1142,7 @@ export class ActorSystem implements System {
    * Ambient population streaming.
    *
    * The keep radius used to be the RENDERING ceiling (LOD_IMPOSTOR * lodScale),
-   * which for a netch worked out at 2.6 km — so an animal that started 450 m
+   * which for a skerrin worked out at 2.6 km — so an animal that started 450 m
    * away simply stayed there for the whole session, and what ended up in frame
    * was whatever happened to be lying around rather than anything staged. The
    * radius that matters is the composition one: an actor outside its species'
@@ -1166,7 +1166,7 @@ export class ActorSystem implements System {
     // STAGE_NEAR_LEASH: a flier inside its own near edge is the defect the
     // review opened with — a wing filling the top of the frame, cut by the edge,
     // over the mountain it was supposed to be flying past. Fliers only; walking
-    // up to a guar has to keep working.
+    // up to a drell has to keep working.
     if (a.def.altitude !== undefined && dist < near * STAGE_NEAR_LEASH) {
       // Same leash geometry as below, aimed outward instead of inward: a point
       // in the middle of the band along the line the actor came in on.

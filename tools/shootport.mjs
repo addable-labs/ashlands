@@ -29,7 +29,7 @@ const URL = `http://127.0.0.1:${PORT}/`;
  */
 export const SHOTS = {
   dawn:      { hour: 6.2,  weather: 'clear',    note: 'low sun over the ash wastes, long shadows, godrays' },
-  redmtn:    { hour: 10.0, weather: 'cloudy',   note: 'Red Mountain silhouette, aerial perspective' },
+  redmtn:    { hour: 10.0, weather: 'cloudy',   note: 'Ember Mount silhouette, aerial perspective' },
   coast:     { hour: 17.6, weather: 'clear',    note: 'shoreline, water shading, foam, wet sand, sun glint' },
   night:     { hour: 23.4, weather: 'clear',    note: 'both moons, stars, night ambient, bioluminescence' },
   ashstorm:  { hour: 13.0, weather: 'ashstorm', note: 'signature weather — visibility, particulate, tint' },

@@ -102,7 +102,7 @@ export class TerrainField {
         const isStone = surf === Surface.Stone ? 1 : 0;
         const isLava = surf === Surface.Lava ? 1 : 0;
 
-        // Altitude falloff: the flanks of Red Mountain are sterile long before
+        // Altitude falloff: the flanks of Ember Mount are sterile long before
         // the summit, and nothing at all grows in the lava zone.
         const alt = 1 - smoothstep(210, 560, y);
         const level = 1 - smoothstep(0.14, 0.40, slope);
@@ -112,7 +112,7 @@ export class TerrainField {
          * what emptied the whole upper third of the map.
          *
          * The terrain splat is a continuous blend of eight layers; materialAt
-         * returns whichever has the largest weight. On the flanks of Red Mountain
+         * returns whichever has the largest weight. On the flanks of Ember Mount
          * lava_crust wins that vote by a small margin over ash over a very large
          * area — ground that renders, correctly, as grey cinder and reads as ash
          * to the eye. Multiplying every habitat channel by (1 - isLava) therefore

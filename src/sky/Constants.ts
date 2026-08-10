@@ -3,9 +3,9 @@
  * metres, so world-space distances feed the optical-depth integrals directly.
  *
  * Rayleigh/ozone coefficients are Bruneton's 2017 fits for 680/550/440nm.
- * The Mie term is deliberately NOT Earth's: Vvardenfell's air carries volcanic
+ * The Mie term is deliberately NOT Earth's: Ashenreach's air carries volcanic
  * ash, so scattering is biased warm and absorption eats the short wavelengths.
- * That single change is what turns a blue Earth sky into a bronze Dunmer one.
+ * That single change is what turns a blue Earth sky into a bronze Cindren one.
  */
 
 export const PLANET_R = 6360e3;
@@ -132,7 +132,7 @@ export const MIE_G = 0.68;
 /** Solar irradiance in engine units. Calibrated so noon zenith radiance ~0.35. */
 export const SUN_E = 11.0;
 
-/** Latitude of Vvardenfell. Northern, temperate — long low winter suns. */
+/** Latitude of Ashenreach. Northern, temperate — long low winter suns. */
 export const LATITUDE = 41.5 * Math.PI / 180;
 /** Axial tilt driving seasonal declination. */
 export const OBLIQUITY = 23.0 * Math.PI / 180;

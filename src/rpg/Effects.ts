@@ -185,7 +185,7 @@ const EFFECT_TABLE = {
   mark: { name: 'Mark', school: 'mysticism', baseCost: 40, mode: 'mark', param: 'none', noMagnitude: true, noDuration: true, selfOnly: true, vfx: 'mysticism', tint: 0x8f6bff },
   recall: { name: 'Recall', school: 'mysticism', baseCost: 40, mode: 'recall', param: 'none', noMagnitude: true, noDuration: true, selfOnly: true, vfx: 'mysticism', tint: 0x8f6bff },
   divineIntervention: { name: 'Divine Intervention', school: 'mysticism', baseCost: 50, mode: 'intervention', param: 'none', noMagnitude: true, noDuration: true, selfOnly: true, vfx: 'mysticism', tint: 0xd8c9a4 },
-  almsiviIntervention: { name: 'Almsivi Intervention', school: 'mysticism', baseCost: 30, mode: 'intervention', param: 'none', noMagnitude: true, noDuration: true, selfOnly: true, vfx: 'mysticism', tint: 0xd8c9a4 },
+  almsiviIntervention: { name: 'Trine Intervention', school: 'mysticism', baseCost: 30, mode: 'intervention', param: 'none', noMagnitude: true, noDuration: true, selfOnly: true, vfx: 'mysticism', tint: 0xd8c9a4 },
   detectAnimal: { name: 'Detect Animal', school: 'mysticism', baseCost: 1, mode: 'detect', param: 'none', selfOnly: true, vfx: 'mysticism', tint: 0x3fd6c0 },
   detectEnchantment: { name: 'Detect Enchantment', school: 'mysticism', baseCost: 1, mode: 'detect', param: 'none', selfOnly: true, vfx: 'mysticism', tint: 0x8f6bff },
   detectKey: { name: 'Detect Key', school: 'mysticism', baseCost: 1, mode: 'detect', param: 'none', selfOnly: true, vfx: 'mysticism', tint: 0xd8c9a4 },

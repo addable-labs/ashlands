@@ -156,7 +156,7 @@ export function genIdle(ix: SpeciesIndex, def: SpeciesDef, g: GenInput, out: Pos
     const chain = ix.wings[w];
     for (let i = 0; i < chain.length; i++) {
       const bi = chain[i];
-      // Held out flat, not folded: a cliff racer at rest is a bird gliding, and
+      // Held out flat, not folded: a ash shrike at rest is a bird gliding, and
       // a folded-wing idle reads as a dead animal falling out of the sky.
       out.setEuler(bi, 0, 0, s * (0.05 + i * 0.015) + s * Math.sin(g.t * 0.6 - i * 0.4) * 0.045);
     }
@@ -208,7 +208,7 @@ export function genLocomotion(ix: SpeciesIndex, def: SpeciesDef, g: GenInput, ou
       out.setEuler(bi, Math.sin(ph * 2) * 0.05, 0, 0);
     }
   } else {
-    // Drift: the netch bell pulses like a jellyfish, slowly and out of phase
+    // Drift: the skerrin bell pulses like a jellyfish, slowly and out of phase
     // with its own tentacles.
     for (let i = 0; i < ix.spine.length; i++) {
       const bi = ix.spine[i];

@@ -179,7 +179,7 @@ export interface CharacterSave {
 }
 
 export class Character {
-  name = 'Nerevarine';
+  name = 'Veyrane';
   race: RaceId = 'dunmer';
   gender: Gender = 'male';
   birthsign: BirthsignId = 'warrior';
@@ -408,7 +408,7 @@ export class Character {
 
   /**
    * Dispel strips temporary magic it can overpower. Abilities and constant
-   * effects survive — you cannot dispel being a Dunmer.
+   * effects survive — you cannot dispel being a Cindren.
    */
   dispel(power: number): number {
     let n = 0;

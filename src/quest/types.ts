@@ -149,7 +149,7 @@ export type TopicId =
   | 'stolen_goods'
   | 'my_bounty'
   | 'guards'
-  | 'silt_strider'
+  | 'fenwalker'
   | 'missing_apprentice'
   | 'duel_of_honour'
   | 'red_mountain'

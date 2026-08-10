@@ -116,8 +116,8 @@ const shot = async (name) => {
  * motes and the flora's wind pass alone put a third of the plate over the line,
  * so a crop containing nothing but landscape scored 35% "subject" and sailed
  * through a gate that exists precisely to catch that. At 45 the gate went the
- * other way and started failing correct frames, because ashen Dunmer skin
- * against Vvardenfell ash IS a low-contrast subject — which is the whole reason
+ * other way and started failing correct frames, because ashen Cindren skin
+ * against Ashenreach ash IS a low-contrast subject — which is the whole reason
  * this viewmodel is hard to light and is not a licence to measure it wrongly.
  */
 const DIFFERS = (a, b, i) =>

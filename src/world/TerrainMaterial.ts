@@ -1081,7 +1081,7 @@ void terrainWeights(float y, float s, float f, float c, float sh, float lo, floa
   float outcrop = bare * ridge * ss(0.035, 0.14, s);
   // Bedrock band, 40 to 55 degrees, and it must stay byte-identical to
   // Heightfield.weightsAt. See the long note there: without it basalt loses every
-  // argmax outside Red Mountain's radius and the palette's whole dark end
+  // argmax outside Ember Mount's radius and the palette's whole dark end
   // disappears from the world.
   float bedrock = ss(0.24, 0.42, s) * (0.35 + 0.65 * bare);
 
@@ -3580,7 +3580,7 @@ const FRAG_SPLAT = /* glsl */ `
   // large-scale term in this shader was value-only, so a plain could be light or
   // dark ochre and nothing else.
   //
-  // Vvardenfell's ashlands are not one powder. They are pale wind-graded fines
+  // Ashenreach's ashlands are not one powder. They are pale wind-graded fines
   // banked in the hollows, with dark scoria and clinker scoured bare on the
   // breaks between them, in patches tens to hundreds of metres across. So the
   // macro term becomes a *two-ended* ramp on the same tone field: cool near-black
@@ -3631,7 +3631,7 @@ const FRAG_SPLAT = /* glsl */ `
   vec3 driftMod = mix(vec3(1.0), chromaTrim(vec3(1.34, 1.24, 1.06), TQ_CHROMA), drift * depo);
   accA *= max(vec3(0.05), vec3(1.0) + (scourMod - vec3(1.0)) * farLift);
   accA *= max(vec3(0.05), vec3(1.0) + (driftMod - vec3(1.0)) * farLift);
-  // Red Mountain's ferric wash — now on the deposits only, and stronger there.
+  // Ember Mount's ferric wash — now on the deposits only, and stronger there.
   //
   // It was applied to every layer inside the volcano's 1290 m radius, which is
   // to say to the whole of the dawn, redmtn and ridge vantages, and it multiplied

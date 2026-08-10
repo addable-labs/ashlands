@@ -97,7 +97,7 @@ function bagOf(o: Bag | null, key: string): Bag | null {
  * Read race and equipped gear off whatever the 'rpg' system turns out to be.
  * Duck-typed on purpose: combat builds against the engine contracts and nothing
  * else, so it cannot hard-import another subsystem's item tables. Gauntlet
- * slots first, then the cuirass — a Dunmer in an iron cuirass is wearing iron,
+ * slots first, then the cuirass — a Cindren in an iron cuirass is wearing iron,
  * and showing a leather bracer because the gauntlet slot is empty is the wrong
  * answer.
  */

@@ -358,7 +358,7 @@ export class ShadowCascades {
     sc.bottom = -r;
     // Negative near, i.e. the frustum reaches *past* the light plane as well.
     // With a high sun the light plane sits only a few hundred metres above the
-    // slice, and Red Mountain is 1.4 km tall — a near of 1 clips the very
+    // slice, and Ember Mount is 1.4 km tall — a near of 1 clips the very
     // occluders whose shadows carry the composition.
     sc.near = -CASCADE_CASTER_DEPTH;
     sc.far = back + r;

@@ -28,7 +28,7 @@ const URL = 'http://127.0.0.1:5178/';
  */
 export const SHOTS = {
   dawn:      { hour: 6.2,  weather: 'clear',  relight: true,    note: 'low sun over the ash wastes, long shadows, godrays' },
-  redmtn:    { hour: 10.0, weather: 'cloudy', relight: true,   note: 'Red Mountain silhouette, aerial perspective' },
+  redmtn:    { hour: 10.0, weather: 'cloudy', relight: true,   note: 'Ember Mount silhouette, aerial perspective' },
   coast:     { hour: 17.6, weather: 'clear',  relight: true,    note: 'shoreline, water shading, foam, wet sand, sun glint' },
   night:     { hour: 23.4, weather: 'clear',    note: 'both moons, stars, night ambient, bioluminescence' },
   ashstorm:  { hour: 13.0, weather: 'ashstorm', note: 'signature weather — visibility, particulate, tint' },
@@ -153,7 +153,7 @@ for (const name of wanted) {
     // The elevation band is the shot's intent and must survive re-angling. Without
     // this the search optimised azimuth alone and was free to trade mid-morning for
     // sunrise: ridge (nominal 8.4) was landing on 6.25, a 4.8 deg sun sitting behind
-    // the Telvanni towers. They lit correctly and were then crushed to flat black by
+    // the Vaelmyr towers. They lit correctly and were then crushed to flat black by
     // the frame's black point, which reads as an unlit-asset bug and cost an agent a
     // full investigation to trace back to here. 0.15 rad ~= 8.6 deg. Because solar
     // elevation moves fast near sunrise and slowly near noon, a fixed band self-scales:

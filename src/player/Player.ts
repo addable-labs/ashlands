@@ -45,7 +45,7 @@ interface StatsEvent {
  * the *starting* character, not zero. A level-one build (Speed 40, Athletics 20)
  * lands on exactly 1.0, so the tuning constants are the speed the game actually
  * ships at and the RPG layer is a bonus on top rather than a hidden tax. The
- * floor keeps even a slow, unathletic Altmer inside a run that still feels like
+ * floor keeps even a slow, unathletic Aurin inside a run that still feels like
  * running; the ceiling keeps a maxed athlete from outrunning the terrain
  * streaming and the collision sweep.
  */

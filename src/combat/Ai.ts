@@ -10,12 +10,12 @@ import type { ActorLike, TargetIndex } from './Targets';
  * The actor system owns wandering, herding and flight; this owns what happens
  * once something has decided to fight. The two compose rather than compete: a
  * fighter's steering here is an additive impulse on top of whatever the actor's
- * own brain is doing, so a nix-hound that is fleeing and a nix-hound that is
- * closing both still look like a nix-hound.
+ * own brain is doing, so a glassjaw that is fleeing and a glassjaw that is
+ * closing both still look like a glassjaw.
  *
  * The state machine is deliberately small — approach, circle, commit, recover,
  * guard, retreat, flee — because the interesting behaviour comes from the
- * species table rather than from more states. A cliff racer and a guar run the
+ * species table rather than from more states. A ash shrike and a drell run the
  * same seven states; what differs is that one of them commits from thirty
  * metres up at twenty-two metres a second and does not stop, and the other
  * lowers its head and ploughs.
@@ -174,7 +174,7 @@ export class CombatAI {
       this.fighters.set(a.id, f);
     } else if (f.kind !== a.kind) {
       // The actor system recycles ids onto relocated actors; rebind rather than
-      // let a guar inherit a cliff racer's fight.
+      // let a drell inherit a ash shrike's fight.
       f.kind = a.kind;
       f.profile = this.profileFor(a.kind);
       f.state = 'idle';
@@ -266,7 +266,7 @@ export class CombatAI {
       const dist = sense.targetValid ? a.position.distanceTo(sense.targetPos) : Infinity;
       const prof = f.profile;
 
-      // Ambient aggression: a cliff racer needs no reason.
+      // Ambient aggression: a ash shrike needs no reason.
       if (f.state === 'idle' && sense.targetValid && dist < prof.notice) {
         if (this.rand.next() < prof.aggression * dt * 0.9) {
           f.aggro = clamp(f.aggro + 0.8, 0, 1);
@@ -402,7 +402,7 @@ export class CombatAI {
    * Without this the only way a creature enters a fight it did not start is the
    * ambient aggression roll in `update()`, which takes a second or two to come
    * up — and a skittish animal spends that time running. The player can stand
-   * over a kwama swinging and never begin the fight at all, which is the point
+   * over a morvek swinging and never begin the fight at all, which is the point
    * at which combat stops looking like combat.
    *
    * Deliberately only on a miss. A blow that lands alerts through

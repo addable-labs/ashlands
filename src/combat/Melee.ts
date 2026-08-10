@@ -11,7 +11,7 @@ import { clamp, easeInQuad, easeOutCubic, smoothstep } from './mathx';
  * hit test uses that object's segment — hilt to tip — swept along the arc
  * across the frame. A swing is sampled at up to eight intermediate poses chosen
  * from how far the tip actually travelled, so a warhammer at the bottom of a
- * chop cannot skip past a nix-hound between two frames. What the player sees
+ * chop cannot skip past a glassjaw between two frames. What the player sees
  * pass through a body is what the code tested.
  *
  * Second, the arc is a continuous function of one scalar `s`: negative through
@@ -118,7 +118,7 @@ export class Swing {
    * phase to 'recover' on the same frame that `s` crosses 1, so a test gated on
    * `live` silently drops the interval between the previous frame's `s` and
    * 1.0 — the end of the arc, which for a chop is the bottom of the swing and
-   * the only part of it low enough to reach a kwama. The blade visibly passed
+   * the only part of it low enough to reach a morvek. The blade visibly passed
    * through the target and nothing was ever tested there.
    */
   get sweeping(): boolean {

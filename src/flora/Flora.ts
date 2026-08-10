@@ -21,7 +21,7 @@ import { OSEED, OSY, OX, OY, OZ, SPECIES, STRIDE, scatter, type Scattered } from
 /**
  * ASHLANDS — vegetation.
  *
- * Vvardenfell's flora is fungal, and the silhouette is the point: an emperor
+ * Ashenreach's flora is fungal, and the silhouette is the point: an emperor
  * parasol is a swollen stalk under a wide drooping cap with gills you can see
  * from below, not a tree. Everything here is generated: the meshes are lofted
  * splines and lathes over seeded noise, the textures are a single synthesised
@@ -665,7 +665,7 @@ const GROUND: GroundOpts[] = [
      *
      * This was a lobed moss cushion and it was the subsystem's worst asset: a
      * dome authored crown-up with its rim on the ground is a cone, and every
-     * review shot named it. A cone cannot be shaded into a plant. What Vvardenfell
+     * review shot named it. A cone cannot be shaded into a plant. What Ashenreach
      * ground actually wants is fungus, so it is fungus now — see fungusTemplate()
      * for the mesh and the vertex shader for the per-instance cap width, rim lobe
      * count, stipe length, size (over two and a half stops), yaw and tilt that

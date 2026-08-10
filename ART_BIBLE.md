@@ -6,7 +6,7 @@ or judging a screenshot.
 ## The target
 
 **Ashlands** is a follow-up installment to *The Elder Scrolls III: Morrowind*. Same province
-(Vvardenfell), same alien sensibility, rendered with a modern physically-based pipeline. The
+(Ashenreach), same alien sensibility, rendered with a modern physically-based pipeline. The
 comparison target is vanilla Morrowind as it ships today on Steam — and the bar is that a
 viewer shown both without labels picks ours, on every shot, without hesitation.
 
@@ -39,7 +39,7 @@ A photoreal generic hillside is a **failure**, not a win.
 |---|---|---|
 | Ash | `#8a7f72` → `#4a423b` | ground plane, dominant mid-value |
 | Basalt | `#2a2622` → `#141312` | cliffs, columnar rock, deep shadow |
-| Ember | `#c4551f` / `#ff7a2a` | lava fissures, Red Mountain glow, emissives |
+| Ember | `#c4551f` / `#ff7a2a` | lava fissures, Ember Mount glow, emissives |
 | Sulphur sky | `#c99a5c` → `#7d5a3e` | haze, horizon band, ash storms |
 | Bioluminescence | `#3fd6c0` / `#8f6bff` | fungus, glow-moss, magic — the only saturated colours |
 | Chitin / bone | `#d8c9a4` → `#8f7d5a` | architecture, armour |

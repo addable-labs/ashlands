@@ -11,15 +11,15 @@ import type { ActorLike, TargetIndex } from './Targets';
  * An arrow is a point mass under gravity and quadratic drag, integrated with a
  * step small enough that it cannot cross more than a third of a metre without
  * being tested — a 84 m/s chitin bolt at 60 fps covers 1.4 m in a frame, and
- * without substepping it would pass clean through a nix-hound. Because the
+ * without substepping it would pass clean through a glassjaw. Because the
  * flight is real, everything downstream of it is real too: the drop is
  * something the player learns to aim over, the travel time is something a
- * moving target can walk out of, and hitting a diving cliff racer requires
+ * moving target can walk out of, and hitting a diving ash shrike requires
  * leading it. That is the whole reason to simulate rather than to roll.
  *
  * Arrows that land stay landed: in terrain they bite at the angle they arrived
  * at, and in a body they ride the animation, because a quiver of arrows
- * standing out of a dead guar is worth more than any hit indicator.
+ * standing out of a dead drell is worth more than any hit indicator.
  */
 
 const GRAVITY = -9.81;
@@ -413,7 +413,7 @@ const AMMO_INDEX: readonly string[] = ['iron_arrow', 'steel_arrow', 'silver_arro
  * nothing next to a closed-form quartic.
  *
  * This is what lets an archer NPC hit a running player, and what the player is
- * doing by eye when they aim ahead of a diving cliff racer.
+ * doing by eye when they aim ahead of a diving ash shrike.
  */
 export function leadShot(
   from: THREE.Vector3,
