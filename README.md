@@ -6,6 +6,32 @@ It runs in the browser on Three.js (r185) and WebGL2. **Everything is procedural
 
 ---
 
+## This is an experiment
+
+Ashlands is an experiment in agentic software development. The entire codebase — engine, renderer, RPG systems, quest graph, audio synthesis, and the verification harness that polices it — was written by Claude Code working from a single prompt, fanning out to sub-agents that each owned one subsystem and verified their own work against captured frames.
+
+The originating prompt, verbatim:
+
+> I want you to build an action role-playing game at the level of the most recent version of Elder Scrolls: Morrowind, serving as a follow-up in the series, a new installment. It should be utterly perfect, visually beautiful, with every single thing done at AAA quality—from textures to physics to anything you could think of.
+>
+> Fan out sub-agents and have sub-agents tackle each one individually so that the game is utterly perfect. You should /loop on each item and have a separate sub-agent check it visually to ensure it looks triple A. That separate sub-agent should be a really harsh critic, and if it doesn't look triple A, it should keep going.
+>
+> Don't stop until each sub-agent is utterly wowed with the quality when compared with the actual Morrowind games. It should literally compare them side by side blind and say which one looks better. Do this in ThreeJS. /loop until it's utterly perfect. Fan out sub-agents and ultracodde.
+
+### What that brief did and did not produce
+
+Read the goal as stated — "utterly perfect", "AAA quality" — and then read the **Current state** section at the bottom. The gap between them is the honest result of the experiment, and it is more interesting than the aspiration.
+
+Two caveats matter if you are evaluating this repository as evidence of anything:
+
+**The blind side-by-side against Morrowind never actually happened.** The brief asks for critic agents to compare frames against the real games and say which looks better. No reference screenshots were ever obtained, so every such judgement was an agent scoring a frame against its own *recollection* of Morrowind. Those numbers should not be read as a measured comparison, because they are not one.
+
+**"Perfect" was never reached, and several rounds of confident work were wrong.** The commit history is deliberately explicit about this: it contains reverted changes, negative results kept because they were expensive to obtain, and a number of cases where the tooling itself was manufacturing false signal — a gate metric scored in the wrong direction, a check flipping between pass and fail on an unchanged build, a diagnostic that silently invalidated every measurement after the first shot in a run. Two visual defects that each consumed multiple rounds of shader investigation turned out to be the camera standing in the wrong place.
+
+The verification harness exists because of that pattern, not in spite of it. An agent's confidence is not evidence; a captured frame and a measured number are. `PIPELINE.md` is the process that emerged from getting this wrong repeatedly.
+
+---
+
 ## Requirements
 
 - **Node 20+** (developed on Node 26)
