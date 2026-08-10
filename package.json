@@ -1,5 +1,5 @@
 {
-  "name": "morrowind",
+  "name": "ashlands",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -14,8 +14,8 @@
     "serve": "bash tools/serve-play.sh"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Peter Blenessy",
+  "license": "MIT",
   "type": "commonjs",
   "dependencies": {
     "three": "^0.185.1"

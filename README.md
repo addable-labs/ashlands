@@ -196,4 +196,6 @@ For how this list came to look the way it does, see [EVALUATION.md](EVALUATION.m
 
 ## License
 
-None yet — all rights reserved pending a decision. *The Elder Scrolls* and *Morrowind* are trademarks of ZeniMax Media; this project is an independent homage and contains no assets from those games.
+[MIT](LICENSE) — do what you like with it, keep the notice, no warranty.
+
+*The Elder Scrolls* and *Morrowind* are trademarks of ZeniMax Media. This project is an independent homage: it contains no assets from those games, and its setting, peoples, creatures and factions are original. References to Morrowind in this README and in [EVALUATION.md](EVALUATION.md) name it as the design target the experiment was measured against — nothing more.
